@@ -1,4 +1,5 @@
 import { SessionProvider } from 'next-auth/react';
+import { EdgeStoreProvider } from '@/lib/edgestore';
 import { auth } from '@/auth';
 
 import React from 'react';
@@ -8,7 +9,7 @@ const Providers = async ({ children }: { children: React.ReactNode }) => {
 
     return (
         <SessionProvider session={session}>
-            <>{children}</>
+            <EdgeStoreProvider>{children}</EdgeStoreProvider>
         </SessionProvider>
     );
 };
