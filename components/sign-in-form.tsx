@@ -82,12 +82,7 @@ export default function SignInForm() {
     }, [success, error]);
 
     return (
-        <Auth
-            headerLabel="Sign In"
-            footerLabel="Do not have an account ? "
-            footerHref="/sign-up"
-            className="h-full xl:rounded-none"
-        >
+        <Auth headerLabel="Sign In" footerLabel="Do not have an account ? " footerHref="/sign-up">
             <Form {...form}>
                 <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-2">
                     <FormField

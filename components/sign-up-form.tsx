@@ -49,12 +49,7 @@ export default function SignUpForm() {
     };
 
     return (
-        <AuthCardWrapper
-            className="h-full xl:rounded-none"
-            headerLabel="Sign Up"
-            footerLabel="You Have An Account ? "
-            footerHref="/sign-in"
-        >
+        <AuthCardWrapper headerLabel="Sign Up" footerLabel="You Have An Account ? " footerHref="/sign-in">
             <Form {...form}>
                 <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-2">
                     <FormField
