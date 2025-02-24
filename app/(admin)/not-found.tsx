@@ -1,11 +1,7 @@
 import Link from 'next/link';
 import { Frown } from 'lucide-react';
-import { NextRequest, NextResponse } from 'next/server';
 
-export default async function NotFound(
-    request: NextRequest,
-    response: NextResponse,
-) {
+export default async function NotFound() {
     return (
         <main className="flex min-h-screen flex-col items-center justify-center gap-2">
             <Frown className="w-10 text-gray-400" />
