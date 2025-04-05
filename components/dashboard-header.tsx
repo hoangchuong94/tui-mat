@@ -2,7 +2,7 @@ import React from 'react';
 import { Slash } from 'lucide-react';
 import { SidebarTrigger } from '@/components/ui/sidebar';
 import { BreadcrumbSeparator } from '@/components/ui/breadcrumb';
-import LinkHierarchy from '@/components/loading-spinner';
+import LinkHierarchy from '@/components/link-hierarchy';
 
 export default function DashboardHeader() {
     return (

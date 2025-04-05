@@ -1,10 +1,11 @@
-import { Image, Category, Color, Promotion, DetailCategory, Gender } from '@prisma/client';
+import { Image, Category, Color, Promotion, DetailCategory, Gender, Trademark } from '@prisma/client';
 
 export type DataCreateProduct = {
     categories: Category[];
     detailCategories: DetailCategory[];
     genders: Gender[];
     promotions: Promotion[];
+    trademark: Trademark[];
 };
 
 export type UploadedImage = {
@@ -57,4 +58,10 @@ export interface CreateProductFormValues {
     thumbnailFile: string;
     imageFiles: string[];
     discountType: string;
+}
+
+export interface Profile {
+    username: string;
+    email: string;
+    avatar: string;
 }

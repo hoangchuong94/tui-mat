@@ -65,7 +65,7 @@ export default function PopoverSelect<T>({
                     <ChevronsUpDown className={cn('ml-2 h-4 w-4 shrink-0 opacity-50')} />
                 </Button>
             </PopoverTrigger>
-            <PopoverContent className="p-0">
+            <PopoverContent className="w-auto p-0 xl:w-96">
                 <Command>
                     <CommandInput placeholder="Search..." disabled={disabled} />
                     <CommandList>

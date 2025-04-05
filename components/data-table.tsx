@@ -19,8 +19,6 @@ import { DataTablePagination } from '@/components/data-table-pagination';
 import { DataTableViewOptions } from '@/components/data-table-view-options';
 import { DatePickerWithRange } from '@/components/data-date-picker';
 import { DateRange } from 'react-day-picker';
-import { Button } from './ui/button';
-import Link from 'next/link';
 
 interface DataTableProps<TData, TValue> {
     columns: ColumnDef<TData, TValue>[];
@@ -80,9 +78,6 @@ export function DataTable<TData extends { createdAt?: Date }, TValue>({
     return (
         <div className={className}>
             <div className="mb-4 flex justify-between space-x-2">
-                <Link href={'/dashboard/product/create'}>
-                    <Button className="bg-green-400 text-white">Create Product</Button>
-                </Link>
                 <div className="flex space-x-2">
                     <div className="relative">
                         <Input

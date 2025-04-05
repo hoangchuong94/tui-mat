@@ -103,6 +103,17 @@ model DetailCategory {
   @@map("detail_categories")
 }
 
+model Trademark{
+  id                String        @id @default(cuid())
+  name              String
+  createdAt         DateTime      @default(now()) @map(name: "created_at")
+  updatedAt         DateTime      @updatedAt @map(name: "updated_at")
+  products          Product []
+  @@map("trademark")
+}
+
+
+
 model Product {
   id                String         @id @default(cuid())
   name              String
@@ -112,13 +123,17 @@ model Product {
   quantity          Int
   discount          Float
   thumbnail         String
+  origin            String
+  images            ProductImage[]
+  colors            ProductColor[] 
+  promotions        ProductPromotion[]
   createdAt         DateTime       @default(now()) @map(name: "created_at")
   updatedAt         DateTime       @updatedAt @map(name: "updated_at")
   detailCategoryId  String         @map("detail_category_id")
   detailCategory    DetailCategory @relation(fields: [detailCategoryId], references: [id])
-  images            ProductImage[]
-  colors            ProductColor[] 
-  promotions        ProductPromotion[]
+  trademarkId       String         @map("trademark_id")
+  trademark         Trademark         @relation(fields: [trademarkId], references: [id])
+  
 
   @@map("products")
 }

@@ -46,21 +46,16 @@ export const CreateProductSchema = z
             .positive('Quantity must be a positive number')
             .int('Quantity must be an integer'),
 
-        promotions: z.object({
-            id: z.string(),
-            name: z.string(),
-            description: z.string(),
-            startDay: z.date(),
-            endDay: z.date(),
-            createdAt: z.date(),
-            updatedAt: z.date(),
-        }),
-
         thumbnailFile: ThumbnailSchema,
         imageFiles: ImagesSchema,
 
         stock: z.coerce.number().min(1, 'Stock is required').positive('Stock must be a positive number'),
         discount: z.coerce.number().optional(),
+        origin: z
+            .string({ required_error: 'Origin name is required' })
+            .min(1, 'Origin name is required')
+            .min(6, 'Origin name must be more than 6 characters')
+            .max(32, 'Origin name must be less than 32 characters'),
 
         gender: z.object({
             id: z.string().min(1, 'Gender ID is required'),
@@ -83,6 +78,23 @@ export const CreateProductSchema = z
             createdAt: z.date(),
             updatedAt: z.date(),
             categoryId: z.string().min(1, 'Category ID in DetailCategory is required'),
+        }),
+
+        promotions: z.object({
+            id: z.string(),
+            name: z.string(),
+            description: z.string(),
+            startDay: z.date(),
+            endDay: z.date(),
+            createdAt: z.date(),
+            updatedAt: z.date(),
+        }),
+
+        trademark: z.object({
+            id: z.string(),
+            name: z.string(),
+            createdAt: z.date(),
+            updatedAt: z.date(),
         }),
     })
     .superRefine((data, ctx) => {

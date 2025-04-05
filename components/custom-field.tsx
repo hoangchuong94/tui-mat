@@ -222,14 +222,7 @@ export const ImagesField = <TFieldValues extends FieldValues>({
         label={label}
         {...fieldProps}
         renderInput={(field) => {
-            return (
-                <UploadImages
-                    setUrls={setUrls}
-                    onChange={field.onChange}
-                    initialFilesState={field.value}
-                    className={className}
-                />
-            );
+            return <UploadImages setUrls={setUrls} onChange={field.onChange} initialFilesState={field.value} />;
         }}
     />
 );

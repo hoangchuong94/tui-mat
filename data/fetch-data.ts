@@ -3,11 +3,12 @@ import prisma from '@/lib/prisma';
 
 export const fetchDataCreateProductForm = async (): Promise<DataCreateProduct> => {
     try {
-        const [categories, genders, detailCategories, promotions] = await Promise.all([
+        const [categories, genders, detailCategories, promotions, trademark] = await Promise.all([
             prisma.category.findMany(),
             prisma.gender.findMany(),
             prisma.detailCategory.findMany(),
             prisma.promotion.findMany(),
+            prisma.trademark.findMany(),
         ]);
 
         return {
@@ -15,6 +16,7 @@ export const fetchDataCreateProductForm = async (): Promise<DataCreateProduct> =
             genders,
             detailCategories,
             promotions,
+            trademark,
         };
     } catch (error) {
         console.error('Error fetching data:', error);

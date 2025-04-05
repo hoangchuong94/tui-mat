@@ -2,6 +2,6 @@ export const publicRoutes = ['/', '/new-verification', '/contact', '/about', '/p
 
 export const authRoutes = ['/sign-in', '/sign-up', '/error', '/forgot-password'];
 
-export const apiAuthPrefix = '/api/auth';
+export const apiAuthPrefix = '/api';
 
 export const DEFAULT_ADMIN_SIGN_IN_REDIRECT = '/dashboard';

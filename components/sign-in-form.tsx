@@ -4,7 +4,7 @@ import z from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
 import Image from 'next/image';
 import Link from 'next/link';
-import React, { useEffect, useState, useTransition } from 'react';
+import React, { useState, useTransition } from 'react';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import { useSearchParams } from 'next/navigation';
@@ -46,40 +46,20 @@ export default function SignInForm() {
             password: '',
         },
     });
-
-    const onSubmit = (values: z.infer<typeof LoginSchema>) => {
+    const onSubmit = async (values: z.infer<typeof LoginSchema>) => {
         setError('');
         setSuccess('');
 
-        startTransition(() => {
-            authenticate(values)
-                .then((data) => {
-                    if (data?.error) {
-                        form.reset();
-                        setError(data.error);
-                    }
-
-                    if (data?.success) {
-                        form.reset();
-                        setSuccess(data.success);
-                    }
-                })
-                .catch(() => {
-                    setError('Something went wrong');
-                });
+        startTransition(async () => {
+            const data = await authenticate(values);
+            if (data?.error) {
+                setError(data.error);
+            } else if (data?.success) {
+                setSuccess(data.success);
+                form.reset();
+            }
         });
     };
-
-    useEffect(() => {
-        try {
-            if (!error && success && success === 'Login Successful') {
-                window.location.reload();
-            }
-        } catch (error) {
-            console.log(error);
-            throw Error('Something went wrong!');
-        }
-    }, [success, error]);
 
     return (
         <Auth headerLabel="Sign In" footerLabel="Do not have an account ? " footerHref="/sign-up">

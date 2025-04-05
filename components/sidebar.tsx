@@ -4,33 +4,27 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { signOut } from 'next-auth/react';
 import { usePathname } from 'next/navigation';
-import { useSession } from 'next-auth/react';
 import {
     CirclePercent,
     CreditCard,
-    Settings,
     LayoutDashboard,
     Store,
     ChartNoAxesCombined,
-    ChevronsUpDown,
-    ChevronDown,
     NotebookText,
     HandCoins,
     ListRestart,
+    ChevronsUpDown,
 } from 'lucide-react';
 import {
     Sidebar,
     SidebarContent,
     SidebarGroup,
-    SidebarGroupContent,
     SidebarGroupLabel,
     SidebarMenu,
     SidebarMenuButton,
     SidebarMenuItem,
     SidebarHeader,
     SidebarFooter,
-    SidebarMenuSub,
-    SidebarMenuSubItem,
     SidebarSeparator,
     useSidebar,
 } from '@/components/ui/sidebar';
@@ -43,15 +37,37 @@ import {
 } from '@/components/ui/dropdown-menu';
 import { Button } from '@/components/ui/button';
 import { Avatar, AvatarImage } from '@/components/ui/avatar';
-import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
-
 import logo from '@/public/static/logo-retina.png';
 
-export default function DashboardSidebar() {
+interface Profile {
+    username: string;
+    email: string;
+    avatar: string;
+}
+
+interface DashboardSidebarProps {
+    profile: Profile;
+}
+
+const menuItems = [
+    { path: 'overview', label: 'Overview', icon: <LayoutDashboard /> },
+    { path: 'analytics', label: 'Analytics', icon: <ChartNoAxesCombined /> },
+    { path: 'product', label: 'Product', icon: <Store /> },
+    { path: 'sales', label: 'Sales', icon: <CirclePercent /> },
+];
+
+const transactionItems = [
+    { path: 'payment', label: 'Payment', icon: <CreditCard /> },
+    { path: 'returns', label: 'Returns', icon: <HandCoins /> },
+    { path: 'invoice', label: 'Invoice', icon: <NotebookText /> },
+    { path: 'refunds', label: 'Refunds', icon: <ListRestart /> },
+];
+
+export default function DashboardSidebar({ profile }: DashboardSidebarProps) {
     const pathname = usePathname();
     const { open } = useSidebar();
-    const isActive = (path: string) => pathname.split('/').includes(path);
-    const { data: session } = useSession();
+    const isActive = (path: string) => pathname.includes(`/dashboard/${path}`);
+
     return (
         <Sidebar variant="floating" collapsible="icon" className="bg-slate-300">
             <SidebarHeader>
@@ -73,189 +89,40 @@ export default function DashboardSidebar() {
             <SidebarContent>
                 <SidebarGroup>
                     <SidebarGroupLabel>Main Menu</SidebarGroupLabel>
-                    <SidebarGroupContent>
-                        <SidebarMenu>
-                            <SidebarMenuItem className="flex items-center justify-center">
+                    <SidebarMenu>
+                        {menuItems.map(({ path, label, icon }) => (
+                            <SidebarMenuItem key={path} className="flex items-center justify-center">
                                 <SidebarMenuButton
                                     asChild
-                                    className={`${
-                                        pathname.split('/').filter(Boolean).pop() === 'dashboard'
+                                    className={
+                                        isActive(path)
                                             ? 'bg-green-400 text-white hover:bg-green-400 hover:text-white'
                                             : ''
-                                    }`}
+                                    }
                                 >
-                                    <Link href={'/dashboard'}>
-                                        <LayoutDashboard />
-                                        <span>Overview</span>
+                                    <Link href={`/dashboard/${path}`}>
+                                        {icon}
+                                        <span>{label}</span>
                                     </Link>
                                 </SidebarMenuButton>
                             </SidebarMenuItem>
-                            <SidebarMenuItem className="flex items-center justify-center">
-                                <SidebarMenuButton
-                                    asChild
-                                    className={` ${
-                                        isActive('analytics')
-                                            ? 'bg-green-400 text-white hover:bg-green-400 hover:text-white'
-                                            : ''
-                                    }`}
-                                >
-                                    <Link href={'/dashboard/analytics'}>
-                                        <ChartNoAxesCombined />
-                                        <span>Analytics</span>
-                                    </Link>
-                                </SidebarMenuButton>
-                            </SidebarMenuItem>
-                            <SidebarMenuItem className="flex items-center justify-center">
-                                <SidebarMenuButton
-                                    asChild
-                                    className={` ${
-                                        isActive('product')
-                                            ? 'bg-green-400 text-white hover:bg-green-400 hover:text-white'
-                                            : ''
-                                    }`}
-                                >
-                                    <Link href={'/dashboard/product'}>
-                                        <Store />
-                                        <span>Product</span>
-                                    </Link>
-                                </SidebarMenuButton>
-                            </SidebarMenuItem>
-                            <SidebarMenuItem className="flex items-center justify-center">
-                                <SidebarMenuButton
-                                    asChild
-                                    className={` ${
-                                        isActive('sales')
-                                            ? 'bg-green-400 text-white hover:bg-green-400 hover:text-white'
-                                            : ''
-                                    }`}
-                                >
-                                    <Link href={'/dashboard/sales'}>
-                                        <CirclePercent />
-                                        <span>Sales</span>
-                                    </Link>
-                                </SidebarMenuButton>
-                            </SidebarMenuItem>
-                        </SidebarMenu>
-                    </SidebarGroupContent>
+                        ))}
+                    </SidebarMenu>
                 </SidebarGroup>
                 <SidebarGroup>
                     <SidebarGroupLabel>Transaction</SidebarGroupLabel>
-                    <SidebarGroupContent>
-                        <SidebarMenu>
-                            <SidebarMenuItem className="flex items-center justify-center">
-                                <SidebarMenuButton
-                                    asChild
-                                    className={` ${
-                                        isActive('payment')
-                                            ? 'bg-green-400 text-white hover:bg-green-400 hover:text-white'
-                                            : ''
-                                    }`}
-                                >
-                                    <Link href={'/dashboard/payment'}>
-                                        <CreditCard />
-                                        <span>Payment</span>
+                    <SidebarMenu>
+                        {transactionItems.map(({ path, label, icon }) => (
+                            <SidebarMenuItem key={path} className="flex items-center justify-center">
+                                <SidebarMenuButton asChild className={isActive(path) ? 'bg-green-400 text-white' : ''}>
+                                    <Link href={`/dashboard/${path}`}>
+                                        {icon}
+                                        <span>{label}</span>
                                     </Link>
                                 </SidebarMenuButton>
                             </SidebarMenuItem>
-                            <SidebarMenuItem className="flex items-center justify-center">
-                                <SidebarMenuButton
-                                    asChild
-                                    className={` ${
-                                        isActive('returns')
-                                            ? 'bg-green-400 text-white hover:bg-green-400 hover:text-white'
-                                            : ''
-                                    }`}
-                                >
-                                    <Link href={'/dashboard/returns'}>
-                                        <HandCoins />
-                                        <span>Returns</span>
-                                    </Link>
-                                </SidebarMenuButton>
-                            </SidebarMenuItem>
-                            <SidebarMenuItem className="flex items-center justify-center">
-                                <SidebarMenuButton
-                                    asChild
-                                    className={` ${
-                                        isActive('invoice')
-                                            ? 'bg-green-400 text-white hover:bg-green-400 hover:text-white'
-                                            : ''
-                                    }`}
-                                >
-                                    <Link href={'/dashboard/invoice'}>
-                                        <NotebookText />
-                                        <span>Invoice</span>
-                                    </Link>
-                                </SidebarMenuButton>
-                            </SidebarMenuItem>
-
-                            <SidebarMenuItem className="flex items-center justify-center">
-                                <SidebarMenuButton
-                                    asChild
-                                    className={` ${
-                                        isActive('refunds')
-                                            ? 'bg-green-400 text-white hover:bg-green-400 hover:text-white'
-                                            : ''
-                                    }`}
-                                >
-                                    <Link href={'/dashboard/refunds'}>
-                                        <ListRestart />
-                                        <span>Refunds</span>
-                                    </Link>
-                                </SidebarMenuButton>
-                            </SidebarMenuItem>
-                        </SidebarMenu>
-                    </SidebarGroupContent>
-                </SidebarGroup>
-                <SidebarGroup>
-                    <SidebarGroupLabel>General</SidebarGroupLabel>
-                    <SidebarGroupContent>
-                        <SidebarMenu>
-                            <Collapsible className="group/collapsible">
-                                <SidebarMenuItem
-                                    className={`hover:cursor-pointer ${!open && 'flex items-center justify-center'}`}
-                                >
-                                    <CollapsibleTrigger asChild>
-                                        <SidebarMenuButton asChild>
-                                            <div>
-                                                <Settings />
-                                                <span>Setting</span>
-                                                <ChevronDown className="ml-auto transition-transform group-data-[state=open]/collapsible:rotate-180" />
-                                            </div>
-                                        </SidebarMenuButton>
-                                    </CollapsibleTrigger>
-                                    <CollapsibleContent>
-                                        <SidebarMenuSub>
-                                            <SidebarMenuSubItem>
-                                                <Link href={'/#'}>
-                                                    <span>title 1</span>
-                                                </Link>
-                                            </SidebarMenuSubItem>
-                                            <SidebarMenuSubItem>
-                                                <Link href={'/#'}>
-                                                    <span>title 2</span>
-                                                </Link>
-                                            </SidebarMenuSubItem>
-                                            <SidebarMenuSubItem>
-                                                <Link href={'/#'}>
-                                                    <span>title 3</span>
-                                                </Link>
-                                            </SidebarMenuSubItem>
-                                            <SidebarMenuSubItem>
-                                                <Link href={'/#'}>
-                                                    <span>title 4</span>
-                                                </Link>
-                                            </SidebarMenuSubItem>
-                                            <SidebarMenuSubItem>
-                                                <Link href={'/#'}>
-                                                    <span>title 5</span>
-                                                </Link>
-                                            </SidebarMenuSubItem>
-                                        </SidebarMenuSub>
-                                    </CollapsibleContent>
-                                </SidebarMenuItem>
-                            </Collapsible>
-                        </SidebarMenu>
-                    </SidebarGroupContent>
+                        ))}
+                    </SidebarMenu>
                 </SidebarGroup>
             </SidebarContent>
             <SidebarSeparator />
@@ -267,15 +134,10 @@ export default function DashboardSidebar() {
                                 <DropdownMenuTrigger asChild>
                                     <div className="flex w-full items-center justify-center">
                                         <Avatar className="cursor-pointer">
-                                            <AvatarImage
-                                                src={session?.user.image || 'https://github.com/shadcn.png'}
-                                                alt={session?.user.name || ''}
-                                            />
+                                            <AvatarImage src={profile.avatar} alt={profile.username} />
                                         </Avatar>
-                                        <SidebarMenuButton
-                                            className={`flex justify-between hover:bg-transparent ${!open && 'hidden'}`}
-                                        >
-                                            <span className="overflow-hidden">{session?.user.name}</span>
+                                        <SidebarMenuButton className={`flex justify-between ${!open && 'hidden'}`}>
+                                            <span>{profile.username}</span>
                                             <ChevronsUpDown />
                                         </SidebarMenuButton>
                                     </div>

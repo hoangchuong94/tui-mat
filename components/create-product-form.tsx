@@ -32,6 +32,7 @@ export default function CreateProductForm({ dataCreateProduct }: CreateProductFo
             quantity: 0,
             discount: 0,
             imageFiles: [],
+            origin: '',
             promotions: {
                 id: '',
                 name: '',
@@ -44,6 +45,7 @@ export default function CreateProductForm({ dataCreateProduct }: CreateProductFo
             gender: { id: '', name: '', createdAt: new Date(), updatedAt: new Date() },
             category: { id: '', name: '', genderId: '', createdAt: new Date(), updatedAt: new Date() },
             detailCategory: { id: '', name: '', categoryId: '', createdAt: new Date(), updatedAt: new Date() },
+            trademark: { id: '', name: '', createdAt: new Date(), updatedAt: new Date() },
         },
     });
 
@@ -67,7 +69,7 @@ export default function CreateProductForm({ dataCreateProduct }: CreateProductFo
         console.log(values);
     };
     return (
-        <div className="px-4">
+        <div className="px-4 pb-2">
             <Form {...form}>
                 <form
                     onSubmit={form.handleSubmit(onSubmit)}
@@ -94,25 +96,27 @@ export default function CreateProductForm({ dataCreateProduct }: CreateProductFo
                             placeholder="Please enter your name"
                         />
 
-                        <InputField
-                            type="number"
-                            name="quantity"
-                            className="bg-slate-200 focus:bg-white"
-                            label="Quantity"
-                            placeholder="Please enter your price quantity"
-                        />
-                        <PopoverSelectField
-                            name="gender"
-                            label="Gender"
-                            items={dataCreateProduct.genders}
-                            getItemKey={(item) => item.id}
-                            renderItem={(item) => item.name}
-                        />
+                        <div className="grid grid-cols-2 gap-2">
+                            <PopoverSelectField
+                                name="gender"
+                                label="Gender"
+                                items={dataCreateProduct.genders}
+                                getItemKey={(item) => item.id}
+                                renderItem={(item) => item.name}
+                            />
+                            <InputField
+                                type="number"
+                                name="quantity"
+                                className="bg-slate-200 focus:bg-white"
+                                label="Quantity"
+                                placeholder="Please enter your price quantity"
+                            />
+                        </div>
                         <InputField
                             type="area"
                             name="description"
                             label="Description Product"
-                            className="h-40 bg-slate-200 focus:bg-white"
+                            className="h-56 bg-slate-200 focus:bg-white"
                             placeholder="Type your message here."
                         />
                     </div>
@@ -168,16 +172,16 @@ export default function CreateProductForm({ dataCreateProduct }: CreateProductFo
                         </div>
                         <div className="grid-cols-2 gap-2 max-lg:space-y-2 lg:grid">
                             <InputField
-                                type="number"
+                                type="text"
                                 className="bg-slate-200 focus:bg-white"
-                                label="Discount"
-                                name="discount"
-                                placeholder="Enter your discount"
+                                label="Origin"
+                                name="origin"
+                                placeholder="Enter your Origin"
                             />
                             <PopoverSelectField
-                                name="discountType"
-                                label="Discount Type"
-                                items={dataCreateProduct.promotions}
+                                name="trademark"
+                                label="Trademark"
+                                items={dataCreateProduct.trademark}
                                 getItemKey={(item) => item.id}
                                 renderItem={(item) => item.name}
                             />
