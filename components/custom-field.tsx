@@ -215,7 +215,6 @@ export const ImageField = <TFieldValues extends FieldValues>({
 export const ImagesField = <TFieldValues extends FieldValues>({
     label,
     setUrls,
-    className,
     ...fieldProps
 }: ImagesFieldProps<TFieldValues>) => (
     <GenericField
