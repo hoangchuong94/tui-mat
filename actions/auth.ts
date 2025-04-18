@@ -42,7 +42,7 @@ export async function authenticate(values: z.infer<typeof LoginSchema>) {
 
         await signIn('credentials', { email, password, redirect: false });
 
-        redirectTo = user.role === 'ADMIN' ? '/dashboard' : user.role === 'USER' ? '/' : '/feedback';
+        redirectTo = user.role === 'ADMIN' ? '/dashboard/overview' : user.role === 'USER' ? '/' : '/feedback';
     } catch (error) {
         if (error instanceof AuthError) {
             return {

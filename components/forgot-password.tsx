@@ -17,6 +17,7 @@ import { forgotPassword, sendVerificationEmail } from '@/actions/forgot-password
 import { ArrowRight } from 'lucide-react';
 import LoadingSpinner from '@/components/loading-spinner';
 import Link from 'next/link';
+import { InputField } from '@/components/custom-field';
 
 export default function ForgotPasswordPage() {
     const [error, setError] = useState<string | undefined>('');
@@ -74,27 +75,7 @@ export default function ForgotPasswordPage() {
             {!tokenParam && (
                 <Form {...formSendEmail}>
                     <form onSubmit={formSendEmail.handleSubmit(onSubmitVerification)} className="space-y-6">
-                        <div className="space-y-4">
-                            <FormField
-                                control={formSendEmail.control}
-                                name="email"
-                                render={({ field }) => (
-                                    <FormItem>
-                                        <FormLabel>Email</FormLabel>
-                                        <FormControl>
-                                            <Input
-                                                className="border border-gray-800"
-                                                {...field}
-                                                disabled={isPending}
-                                                placeholder="Enter your email address"
-                                                type="email"
-                                            />
-                                        </FormControl>
-                                        <FormMessage />
-                                    </FormItem>
-                                )}
-                            />
-                        </div>
+                        <InputField name="email" label="Email" placeholder="Please enter your email" />
                         <FormError message={error} />
                         <FormSuccess message={success} />
                         <Button disabled={isPending || !!success} type="submit" className="w-full">

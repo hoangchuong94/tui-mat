@@ -17,7 +17,7 @@ import TagList from '@/components/tag-list';
 import { ProductDetail } from '@/types';
 import { DataTableColumnHeader } from '@/components/data-table-column-header';
 
-export const columns: ColumnDef<ProductDetail>[] = [
+export const productTableColumn: ColumnDef<ProductDetail>[] = [
     {
         accessorKey: 'select',
         header: ({ table }) => (

@@ -1,6 +1,6 @@
 'use client';
 import * as z from 'zod';
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
+import { Form } from '@/components/ui/form';
 import { useState, useTransition } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -12,7 +12,7 @@ import { register } from '@/actions/auth';
 import { ArrowRight } from 'lucide-react';
 import LoadingSpinner from '@/components/loading-spinner';
 import AuthCardWrapper from '@/components/auth-wrapper';
-import { Input } from '@/components/ui/input';
+import { InputField } from '@/components/custom-field';
 
 export default function SignUpForm() {
     const [error, setError] = useState<string | undefined>('');
@@ -52,69 +52,24 @@ export default function SignUpForm() {
         <AuthCardWrapper headerLabel="Sign Up" footerLabel="You Have An Account ? " footerHref="/sign-in">
             <Form {...form}>
                 <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-2">
-                    <FormField
-                        control={form.control}
-                        name="name"
-                        render={({ field }) => (
-                            <FormItem>
-                                <FormLabel>Name : </FormLabel>
-                                <FormControl>
-                                    <Input placeholder="Enter your name" {...field} className="h-8" />
-                                </FormControl>
-                                <FormMessage />
-                            </FormItem>
-                        )}
-                    />
-                    <FormField
-                        control={form.control}
-                        name="email"
-                        render={({ field }) => (
-                            <FormItem>
-                                <FormLabel>Email : </FormLabel>
-                                <FormControl>
-                                    <Input placeholder="Enter your email" {...field} className="h-8" />
-                                </FormControl>
-                                <FormMessage />
-                            </FormItem>
-                        )}
-                    />
-                    <FormField
-                        control={form.control}
+                    <InputField name="name" label="Name" placeholder="Please enter your name" />
+
+                    <InputField name="email" label="Email" placeholder="Please enter your email" />
+
+                    <InputField
+                        type="password"
                         name="password"
-                        render={({ field }) => (
-                            <FormItem>
-                                <FormLabel>Password :</FormLabel>
-                                <FormControl>
-                                    <Input
-                                        placeholder="Enter your password"
-                                        {...field}
-                                        type="password"
-                                        className="h-8"
-                                    />
-                                </FormControl>
-                                <FormMessage />
-                            </FormItem>
-                        )}
+                        label="Password"
+                        placeholder="Please enter your password"
                     />
 
-                    <FormField
-                        control={form.control}
+                    <InputField
+                        type="password"
                         name="passwordConfirm"
-                        render={({ field }) => (
-                            <FormItem>
-                                <FormLabel>Password Confirm :</FormLabel>
-                                <FormControl>
-                                    <Input
-                                        placeholder="Enter your password confirm"
-                                        {...field}
-                                        type="password"
-                                        className="h-8"
-                                    />
-                                </FormControl>
-                                <FormMessage />
-                            </FormItem>
-                        )}
+                        label="Password Confirm"
+                        placeholder="Please enter your password confirm"
                     />
+
                     <div>
                         <Button className="mt-4 w-full" aria-disabled={isPending} disabled={isPending} type="submit">
                             {isPending ? (

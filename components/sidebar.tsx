@@ -73,7 +73,7 @@ export default function DashboardSidebar({ profile }: DashboardSidebarProps) {
             <SidebarHeader>
                 <SidebarMenu>
                     <SidebarMenuItem className="flex items-center justify-center">
-                        <Link href={'/dashboard'}>
+                        <Link href={'/dashboard/overview'}>
                             <Image
                                 src={logo}
                                 alt="logo"

@@ -5,8 +5,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import Image from 'next/image';
 import Link from 'next/link';
 import React, { useState, useTransition } from 'react';
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
-import { Input } from '@/components/ui/input';
+import { Form } from '@/components/ui/form';
 import { useSearchParams } from 'next/navigation';
 import { useForm } from 'react-hook-form';
 
@@ -23,6 +22,7 @@ import { FormSuccess } from '@/components/form-success';
 import { Button } from '@/components/ui/button';
 
 import { ArrowRight } from 'lucide-react';
+import { InputField } from '@/components/custom-field';
 
 export default function SignInForm() {
     const [error, setError] = useState<string | undefined>('');
@@ -65,37 +65,13 @@ export default function SignInForm() {
         <Auth headerLabel="Sign In" footerLabel="Do not have an account ? " footerHref="/sign-up">
             <Form {...form}>
                 <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-2">
-                    <FormField
-                        control={form.control}
-                        name="email"
-                        render={({ field }) => (
-                            <FormItem>
-                                <FormLabel>Email : </FormLabel>
-                                <FormControl>
-                                    <Input placeholder="Please enter your email" {...field} className="h-8" />
-                                </FormControl>
-                                <FormMessage />
-                            </FormItem>
-                        )}
-                    />
+                    <InputField name="email" label="Email" placeholder="Please enter your email" />
 
-                    <FormField
-                        control={form.control}
+                    <InputField
+                        type="password"
                         name="password"
-                        render={({ field }) => (
-                            <FormItem>
-                                <FormLabel>Password :</FormLabel>
-                                <FormControl>
-                                    <Input
-                                        placeholder="Please enter your password"
-                                        {...field}
-                                        type="password"
-                                        className="h-8"
-                                    />
-                                </FormControl>
-                                <FormMessage />
-                            </FormItem>
-                        )}
+                        label="Password"
+                        placeholder="Please enter your password"
                     />
 
                     <Link href="/forgot-password">

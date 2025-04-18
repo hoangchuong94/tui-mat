@@ -11,6 +11,7 @@ import { Button } from '@/components/ui/button';
 import { Form } from '@/components/ui/form';
 import { ImageField, ImagesField, InputField, PopoverSelectField } from '@/components/custom-field';
 import { useFilteredGender } from '@/hooks/use-filtered-gender';
+import Link from 'next/link';
 
 interface CreateProductFormProps {
     dataCreateProduct: DataCreateProduct;
@@ -170,7 +171,9 @@ export default function CreateProductForm({ dataCreateProduct }: CreateProductFo
                                     renderItem={(item) => item.name}
                                 />
                                 <div className="flex items-end">
-                                    <Button>+</Button>
+                                    <Link href={'/dashboard/product/category'}>
+                                        <Button>+</Button>
+                                    </Link>
                                 </div>
                             </div>
                         </div>

@@ -13,7 +13,7 @@ export const metadata: Metadata = {
     description: 'clothing store admin page',
 };
 
-export default async function RootLayout({
+export default async function DashboardLayout({
     children,
 }: Readonly<{
     children: React.ReactNode;

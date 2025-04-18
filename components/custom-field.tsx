@@ -125,6 +125,15 @@ export const InputField = <TFieldValues extends FieldValues>({
                         onKeyDown={preventInvalidNumberInput}
                     />
                 )}
+                {type === 'password' && (
+                    <Input
+                        {...field}
+                        className={className}
+                        placeholder={placeholder}
+                        type="password"
+                        value={field.value}
+                    />
+                )}
                 {type === 'area' && <Textarea placeholder={placeholder} className={className} {...field} />}
             </div>
         )}
