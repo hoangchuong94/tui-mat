@@ -82,7 +82,7 @@ export const GenericField = <TFieldValues extends FieldValues>({
         name={fieldProps.name as FieldPath<TFieldValues>}
         render={({ field }) => {
             return (
-                <FormItem>
+                <FormItem className="w-full">
                     {label && <FormLabel>{label}</FormLabel>}
                     <FormControl>{renderInput(field)}</FormControl>
                     {description && <FormDescription>{description}</FormDescription>}
@@ -201,27 +201,37 @@ export const ImageField = <TFieldValues extends FieldValues>({
     <GenericField
         label={label}
         {...fieldProps}
-        renderInput={(field) => (
-            <UploadImage
-                initialFile={field.value as File | string}
-                onChange={field.onChange}
-                setUrl={setUrl}
-                className={className}
-            />
-        )}
+        renderInput={(field) => {
+            return (
+                <UploadImage
+                    initialFile={field.value as File | string}
+                    onChange={field.onChange}
+                    setUrl={setUrl}
+                    className={className}
+                />
+            );
+        }}
     />
 );
 
 export const ImagesField = <TFieldValues extends FieldValues>({
     label,
     setUrls,
+    className,
     ...fieldProps
 }: ImagesFieldProps<TFieldValues>) => (
     <GenericField
         label={label}
         {...fieldProps}
         renderInput={(field) => {
-            return <UploadImages setUrls={setUrls} onChange={field.onChange} initialFilesState={field.value} />;
+            return (
+                <UploadImages
+                    setUrls={setUrls}
+                    onChange={field.onChange}
+                    initialFilesState={field.value}
+                    className={className}
+                />
+            );
         }}
     />
 );

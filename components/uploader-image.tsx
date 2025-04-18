@@ -13,6 +13,7 @@ interface UploadImageProps {
 
 export default function UploadImage({ initialFile: file, setUrl, onChange, className }: UploadImageProps) {
     const { edgestore } = useEdgeStore();
+    const [error, setError] = useState<string>('');
     const [isAutoUpdate, setIsAutoUpdate] = useState(true);
 
     const handleUpload = useCallback(
@@ -25,8 +26,12 @@ export default function UploadImage({ initialFile: file, setUrl, onChange, class
                     onProgressChange: () => {},
                 });
                 return res;
-            } catch (error) {
-                console.error('Image upload failed:', error);
+            } catch (error: unknown) {
+                if (error instanceof Error) {
+                    setError(error.message);
+                } else {
+                    setError('An unknown error occurred.');
+                }
                 return null;
             } finally {
                 setIsAutoUpdate(false);
@@ -46,16 +51,17 @@ export default function UploadImage({ initialFile: file, setUrl, onChange, class
     }, [file, isAutoUpdate, handleUpload, setUrl]);
 
     return (
-        <SingleImageDropzone
-            className={className}
-            value={file}
-            onChange={(newFile) => {
-                setIsAutoUpdate(true);
-                onChange(newFile || '');
-            }}
-            dropzoneOptions={{
-                maxSize: 1000000,
-            }}
-        />
+        <>
+            <SingleImageDropzone
+                className={className}
+                value={file}
+                onChange={(newFile) => {
+                    setError('');
+                    setIsAutoUpdate(true);
+                    onChange(newFile || '');
+                }}
+            />
+            <p className="text-xs text-red-500">{error}</p>
+        </>
     );
 }

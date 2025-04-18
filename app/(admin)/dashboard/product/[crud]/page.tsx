@@ -16,11 +16,8 @@ export default async function page({ params }: { params: Promise<{ crud: string 
                 );
             }
             return <CreateProductForm dataCreateProduct={data} />;
-        case 'edit':
-            return <div>✏️ Trang chỉnh sửa, ID: </div>;
-        case 'view':
-            return <div>🔍 Trang xem chi tiết, ID:</div>;
+
         default:
-            return <div>❓ Hành động không hợp lệ: </div>;
+            return <div>❓ not work </div>;
     }
 }

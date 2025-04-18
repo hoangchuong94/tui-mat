@@ -33,6 +33,10 @@ export default function CreateProductForm({ dataCreateProduct }: CreateProductFo
             discount: 0,
             imageFiles: [],
             origin: '',
+            gender: { id: '', name: '', createdAt: new Date(), updatedAt: new Date() },
+            category: { id: '', name: '', genderId: '', createdAt: new Date(), updatedAt: new Date() },
+            detailCategory: { id: '', name: '', categoryId: '', createdAt: new Date(), updatedAt: new Date() },
+            trademark: { id: '', name: '', createdAt: new Date(), updatedAt: new Date() },
             promotions: {
                 id: '',
                 name: '',
@@ -42,15 +46,8 @@ export default function CreateProductForm({ dataCreateProduct }: CreateProductFo
                 createdAt: new Date(),
                 updatedAt: new Date(),
             },
-            gender: { id: '', name: '', createdAt: new Date(), updatedAt: new Date() },
-            category: { id: '', name: '', genderId: '', createdAt: new Date(), updatedAt: new Date() },
-            detailCategory: { id: '', name: '', categoryId: '', createdAt: new Date(), updatedAt: new Date() },
-            trademark: { id: '', name: '', createdAt: new Date(), updatedAt: new Date() },
         },
     });
-
-    console.log(thumbnailUrl);
-    console.log(imageUrls);
 
     const { watch, resetField } = form;
 
@@ -66,6 +63,8 @@ export default function CreateProductForm({ dataCreateProduct }: CreateProductFo
     );
 
     const onSubmit = (values: z.infer<typeof CreateProductSchema>) => {
+        console.log(`thumbnailUrl : ${thumbnailUrl}`);
+        console.log(`imageUrls : ${imageUrls}`);
         console.log(values);
     };
     return (
@@ -96,7 +95,7 @@ export default function CreateProductForm({ dataCreateProduct }: CreateProductFo
                             placeholder="Please enter your name"
                         />
 
-                        <div className="grid grid-cols-2 gap-2">
+                        <div className="md:grid md:grid-cols-2 md:gap-2">
                             <PopoverSelectField
                                 name="gender"
                                 label="Gender"
@@ -121,7 +120,7 @@ export default function CreateProductForm({ dataCreateProduct }: CreateProductFo
                         />
                     </div>
 
-                    <div className="space-y-2 rounded-2xl bg-slate-100 p-4 md:col-span-5 lg:col-span-4 xl:col-span-3">
+                    <div className="flex flex-col space-y-2 rounded-2xl bg-slate-100 p-4 md:col-span-5 lg:col-span-4 xl:col-span-3">
                         <ImageField
                             className="bg-white"
                             control={form.control}
@@ -162,13 +161,18 @@ export default function CreateProductForm({ dataCreateProduct }: CreateProductFo
                                 name="discount"
                                 placeholder="Enter your discount"
                             />
-                            <PopoverSelectField
-                                name="discountType"
-                                label="Discount Type"
-                                items={dataCreateProduct.promotions}
-                                getItemKey={(item) => item.id}
-                                renderItem={(item) => item.name}
-                            />
+                            <div className="flex justify-between gap-2">
+                                <PopoverSelectField
+                                    name="discountType"
+                                    label="Discount Type"
+                                    items={dataCreateProduct.promotions}
+                                    getItemKey={(item) => item.id}
+                                    renderItem={(item) => item.name}
+                                />
+                                <div className="flex items-end">
+                                    <Button>+</Button>
+                                </div>
+                            </div>
                         </div>
                         <div className="grid-cols-2 gap-2 max-lg:space-y-2 lg:grid">
                             <InputField

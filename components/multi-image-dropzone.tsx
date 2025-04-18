@@ -127,7 +127,7 @@ const MultiImageDropzone = React.forwardRef<HTMLInputElement, InputProps>(
         }, [fileRejections, dropzoneOptions]);
 
         return (
-            <div>
+            <>
                 <Carousel className="flex items-center justify-center">
                     <CarouselContent
                         className={`${value && value?.length === 0 && 'flex items-center justify-center'}`}
@@ -148,120 +148,136 @@ const MultiImageDropzone = React.forwardRef<HTMLInputElement, InputProps>(
                                 </div>
                             )}
                         </CarouselItem>
-                        {value?.map(({ file, progress }, index) => (
-                            <CarouselItem key={index} className="basis-1/3 hover:cursor-grab">
-                                <div key={index} className={variants.image + ' aspect-square'}>
-                                    <Image
-                                        className="h-full w-full rounded-md object-cover"
-                                        src={imageUrls[index]}
-                                        alt={typeof file === 'string' ? file : file.name}
-                                        width={500}
-                                        height={500}
-                                        priority
-                                    />
-                                    {typeof progress === 'number' && (
-                                        <div className="absolute left-0 top-0 flex h-full w-full items-center justify-center rounded-md bg-black bg-opacity-70">
-                                            <CircleProgress progress={progress} />
-                                        </div>
-                                    )}
+                        {value
+                            ?.slice()
+                            .reverse()
+                            .map(({ file, progress }, index) => {
+                                const actualIndex = value.length - 1 - index;
 
-                                    {typeof progress === 'number' && progress === 0 && (
-                                        <div
-                                            className="group absolute right-0 top-0 -translate-y-1/4 translate-x-1/4 transform"
-                                            onClick={(e) => {
-                                                e.stopPropagation();
-                                                void onChange?.(value.filter((_, i) => i !== index) ?? []);
-                                            }}
-                                        >
-                                            <div className="flex h-5 w-5 cursor-pointer items-center justify-center rounded-md border border-solid border-gray-500 bg-white transition-all duration-300 hover:h-6 hover:w-6 dark:border-gray-400 dark:bg-black">
-                                                <X
-                                                    className="text-gray-500 dark:text-gray-400"
-                                                    width={16}
-                                                    height={16}
-                                                />
-                                            </div>
-                                        </div>
-                                    )}
+                                return (
+                                    <CarouselItem key={actualIndex} className="basis-1/3 hover:cursor-grab">
+                                        <div className={variants.image + ' aspect-square'}>
+                                            <Image
+                                                className="h-full w-full rounded-md object-cover"
+                                                src={imageUrls[actualIndex]}
+                                                alt={typeof file === 'string' ? file : file.name}
+                                                width={500}
+                                                height={500}
+                                                priority
+                                            />
 
-                                    {imageUrls[index] && !disabled && progress === 'PENDING' && (
-                                        <div
-                                            className="group absolute right-0 top-0 -translate-y-1/4 translate-x-1/4 transform"
-                                            onClick={(e) => {
-                                                e.stopPropagation();
-                                                void onChange?.(value.filter((_, i) => i !== index) ?? []);
-                                            }}
-                                        >
-                                            <div className="flex h-5 w-5 cursor-pointer items-center justify-center rounded-md border border-solid border-gray-500 bg-white transition-all duration-300 hover:h-6 hover:w-6 dark:border-gray-400 dark:bg-black">
-                                                <X
-                                                    className="text-gray-500 dark:text-gray-400"
-                                                    width={16}
-                                                    height={16}
-                                                />
-                                            </div>
-                                        </div>
-                                    )}
+                                            {typeof progress === 'number' && (
+                                                <div className="absolute left-0 top-0 flex h-full w-full items-center justify-center rounded-md bg-black bg-opacity-70">
+                                                    <CircleProgress progress={progress} />
+                                                </div>
+                                            )}
 
-                                    {imageUrls[index] && !disabled && progress === 'ERROR' && (
-                                        <>
-                                            <div className="absolute left-0 top-0 flex h-full w-full items-center justify-center rounded-md bg-black bg-opacity-10">
-                                                <div className="absolute left-0 top-0 flex h-full w-full items-center justify-center text-xs text-white">
-                                                    <div className="flex h-12 w-12 items-center justify-center rounded-full bg-white">
-                                                        <p className="text-xs text-red-500">Error</p>
+                                            {typeof progress === 'number' && progress === 0 && (
+                                                <div
+                                                    className="group absolute right-0 top-0 -translate-y-1/4 translate-x-1/4 transform"
+                                                    onClick={(e) => {
+                                                        e.stopPropagation();
+                                                        void onChange?.(
+                                                            value.filter((_, i) => i !== actualIndex) ?? [],
+                                                        );
+                                                    }}
+                                                >
+                                                    <div className="flex h-5 w-5 cursor-pointer items-center justify-center rounded-md border border-solid border-gray-500 bg-white transition-all duration-300 hover:h-6 hover:w-6 dark:border-gray-400 dark:bg-black">
+                                                        <X
+                                                            className="text-gray-500 dark:text-gray-400"
+                                                            width={16}
+                                                            height={16}
+                                                        />
                                                     </div>
                                                 </div>
-                                            </div>
-                                            <div
-                                                className="group absolute right-0 top-0 -translate-y-1/4 translate-x-1/4 transform"
-                                                onClick={(e) => {
-                                                    e.stopPropagation();
-                                                    void onChange?.(value.filter((_, i) => i !== index) ?? []);
-                                                }}
-                                            >
-                                                <div className="flex h-5 w-5 cursor-pointer items-center justify-center rounded-md border border-solid border-gray-500 bg-white transition-all duration-300 hover:h-6 hover:w-6 dark:border-gray-400 dark:bg-black">
-                                                    <X
-                                                        className="text-gray-500 dark:text-gray-400"
-                                                        width={16}
-                                                        height={16}
-                                                    />
-                                                </div>
-                                            </div>
-                                        </>
-                                    )}
+                                            )}
 
-                                    {imageUrls[index] &&
-                                        typeof file === 'string' &&
-                                        !disabled &&
-                                        progress === 'COMPLETE' && (
-                                            <div
-                                                className="group absolute right-0 top-0 -translate-y-1/4 translate-x-1/4 transform"
-                                                onClick={(e) => {
-                                                    e.stopPropagation();
-                                                    void onChange?.(value.filter((_, i) => i !== index) ?? []);
-                                                }}
-                                            >
-                                                <div className="flex h-5 w-5 cursor-pointer items-center justify-center rounded-md border border-solid border-gray-500 bg-white transition-all duration-300 hover:h-6 hover:w-6 dark:border-gray-400 dark:bg-black">
-                                                    <X
-                                                        className="text-gray-500 dark:text-gray-400"
-                                                        width={16}
-                                                        height={16}
-                                                    />
+                                            {imageUrls[actualIndex] && !disabled && progress === 'PENDING' && (
+                                                <div
+                                                    className="group absolute right-0 top-0 -translate-y-1/4 translate-x-1/4 transform"
+                                                    onClick={(e) => {
+                                                        e.stopPropagation();
+                                                        void onChange?.(
+                                                            value.filter((_, i) => i !== actualIndex) ?? [],
+                                                        );
+                                                    }}
+                                                >
+                                                    <div className="flex h-5 w-5 cursor-pointer items-center justify-center rounded-md border border-solid border-gray-500 bg-white transition-all duration-300 hover:h-6 hover:w-6 dark:border-gray-400 dark:bg-black">
+                                                        <X
+                                                            className="text-gray-500 dark:text-gray-400"
+                                                            width={16}
+                                                            height={16}
+                                                        />
+                                                    </div>
                                                 </div>
-                                            </div>
-                                        )}
-                                </div>
-                            </CarouselItem>
-                        ))}
+                                            )}
+
+                                            {imageUrls[actualIndex] && !disabled && progress === 'ERROR' && (
+                                                <div>
+                                                    <div className="absolute left-0 top-0 flex h-full w-full items-center justify-center rounded-md bg-black bg-opacity-10">
+                                                        <div className="absolute left-0 top-0 flex h-full w-full items-center justify-center text-xs text-white">
+                                                            <div className="flex h-8 w-8 items-center justify-center rounded-full bg-white bg-opacity-75">
+                                                                <p className="text-xs text-red-500">Error</p>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <div
+                                                        className="group absolute right-0 top-0 -translate-y-1/4 translate-x-1/4 transform"
+                                                        onClick={(e) => {
+                                                            e.stopPropagation();
+                                                            void onChange?.(
+                                                                value.filter((_, i) => i !== actualIndex) ?? [],
+                                                            );
+                                                        }}
+                                                    >
+                                                        <div className="flex h-5 w-5 cursor-pointer items-center justify-center rounded-md border border-solid border-gray-500 bg-white transition-all duration-300 hover:h-6 hover:w-6 dark:border-gray-400 dark:bg-black">
+                                                            <X
+                                                                className="text-gray-500 dark:text-gray-400"
+                                                                width={16}
+                                                                height={16}
+                                                            />
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            )}
+
+                                            {imageUrls[actualIndex] &&
+                                                typeof file === 'string' &&
+                                                !disabled &&
+                                                progress === 'COMPLETE' && (
+                                                    <div
+                                                        className="group absolute right-0 top-0 -translate-y-1/4 translate-x-1/4 transform"
+                                                        onClick={(e) => {
+                                                            e.stopPropagation();
+                                                            void onChange?.(
+                                                                value.filter((_, i) => i !== actualIndex) ?? [],
+                                                            );
+                                                        }}
+                                                    >
+                                                        <div className="flex h-5 w-5 cursor-pointer items-center justify-center rounded-md border border-solid border-gray-500 bg-white transition-all duration-300 hover:h-6 hover:w-6 dark:border-gray-400 dark:bg-black">
+                                                            <X
+                                                                className="text-gray-500 dark:text-gray-400"
+                                                                width={16}
+                                                                height={16}
+                                                            />
+                                                        </div>
+                                                    </div>
+                                                )}
+                                        </div>
+                                    </CarouselItem>
+                                );
+                            })}
                     </CarouselContent>
                     {value && value.length > 0 && (
-                        <>
+                        <div>
                             <CarouselPrevious className="left-[-14px]" type="button" />
                             <CarouselNext className="right-[-14px]" type="button" />
-                        </>
+                        </div>
                     )}
                 </Carousel>
                 {/* Error Text */}
                 <div className="mt-1 text-xs text-red-500">{customError ?? errorMessage}</div>
-            </div>
+            </>
         );
     },
 );

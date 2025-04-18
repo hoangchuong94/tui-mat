@@ -31,7 +31,7 @@ const edgeStoreRouter = es.router({
     publicImages: es
         .imageBucket({
             accept: ['image/jpeg', 'image/png'],
-            maxSize: 20 * 1024,
+            maxSize: 1024 * 1024 * 10,
         })
         .input(
             z.object({
@@ -53,7 +53,7 @@ const edgeStoreRouter = es.router({
         }),
     publicFiles: es
         .fileBucket({
-            // maxSize: 1024 * 1024 * 10,
+            maxSize: 1024 * 1024 * 10,
         })
         .path(({ ctx }) => [{ owner: ctx.userId }])
         .accessControl({
