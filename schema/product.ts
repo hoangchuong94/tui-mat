@@ -28,6 +28,13 @@ export const ThumbnailSchema = z
         console.log(data, ctx);
     });
 
+export const GenderSchema = z.object({
+    id: z.string().min(1, 'Gender ID is required'),
+    name: z.string().min(1, 'Gender name is required'),
+    createdAt: z.date(),
+    updatedAt: z.date(),
+});
+
 export const CreateProductSchema = z
     .object({
         name: z
@@ -61,12 +68,7 @@ export const CreateProductSchema = z
             .min(6, 'Origin name must be more than 6 characters')
             .max(32, 'Origin name must be less than 32 characters'),
 
-        gender: z.object({
-            id: z.string().min(1, 'Gender ID is required'),
-            name: z.string().min(1, 'Gender name is required'),
-            createdAt: z.date(),
-            updatedAt: z.date(),
-        }),
+        gender: GenderSchema,
 
         category: z.object({
             id: z.string().min(1, 'Category ID is required'),
@@ -161,3 +163,8 @@ export const CreateProductSchema = z
             });
         }
     });
+
+export const CreateCategory = z.object({
+    name: z.string().min(1, 'Category name is required'),
+    genderId: z.string().min(1, 'Gender name is required'),
+});

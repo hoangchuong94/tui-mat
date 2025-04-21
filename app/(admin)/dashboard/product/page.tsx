@@ -1,4 +1,3 @@
-'use client';
 import React from 'react';
 import Link from 'next/link';
 
@@ -6,7 +5,7 @@ import { Plus } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import ProductTable from '@/components/product-table';
 
-export default function ProductPage() {
+export default async function ProductPage() {
     return (
         <div className="relative">
             <Link href={'/dashboard/product/new'}>

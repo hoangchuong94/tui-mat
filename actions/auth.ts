@@ -1,13 +1,16 @@
 'use server';
 import * as z from 'zod';
-import { signIn } from '@/auth';
-import prisma from '@/lib/prisma';
 import { AuthError } from 'next-auth';
 import { redirect } from 'next/navigation';
-import { LoginSchema, RegisterSchema } from '@/schema/auth';
+
+import prisma from '@/lib/prisma';
+
+import { signIn } from '@/auth';
 import { sendVerificationEmail } from '@/lib/mail';
-import { generateVerificationToken } from '@/lib/tokens';
 import { hashPassword } from '@/actions/hash-password';
+import { generateVerificationToken } from '@/lib/tokens';
+import { LoginSchema, RegisterSchema } from '@/schema/auth';
+import { DEFAULT_ADMIN_SIGN_IN_REDIRECT } from '@/routes';
 
 export async function authenticate(values: z.infer<typeof LoginSchema>) {
     let redirectTo = '';
@@ -42,7 +45,7 @@ export async function authenticate(values: z.infer<typeof LoginSchema>) {
 
         await signIn('credentials', { email, password, redirect: false });
 
-        redirectTo = user.role === 'ADMIN' ? '/dashboard/overview' : user.role === 'USER' ? '/' : '/feedback';
+        redirectTo = user.role === 'ADMIN' ? DEFAULT_ADMIN_SIGN_IN_REDIRECT : user.role === 'USER' ? '/' : '/feedback';
     } catch (error) {
         if (error instanceof AuthError) {
             return {

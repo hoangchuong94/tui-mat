@@ -70,18 +70,18 @@ model VerificationToken {
 
 model Gender {
   id                String        @id @default(cuid())
-  name              String
+  name              String        @unique
   createdAt         DateTime      @default(now()) @map(name: "created_at")
   updatedAt         DateTime      @updatedAt @map(name: "updated_at")
   category          Category[]
 
   @@map("genders")
-  @@unique([name])
+  
 }
 
 model Category {
   id                String        @id @default(cuid())
-  name              String
+  name              String        @unique
   createdAt         DateTime      @default(now()) @map(name: "created_at")
   updatedAt         DateTime      @updatedAt @map(name: "updated_at")
   genderId          String        @map("gender_id")
@@ -93,7 +93,7 @@ model Category {
 
 model DetailCategory {
   id                String        @id @default(cuid())
-  name              String
+  name              String        @unique
   createdAt         DateTime      @default(now()) @map(name: "created_at")
   updatedAt         DateTime      @updatedAt @map(name: "updated_at")
   categoryId        String        @map("category_id")
@@ -105,7 +105,7 @@ model DetailCategory {
 
 model Trademark{
   id                String        @id @default(cuid())
-  name              String
+  name              String        @unique
   createdAt         DateTime      @default(now()) @map(name: "created_at")
   updatedAt         DateTime      @updatedAt @map(name: "updated_at")
   products          Product []
@@ -116,7 +116,7 @@ model Trademark{
 
 model Product {
   id                String         @id @default(cuid())
-  name              String
+  name              String         
   description       String
   price             Float
   stock             Float
@@ -140,7 +140,7 @@ model Product {
 
 model Color {
   id                String          @id @default(cuid())
-  name              String
+  name              String          @unique
   code              String
   createdAt         DateTime        @default(now()) @map(name: "created_at")
   updatedAt         DateTime        @updatedAt @map(name: "updated_at")
@@ -182,7 +182,7 @@ model ProductImage {
 
 model Promotion {
   id                String          @id @default(cuid())
-  name              String
+  name              String          @unique
   description       String
   startDay          DateTime        @default(now()) @map(name: "start_day")
   endDay            DateTime
@@ -191,7 +191,7 @@ model Promotion {
   products          ProductPromotion[]
 
   @@map("promotions")
-  @@unique([name])
+ 
 }
 
 model ProductPromotion {

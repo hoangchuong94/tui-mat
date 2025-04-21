@@ -53,7 +53,8 @@ export default function CreateProductForm({ dataCreateProduct }: CreateProductFo
 
     const selectedGender = watch('gender');
     const selectedCategory = watch('category');
-
+    console.log(selectedGender);
+    console.log(dataCreateProduct.categories);
     const { filteredCategories, filteredDetailCategories } = useFilteredGender(
         selectedGender,
         selectedCategory,
@@ -104,6 +105,7 @@ export default function CreateProductForm({ dataCreateProduct }: CreateProductFo
                                 placeholder="Please enter your price"
                             />
                             <PopoverSelectField
+                                addHref="/dashboard/product/gender"
                                 name="gender"
                                 label="Gender"
                                 items={dataCreateProduct.genders}
@@ -163,11 +165,13 @@ export default function CreateProductForm({ dataCreateProduct }: CreateProductFo
                                 placeholder="Please enter your discount"
                             />
                             <PopoverSelectField
+                                addHref="/dashboard/product/discount-type?action=create"
                                 name="discountType"
                                 label="Discount Type"
                                 items={dataCreateProduct.promotions}
                                 getItemKey={(item) => item.id}
                                 renderItem={(item) => item.name}
+                                disabled={!form.getValues('discount') ? true : false}
                             />
                         </div>
                         <div className="grid-cols-2 gap-2 max-lg:space-y-2 lg:grid">
@@ -180,6 +184,7 @@ export default function CreateProductForm({ dataCreateProduct }: CreateProductFo
                             />
 
                             <PopoverSelectField
+                                addHref="/dashboard/product/trademark?action=create"
                                 name="trademark"
                                 label="Trademark"
                                 items={dataCreateProduct.trademark}
@@ -190,23 +195,27 @@ export default function CreateProductForm({ dataCreateProduct }: CreateProductFo
                     </div>
                     <div className="space-y-2 rounded-2xl bg-slate-100 p-4 md:col-span-5 lg:col-span-4 xl:col-span-3">
                         <PopoverSelectField
+                            addHref="/dashboard/product/category?action=create"
+                            updateHref="/dashboard/product/category?action=update"
+                            removeHref="/dashboard/product/category?action=remove"
                             name="category"
                             label="Category"
                             items={filteredCategories}
                             getItemKey={(item) => item.id}
                             renderItem={(item) => item.name}
                             description="Please select a gender."
-                            disabled={filteredCategories.length > 0 ? false : true}
+                            disabled={selectedGender.id ? false : true}
                         />
 
                         <PopoverSelectField
+                            addHref="/dashboard/product/detail-category?action=create"
                             name="detailCategory"
                             label="Detail Category"
                             items={filteredDetailCategories}
                             getItemKey={(item) => item.id}
                             renderItem={(item) => item.name}
                             description="Please select a category."
-                            disabled={filteredDetailCategories.length > 0 ? false : true}
+                            disabled={selectedCategory.id ? false : true}
                         />
                     </div>
                 </form>

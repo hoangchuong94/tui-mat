@@ -1,7 +1,7 @@
 'use client';
 
 import * as React from 'react';
-import { Check, ChevronsUpDown, Plus } from 'lucide-react';
+import { Check, ChevronsUpDown, Plus, Trash, Pencil } from 'lucide-react';
 
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
@@ -17,13 +17,18 @@ interface PopoverSelectProps<T> {
     getKey: (item: T) => string | number;
     onChange: (value: T) => void;
     disabled?: boolean;
-    href?: string;
+    addHref?: string;
+    updateHref?: string;
+    removeHref?: string;
 }
 
 export default function PopoverSelect<T>({
     items = [],
     defaultValue,
     value,
+    addHref,
+    updateHref,
+    removeHref,
     getItemName,
     getKey,
     onChange,
@@ -93,37 +98,70 @@ export default function PopoverSelect<T>({
                                     </CommandItem>
                                 )}
                                 {items.map((item) => (
-                                    <CommandItem
-                                        className="cursor-pointer capitalize"
-                                        key={getKey(item)}
-                                        value={getItemName(item)}
-                                        onSelect={() => handleSelect(getItemName(item))}
-                                        disabled={disabled}
-                                        aria-selected={value && getItemName(value) === getItemName(item) ? true : false}
-                                    >
-                                        <Check
-                                            className={cn(
-                                                'mr-2 h-4 w-4',
-                                                value && getItemName(value) === getItemName(item)
-                                                    ? 'opacity-100'
-                                                    : 'opacity-0',
+                                    <div className="flex flex-row gap-2" key={getKey(item)}>
+                                        <CommandItem
+                                            className="flex flex-1 cursor-pointer capitalize"
+                                            key={getKey(item)}
+                                            value={getItemName(item)}
+                                            onSelect={() => handleSelect(getItemName(item))}
+                                            disabled={disabled}
+                                            aria-selected={
+                                                value && getItemName(value) === getItemName(item) ? true : false
+                                            }
+                                        >
+                                            <div className="flex flex-1">
+                                                <Check
+                                                    className={cn(
+                                                        'mr-2 h-4 w-4',
+                                                        value && getItemName(value) === getItemName(item)
+                                                            ? 'opacity-100'
+                                                            : 'opacity-0',
+                                                    )}
+                                                />
+                                                {getItemName(item)}
+                                            </div>
+                                            {updateHref && removeHref && (
+                                                <div className="flex items-center gap-1">
+                                                    <Link href={`${updateHref}&id=${getKey(item)}`}>
+                                                        <Button
+                                                            size="icon"
+                                                            variant="ghost"
+                                                            className="text-blue-600 hover:bg-blue-100"
+                                                            aria-label="Edit"
+                                                        >
+                                                            <Pencil className="h-4 w-4" />
+                                                        </Button>
+                                                    </Link>
+
+                                                    <Link href={`${removeHref}&id=${getKey(item)}`}>
+                                                        <Button
+                                                            size="icon"
+                                                            variant="ghost"
+                                                            className="text-red-600 hover:bg-red-100"
+                                                            aria-label="Delete"
+                                                        >
+                                                            <Trash className="h-4 w-4" />
+                                                        </Button>
+                                                    </Link>
+                                                </div>
                                             )}
-                                        />
-                                        {getItemName(item)}
-                                    </CommandItem>
+                                        </CommandItem>
+                                    </div>
                                 ))}
                             </CommandGroup>
                         </CommandList>
                     </Command>
                 </PopoverContent>
             </Popover>
-            <div className="flex items-center">
-                <Link href={'/dashboard/product/gender'}>
-                    <Button size="icon" variant="outline">
-                        <Plus className="h-4 w-4" />
-                    </Button>
-                </Link>
-            </div>
+            {!disabled && addHref && (
+                <div className="flex items-center">
+                    <Link href={addHref}>
+                        <Button size="icon" variant="outline">
+                            <Plus className="h-4 w-4" />
+                        </Button>
+                    </Link>
+                </div>
+            )}
         </div>
     );
 }

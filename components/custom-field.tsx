@@ -22,6 +22,7 @@ interface InputFieldProps<TFieldValues extends FieldValues> extends UseControlle
     label: string;
     placeholder: string;
     type?: string;
+    disabled?: boolean;
 }
 
 interface PopoverSelectFieldProps<TFieldValues extends FieldValues, TItem> extends UseControllerProps<TFieldValues> {
@@ -32,6 +33,9 @@ interface PopoverSelectFieldProps<TFieldValues extends FieldValues, TItem> exten
     renderItem: (item: TItem) => string;
     disabled?: boolean;
     description?: string;
+    addHref?: string;
+    updateHref?: string;
+    removeHref?: string;
 }
 
 interface PopoverCheckboxFieldProps<TFieldValues extends FieldValues, TItem> extends UseControllerProps<TFieldValues> {
@@ -98,6 +102,7 @@ export const InputField = <TFieldValues extends FieldValues>({
     label,
     placeholder,
     type = 'text',
+    disabled = false,
     ...fieldProps
 }: InputFieldProps<TFieldValues>) => (
     <GenericField
@@ -112,6 +117,7 @@ export const InputField = <TFieldValues extends FieldValues>({
                         placeholder={placeholder}
                         type={type}
                         className={className}
+                        disabled={disabled}
                     />
                 )}
                 {type === 'number' && (
@@ -123,6 +129,7 @@ export const InputField = <TFieldValues extends FieldValues>({
                         className={className}
                         value={(field.value === 0 ? '' : field.value) ?? ''}
                         onKeyDown={preventInvalidNumberInput}
+                        disabled={disabled}
                     />
                 )}
                 {type === 'password' && (
@@ -132,9 +139,12 @@ export const InputField = <TFieldValues extends FieldValues>({
                         placeholder={placeholder}
                         type="password"
                         value={field.value}
+                        disabled={disabled}
                     />
                 )}
-                {type === 'area' && <Textarea placeholder={placeholder} className={className} {...field} />}
+                {type === 'area' && (
+                    <Textarea disabled={disabled} placeholder={placeholder} className={className} {...field} />
+                )}
             </div>
         )}
     />
@@ -142,6 +152,9 @@ export const InputField = <TFieldValues extends FieldValues>({
 
 export const PopoverSelectField = <TFieldValues extends FieldValues, TItem>({
     label,
+    addHref,
+    updateHref,
+    removeHref,
     items = [],
     getItemKey,
     renderItem,
@@ -159,6 +172,9 @@ export const PopoverSelectField = <TFieldValues extends FieldValues, TItem>({
             {...fieldProps}
             renderInput={(field) => (
                 <PopoverSelect
+                    addHref={addHref}
+                    updateHref={updateHref}
+                    removeHref={removeHref}
                     defaultValue={defaultValue}
                     items={memoizedItems}
                     value={field.value}
