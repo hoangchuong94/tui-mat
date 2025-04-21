@@ -33,7 +33,7 @@ export default function CreateProductForm({ dataCreateProduct }: CreateProductFo
             discount: 0,
             imageFiles: [],
             origin: '',
-            gender: { id: '', name: '', createdAt: new Date(), updatedAt: new Date() },
+            gender: { id: '', name: '', createdAt: new Date(), updatedAt: new Date(), deletedAt: new Date() },
             category: { id: '', name: '', genderId: '', createdAt: new Date(), updatedAt: new Date() },
             detailCategory: { id: '', name: '', categoryId: '', createdAt: new Date(), updatedAt: new Date() },
             trademark: { id: '', name: '', createdAt: new Date(), updatedAt: new Date() },
@@ -53,8 +53,7 @@ export default function CreateProductForm({ dataCreateProduct }: CreateProductFo
 
     const selectedGender = watch('gender');
     const selectedCategory = watch('category');
-    console.log(selectedGender);
-    console.log(dataCreateProduct.categories);
+
     const { filteredCategories, filteredDetailCategories } = useFilteredGender(
         selectedGender,
         selectedCategory,
@@ -105,7 +104,9 @@ export default function CreateProductForm({ dataCreateProduct }: CreateProductFo
                                 placeholder="Please enter your price"
                             />
                             <PopoverSelectField
-                                addHref="/dashboard/product/gender"
+                                addHref="/dashboard/product/gender?action=create"
+                                updateHref="/dashboard/product/gender?action=update"
+                                removeHref="/dashboard/product/gender?action=remove"
                                 name="gender"
                                 label="Gender"
                                 items={dataCreateProduct.genders}

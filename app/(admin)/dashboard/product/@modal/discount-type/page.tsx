@@ -13,7 +13,6 @@ export default function DiscountType() {
     const [loading, setLoading] = useState(false);
     const [success, setSuccess] = useState(false);
     const [errorMessage, setErrorMessage] = useState('');
-    console.log(success);
 
     const handleSubmit = async () => {
         if (!name) return;

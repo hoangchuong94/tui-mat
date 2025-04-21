@@ -26,6 +26,7 @@ interface InputFieldProps<TFieldValues extends FieldValues> extends UseControlle
 }
 
 interface PopoverSelectFieldProps<TFieldValues extends FieldValues, TItem> extends UseControllerProps<TFieldValues> {
+    defaultLabel?: string;
     defaultValue?: PathValue<TFieldValues, Path<TFieldValues>>;
     label: string;
     items: TItem[];
@@ -152,6 +153,7 @@ export const InputField = <TFieldValues extends FieldValues>({
 
 export const PopoverSelectField = <TFieldValues extends FieldValues, TItem>({
     label,
+    defaultLabel,
     addHref,
     updateHref,
     removeHref,
@@ -172,6 +174,7 @@ export const PopoverSelectField = <TFieldValues extends FieldValues, TItem>({
             {...fieldProps}
             renderInput={(field) => (
                 <PopoverSelect
+                    defaultLabel={defaultLabel}
                     addHref={addHref}
                     updateHref={updateHref}
                     removeHref={removeHref}

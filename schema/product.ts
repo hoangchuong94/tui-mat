@@ -33,6 +33,7 @@ export const GenderSchema = z.object({
     name: z.string().min(1, 'Gender name is required'),
     createdAt: z.date(),
     updatedAt: z.date(),
+    deletedAt: z.date(),
 });
 
 export const CreateProductSchema = z
@@ -75,6 +76,7 @@ export const CreateProductSchema = z
             name: z.string().min(1, 'Category name is required'),
             createdAt: z.date(),
             updatedAt: z.date(),
+            deletedAt: z.date(),
             genderId: z.string().min(1, 'Gender ID in category is required'),
         }),
 
@@ -83,6 +85,7 @@ export const CreateProductSchema = z
             name: z.string().min(1, 'DetailCategory name is required'),
             createdAt: z.date(),
             updatedAt: z.date(),
+            deletedAt: z.date(),
             categoryId: z.string().min(1, 'Category ID in DetailCategory is required'),
         }),
 
@@ -94,6 +97,7 @@ export const CreateProductSchema = z
             endDay: z.date(),
             createdAt: z.date(),
             updatedAt: z.date(),
+            deletedAt: z.date(),
         }),
 
         trademark: z.object({
@@ -101,6 +105,7 @@ export const CreateProductSchema = z
             name: z.string(),
             createdAt: z.date(),
             updatedAt: z.date(),
+            deletedAt: z.date(),
         }),
     })
     .superRefine((data, ctx) => {
@@ -167,4 +172,8 @@ export const CreateProductSchema = z
 export const CreateCategory = z.object({
     name: z.string().min(1, 'Category name is required'),
     genderId: z.string().min(1, 'Gender name is required'),
+});
+
+export const CreateGender = z.object({
+    name: z.string().min(1, 'Category name is required'),
 });

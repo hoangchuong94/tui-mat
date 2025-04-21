@@ -11,49 +11,46 @@ import Link from 'next/link';
 
 interface PopoverSelectProps<T> {
     items: T[];
-    defaultValue: T | undefined;
-    value: T;
+    defaultValue?: T;
+    value?: T;
     getItemName: (item: T) => string;
     getKey: (item: T) => string | number;
-    onChange: (value: T) => void;
+    onChange: (value: T | undefined) => void;
     disabled?: boolean;
     addHref?: string;
     updateHref?: string;
     removeHref?: string;
+    defaultLabel?: string;
 }
 
 export default function PopoverSelect<T>({
     items = [],
     defaultValue,
     value,
-    addHref,
-    updateHref,
-    removeHref,
     getItemName,
     getKey,
     onChange,
+    addHref,
+    updateHref,
+    removeHref,
     disabled = false,
+    defaultLabel = 'Select an item',
 }: PopoverSelectProps<T>) {
     const [open, setOpen] = React.useState(false);
-    const selectedItemName = React.useMemo(
-        () => (value && getItemName(value).trim().length > 0 ? getItemName(value) : 'Select a item'),
-        [value, getItemName],
-    );
+
+    const selected = value ?? defaultValue;
+
+    const matchedItem = selected ? items.find((item) => getKey(item) === getKey(selected)) : undefined;
+
+    const selectedName = matchedItem ? getItemName(matchedItem) : defaultLabel;
 
     const handleSelect = React.useCallback(
-        (currentValue: string) => {
-            const selectedItem = items.find((item) => getItemName(item) === currentValue);
-
-            if (selectedItem) {
-                onChange(selectedItem);
-            } else {
-                if (defaultValue) {
-                    onChange(defaultValue);
-                }
-            }
+        (name: string) => {
+            const selectedItem = items.find((item) => getItemName(item) === name);
+            if (selectedItem) onChange(selectedItem);
             setOpen(false);
         },
-        [items, getItemName, onChange, defaultValue],
+        [items, getItemName, onChange],
     );
 
     return (
@@ -64,13 +61,11 @@ export default function PopoverSelect<T>({
                         variant="outline"
                         role="combobox"
                         aria-expanded={open}
-                        aria-haspopup="listbox"
-                        aria-labelledby="custom-select-button"
                         className="w-full justify-between bg-slate-200"
                         disabled={disabled}
                     >
-                        {selectedItemName}
-                        <ChevronsUpDown className={cn('ml-2 h-4 w-4 shrink-0 opacity-50')} />
+                        {selectedName || defaultLabel}
+                        <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
                     </Button>
                 </PopoverTrigger>
                 <PopoverContent className="w-auto p-0 xl:w-96">
@@ -79,51 +74,34 @@ export default function PopoverSelect<T>({
                         <CommandList>
                             <CommandEmpty>No data</CommandEmpty>
                             <CommandGroup>
-                                {defaultValue && (
-                                    <CommandItem
-                                        className="cursor-pointer capitalize"
-                                        key={'default'}
-                                        value={getItemName(defaultValue)}
-                                        onSelect={() => handleSelect(getItemName(defaultValue))}
-                                        disabled={disabled}
-                                        aria-selected={defaultValue && getItemName(defaultValue) === '' ? true : false}
-                                    >
-                                        <Check
-                                            className={cn(
-                                                'mr-2 h-4 w-4',
-                                                defaultValue && getItemName(value) === '' ? 'opacity-100' : 'opacity-0',
-                                            )}
-                                        />
-                                        Default
-                                    </CommandItem>
-                                )}
-                                {items.map((item) => (
-                                    <div className="flex flex-row gap-2" key={getKey(item)}>
-                                        <CommandItem
-                                            className="flex flex-1 cursor-pointer capitalize"
-                                            key={getKey(item)}
-                                            value={getItemName(item)}
-                                            onSelect={() => handleSelect(getItemName(item))}
-                                            disabled={disabled}
-                                            aria-selected={
-                                                value && getItemName(value) === getItemName(item) ? true : false
-                                            }
-                                        >
-                                            <div className="flex flex-1">
-                                                <Check
-                                                    className={cn(
-                                                        'mr-2 h-4 w-4',
-                                                        value && getItemName(value) === getItemName(item)
-                                                            ? 'opacity-100'
-                                                            : 'opacity-0',
-                                                    )}
-                                                />
-                                                {getItemName(item)}
-                                            </div>
-                                            {updateHref && removeHref && (
-                                                <div className="flex items-center gap-1">
-                                                    <Link href={`${updateHref}&id=${getKey(item)}`}>
+                                {items.map((item) => {
+                                    const itemName = getItemName(item);
+                                    const id = getKey(item);
+                                    const isSelected = selected && getKey(selected) === getKey(item);
+
+                                    return (
+                                        <div className="flex flex-row gap-2" key={getKey(item)}>
+                                            <CommandItem
+                                                className="flex flex-1 cursor-pointer capitalize"
+                                                value={itemName}
+                                                onSelect={() => handleSelect(itemName)}
+                                                disabled={disabled}
+                                            >
+                                                <div className="flex flex-1">
+                                                    <Check
+                                                        className={cn(
+                                                            'mr-2 h-4 w-4',
+                                                            isSelected ? 'opacity-100' : 'opacity-0',
+                                                        )}
+                                                    />
+                                                    {itemName}
+                                                </div>
+                                            </CommandItem>
+                                            <div className="flex items-center gap-1">
+                                                {updateHref && (
+                                                    <Link href={`${updateHref}&id=${id}`}>
                                                         <Button
+                                                            type="button"
                                                             size="icon"
                                                             variant="ghost"
                                                             className="text-blue-600 hover:bg-blue-100"
@@ -132,9 +110,12 @@ export default function PopoverSelect<T>({
                                                             <Pencil className="h-4 w-4" />
                                                         </Button>
                                                     </Link>
+                                                )}
 
-                                                    <Link href={`${removeHref}&id=${getKey(item)}`}>
+                                                {removeHref && (
+                                                    <Link href={`${removeHref}&id=${id}`}>
                                                         <Button
+                                                            type="button"
                                                             size="icon"
                                                             variant="ghost"
                                                             className="text-red-600 hover:bg-red-100"
@@ -143,11 +124,11 @@ export default function PopoverSelect<T>({
                                                             <Trash className="h-4 w-4" />
                                                         </Button>
                                                     </Link>
-                                                </div>
-                                            )}
-                                        </CommandItem>
-                                    </div>
-                                ))}
+                                                )}
+                                            </div>
+                                        </div>
+                                    );
+                                })}
                             </CommandGroup>
                         </CommandList>
                     </Command>
@@ -156,7 +137,7 @@ export default function PopoverSelect<T>({
             {!disabled && addHref && (
                 <div className="flex items-center">
                     <Link href={addHref}>
-                        <Button size="icon" variant="outline">
+                        <Button type="button" size="icon" variant="outline">
                             <Plus className="h-4 w-4" />
                         </Button>
                     </Link>

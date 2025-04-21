@@ -4,11 +4,21 @@ import prisma from '@/lib/prisma';
 export const fetchDataCreateProductForm = async (): Promise<DataCreateProduct> => {
     try {
         const [categories, genders, detailCategories, promotions, trademark] = await Promise.all([
-            prisma.category.findMany(),
-            prisma.gender.findMany(),
-            prisma.detailCategory.findMany(),
-            prisma.promotion.findMany(),
-            prisma.trademark.findMany(),
+            prisma.category.findMany({
+                where: { deletedAt: null },
+            }),
+            prisma.gender.findMany({
+                where: { deletedAt: null },
+            }),
+            prisma.detailCategory.findMany({
+                where: { deletedAt: null },
+            }),
+            prisma.promotion.findMany({
+                where: { deletedAt: null },
+            }),
+            prisma.trademark.findMany({
+                where: { deletedAt: null },
+            }),
         ]);
 
         return {

@@ -55,8 +55,8 @@ model Session {
   userId            String
   expires           DateTime
   user              User          @relation(fields: [userId], references: [id], onDelete: Cascade)
-  createdAt DateTime              @default(now())
-  updatedAt DateTime              @updatedAt
+  createdAt         DateTime      @default(now())
+  updatedAt         DateTime      @updatedAt
 }
 
 model VerificationToken {
@@ -65,7 +65,7 @@ model VerificationToken {
   token             String        @unique
   expires           DateTime
 
- @@unique([email, token])
+  @@unique([email, token])
 }
 
 model Gender {
@@ -73,10 +73,10 @@ model Gender {
   name              String        @unique
   createdAt         DateTime      @default(now()) @map(name: "created_at")
   updatedAt         DateTime      @updatedAt @map(name: "updated_at")
+  deletedAt         DateTime?     @map(name: "deleted_at")
   category          Category[]
 
   @@map("genders")
-  
 }
 
 model Category {
@@ -84,6 +84,7 @@ model Category {
   name              String        @unique
   createdAt         DateTime      @default(now()) @map(name: "created_at")
   updatedAt         DateTime      @updatedAt @map(name: "updated_at")
+  deletedAt         DateTime?     @map(name: "deleted_at")
   genderId          String        @map("gender_id")
   gender            Gender        @relation(fields: [genderId], references: [id])
   detailCategories  DetailCategory[]
@@ -96,6 +97,7 @@ model DetailCategory {
   name              String        @unique
   createdAt         DateTime      @default(now()) @map(name: "created_at")
   updatedAt         DateTime      @updatedAt @map(name: "updated_at")
+  deletedAt         DateTime?     @map(name: "deleted_at")
   categoryId        String        @map("category_id")
   category          Category      @relation(fields: [categoryId], references: [id])
   products          Product[]  
@@ -103,16 +105,16 @@ model DetailCategory {
   @@map("detail_categories")
 }
 
-model Trademark{
+model Trademark {
   id                String        @id @default(cuid())
   name              String        @unique
   createdAt         DateTime      @default(now()) @map(name: "created_at")
   updatedAt         DateTime      @updatedAt @map(name: "updated_at")
+  deletedAt         DateTime?     @map(name: "deleted_at")
   products          Product []
+
   @@map("trademark")
 }
-
-
 
 model Product {
   id                String         @id @default(cuid())
@@ -129,11 +131,11 @@ model Product {
   promotions        ProductPromotion[]
   createdAt         DateTime       @default(now()) @map(name: "created_at")
   updatedAt         DateTime       @updatedAt @map(name: "updated_at")
+  deletedAt         DateTime?      @map(name: "deleted_at")
   detailCategoryId  String         @map("detail_category_id")
   detailCategory    DetailCategory @relation(fields: [detailCategoryId], references: [id])
   trademarkId       String         @map("trademark_id")
-  trademark         Trademark         @relation(fields: [trademarkId], references: [id])
-  
+  trademark         Trademark      @relation(fields: [trademarkId], references: [id])
 
   @@map("products")
 }
@@ -144,6 +146,7 @@ model Color {
   code              String
   createdAt         DateTime        @default(now()) @map(name: "created_at")
   updatedAt         DateTime        @updatedAt @map(name: "updated_at")
+  deletedAt         DateTime?       @map(name: "deleted_at")
   products          ProductColor[]
 
   @@map("colors")
@@ -159,12 +162,12 @@ model ProductColor {
   @@map("product_colors")
 }
 
-
 model Image {
   id                String          @id @default(cuid())
   url               String
   createdAt         DateTime        @default(now()) @map(name: "created_at")
   updatedAt         DateTime        @updatedAt @map(name: "updated_at")
+  deletedAt         DateTime?       @map(name: "deleted_at")
   products          ProductImage[]
   
   @@map("images")
@@ -188,10 +191,10 @@ model Promotion {
   endDay            DateTime
   createdAt         DateTime        @default(now()) @map(name: "created_at")
   updatedAt         DateTime        @updatedAt @map(name: "updated_at")
+  deletedAt         DateTime?       @map(name: "deleted_at")
   products          ProductPromotion[]
 
   @@map("promotions")
- 
 }
 
 model ProductPromotion {
@@ -203,4 +206,3 @@ model ProductPromotion {
   @@id([productId, promotionId])
   @@map("product_promotions")
 }
-

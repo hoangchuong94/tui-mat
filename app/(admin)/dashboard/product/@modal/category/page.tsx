@@ -7,10 +7,10 @@ import { Gender } from '@prisma/client';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useSearchParams } from 'next/navigation';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { Button } from '@/components/ui/button';
 
+import Modal from '@/components/modal';
 import { CreateCategory } from '@/schema/product';
 import { InputField } from '@/components/custom-field';
 import { FormError } from '@/components/form-error';
@@ -35,7 +35,6 @@ export default function CategoryModal() {
             genderId: '',
         },
     });
-    console.log(form.getValues('genderId'));
 
     const onSubmit = async (values: z.infer<typeof CreateCategory>) => {
         if (!values.name || !values.genderId) return;
@@ -43,6 +42,7 @@ export default function CategoryModal() {
         setLoading(true);
         setSuccess(false);
         setErrorMessage('');
+
         if (action === 'create') {
             try {
                 const res = await fetch('/api/categories', {
@@ -69,9 +69,31 @@ export default function CategoryModal() {
             } finally {
                 setLoading(false);
             }
-        } else if (action === 'update') {
-            if (idCategoryUpdate) {
-                alert('ok');
+        } else if (action === 'update' && idCategoryUpdate) {
+            try {
+                const res = await fetch(`/api/categories?id=${idCategoryUpdate}`, {
+                    method: 'PATCH',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        name: values.name,
+                        genderId: values.genderId,
+                    }),
+                });
+
+                if (res.ok) {
+                    await res.json();
+                    router.refresh();
+                    form.reset();
+                    setSuccess(true);
+                } else {
+                    const error = await res.json();
+                    setErrorMessage(error.error || 'Có lỗi xảy ra khi cập nhật');
+                }
+            } catch (error) {
+                console.error('Lỗi khi cập nhật category:', error);
+                setErrorMessage('Có lỗi xảy ra, vui lòng thử lại.');
+            } finally {
+                setLoading(false);
             }
         }
     };
@@ -83,7 +105,7 @@ export default function CategoryModal() {
                 const data = await res.json();
                 setGenders(data);
             } catch (error) {
-                console.error('An error fetch genders:', error);
+                console.error('An error fetching genders:', error);
             }
         };
 
@@ -92,7 +114,7 @@ export default function CategoryModal() {
 
     useEffect(() => {
         const setDefaultCategory = async () => {
-            if ((action === 'update' && idCategoryUpdate) || (action === 'remove' && idCategoryUpdate)) {
+            if ((action === 'update' || action === 'remove') && idCategoryUpdate) {
                 try {
                     const res = await fetch(`/api/categories?id=${idCategoryUpdate}`, {
                         method: 'GET',
@@ -101,10 +123,8 @@ export default function CategoryModal() {
 
                     const data = await res.json();
                     if (data) {
-                        if (data) {
-                            form.setValue('name', data.name);
-                            form.setValue('genderId', data.genderId);
-                        }
+                        form.setValue('name', data.name);
+                        form.setValue('genderId', data.genderId);
                     }
                 } catch (error) {
                     console.error('An error occurred while fetching category:', error);
@@ -113,12 +133,12 @@ export default function CategoryModal() {
         };
 
         setDefaultCategory();
-    }, [action, idCategoryUpdate]);
+    }, [action, idCategoryUpdate, form]);
 
     return (
-        <Dialog
+        <Modal
             open={open}
-            onOpenChange={(value) => {
+            openChange={(value) => {
                 setOpen(value);
                 setErrorMessage('');
                 setSuccess(false);
@@ -127,68 +147,64 @@ export default function CategoryModal() {
                     router.push('/dashboard/product/new');
                 }
             }}
+            title={`${action} Category`}
+            loading={loading}
         >
-            <DialogContent>
-                <Form {...form}>
-                    <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-2">
-                        <DialogHeader>
-                            <DialogTitle className="text-center font-thin">Add New Category</DialogTitle>
-                        </DialogHeader>
-                        <FormField
-                            control={form.control}
-                            name="genderId"
-                            render={({ field }) => (
-                                <FormItem>
-                                    <FormLabel>Gender:</FormLabel>
-                                    <Select value={field.value} onValueChange={field.onChange}>
-                                        <FormControl className="bg-slate-200 uppercase">
-                                            <SelectTrigger>
-                                                <SelectValue placeholder="Select a gender" />
-                                            </SelectTrigger>
-                                        </FormControl>
-                                        <SelectContent>
-                                            {genders.map((item) => (
-                                                <SelectItem className="uppercase" value={item.id} key={item.id}>
-                                                    {item.name}
-                                                </SelectItem>
-                                            ))}
-                                        </SelectContent>
-                                    </Select>
-                                    <FormMessage />
-                                </FormItem>
-                            )}
-                        />
-                        <InputField
-                            name="name"
-                            label="Name Category :"
-                            className="bg-slate-200 focus:bg-white"
-                            placeholder="Please enter your name category"
-                            disabled={action !== 'create' && !idCategoryUpdate ? true : false}
-                        />
-                        <FormSuccess message={success ? 'The catalog has been successfully created' : ''} />
-                        <FormError message={errorMessage} />
+            <Form {...form}>
+                <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-2">
+                    <FormField
+                        control={form.control}
+                        name="genderId"
+                        render={({ field }) => (
+                            <FormItem>
+                                <FormLabel>Gender:</FormLabel>
+                                <Select value={field.value} onValueChange={field.onChange}>
+                                    <FormControl className="bg-slate-200 uppercase">
+                                        <SelectTrigger>
+                                            <SelectValue placeholder="Select a gender" />
+                                        </SelectTrigger>
+                                    </FormControl>
+                                    <SelectContent>
+                                        {genders.map((item) => (
+                                            <SelectItem className="uppercase" value={item.id} key={item.id}>
+                                                {item.name}
+                                            </SelectItem>
+                                        ))}
+                                    </SelectContent>
+                                </Select>
+                                <FormMessage />
+                            </FormItem>
+                        )}
+                    />
+                    <InputField
+                        name="name"
+                        label="Name Category :"
+                        className="bg-slate-200 focus:bg-white"
+                        placeholder="Please enter your name category"
+                    />
+                    <FormSuccess message={success ? 'Performed successfully' : ''} />
+                    <FormError message={errorMessage} />
 
-                        <DialogFooter className="mt-4">
-                            <Button
-                                type="button"
-                                variant="outline"
-                                onClick={() => {
-                                    setOpen(false);
-                                    router.back();
-                                    if (success) {
-                                        router.push('/dashboard/product/new');
-                                    }
-                                }}
-                            >
-                                Close
-                            </Button>
-                            <Button type="submit" disabled={loading}>
-                                {loading ? 'Saving...' : 'Save'}
-                            </Button>
-                        </DialogFooter>
-                    </form>
-                </Form>
-            </DialogContent>
-        </Dialog>
+                    <div className="float-right space-x-2 pt-4">
+                        <Button
+                            type="button"
+                            variant="outline"
+                            onClick={() => {
+                                setOpen(false);
+                                router.back();
+                                if (success) {
+                                    router.push('/dashboard/product/new');
+                                }
+                            }}
+                        >
+                            Close
+                        </Button>
+                        <Button type="submit" disabled={loading}>
+                            {loading ? 'Saving...' : 'Save'}
+                        </Button>
+                    </div>
+                </form>
+            </Form>
+        </Modal>
     );
 }

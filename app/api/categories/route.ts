@@ -58,11 +58,37 @@ export async function GET(req: Request) {
 
 export async function PATCH(req: Request) {
     try {
-        const body = await req.json();
-        const { id, name, genderId } = body;
+        const { searchParams } = new URL(req.url);
+        const id = searchParams.get('id');
 
         if (!id || typeof id !== 'string') {
             return NextResponse.json({ error: 'Invalid category id' }, { status: 400 });
+        }
+
+        const body = await req.json();
+        const { name, genderId } = body;
+
+        if (!name || typeof name !== 'string') {
+            return NextResponse.json({ error: 'Invalid category name' }, { status: 400 });
+        }
+
+        if (!genderId || typeof genderId !== 'string') {
+            return NextResponse.json({ error: 'Invalid gender id' }, { status: 400 });
+        }
+
+        const existing = await prisma.category.findFirst({
+            where: {
+                name,
+                genderId,
+                NOT: { id },
+            },
+        });
+
+        if (existing) {
+            return NextResponse.json(
+                { error: 'Category with this name already exists in selected gender' },
+                { status: 409 },
+            );
         }
 
         const category = await prisma.category.update({

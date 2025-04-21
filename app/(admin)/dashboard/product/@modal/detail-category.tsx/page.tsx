@@ -130,7 +130,7 @@ export default function DetailCategoryModal() {
                             className="bg-slate-200 focus:bg-white"
                             placeholder="Please enter your name category"
                         />
-                        <FormSuccess message={success ? 'The catalog has been successfully created' : ''} />
+                        <FormSuccess message={success ? 'Performed successfully' : ''} />
                         <FormError message={errorMessage} />
 
                         <DialogFooter className="mt-4">
