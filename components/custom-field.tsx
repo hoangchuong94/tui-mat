@@ -36,7 +36,7 @@ interface PopoverSelectFieldProps<TFieldValues extends FieldValues, TItem> exten
     description?: string;
     addHref?: string;
     updateHref?: string;
-    removeHref?: string;
+    deleteHref?: string;
 }
 
 interface PopoverCheckboxFieldProps<TFieldValues extends FieldValues, TItem> extends UseControllerProps<TFieldValues> {
@@ -156,7 +156,7 @@ export const PopoverSelectField = <TFieldValues extends FieldValues, TItem>({
     defaultLabel,
     addHref,
     updateHref,
-    removeHref,
+    deleteHref,
     items = [],
     getItemKey,
     renderItem,
@@ -177,7 +177,7 @@ export const PopoverSelectField = <TFieldValues extends FieldValues, TItem>({
                     defaultLabel={defaultLabel}
                     addHref={addHref}
                     updateHref={updateHref}
-                    removeHref={removeHref}
+                    deleteHref={deleteHref}
                     defaultValue={defaultValue}
                     items={memoizedItems}
                     value={field.value}

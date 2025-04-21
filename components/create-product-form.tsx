@@ -106,7 +106,7 @@ export default function CreateProductForm({ dataCreateProduct }: CreateProductFo
                             <PopoverSelectField
                                 addHref="/dashboard/product/gender?action=create"
                                 updateHref="/dashboard/product/gender?action=update"
-                                removeHref="/dashboard/product/gender?action=remove"
+                                deleteHref="/dashboard/product/gender?action=delete"
                                 name="gender"
                                 label="Gender"
                                 items={dataCreateProduct.genders}
@@ -198,7 +198,7 @@ export default function CreateProductForm({ dataCreateProduct }: CreateProductFo
                         <PopoverSelectField
                             addHref="/dashboard/product/category?action=create"
                             updateHref="/dashboard/product/category?action=update"
-                            removeHref="/dashboard/product/category?action=remove"
+                            deleteHref="/dashboard/product/category?action=delete"
                             name="category"
                             label="Category"
                             items={filteredCategories}

@@ -19,7 +19,7 @@ interface PopoverSelectProps<T> {
     disabled?: boolean;
     addHref?: string;
     updateHref?: string;
-    removeHref?: string;
+    deleteHref?: string;
     defaultLabel?: string;
 }
 
@@ -32,7 +32,7 @@ export default function PopoverSelect<T>({
     onChange,
     addHref,
     updateHref,
-    removeHref,
+    deleteHref,
     disabled = false,
     defaultLabel = 'Select an item',
 }: PopoverSelectProps<T>) {
@@ -112,8 +112,8 @@ export default function PopoverSelect<T>({
                                                     </Link>
                                                 )}
 
-                                                {removeHref && (
-                                                    <Link href={`${removeHref}&id=${id}`}>
+                                                {deleteHref && (
+                                                    <Link href={`${deleteHref}&id=${id}`}>
                                                         <Button
                                                             type="button"
                                                             size="icon"

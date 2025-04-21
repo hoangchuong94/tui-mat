@@ -114,7 +114,7 @@ export default function CategoryModal() {
 
     useEffect(() => {
         const setDefaultCategory = async () => {
-            if ((action === 'update' || action === 'remove') && idCategoryUpdate) {
+            if ((action === 'update' || action === 'delete') && idCategoryUpdate) {
                 try {
                     const res = await fetch(`/api/categories?id=${idCategoryUpdate}`, {
                         method: 'GET',

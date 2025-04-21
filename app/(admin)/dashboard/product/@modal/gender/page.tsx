@@ -153,7 +153,7 @@ export default function GenderModal() {
         >
             <Form {...form}>
                 <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-2">
-                    {action !== 'remove' ? (
+                    {action !== 'delete' ? (
                         <div>
                             <InputField
                                 name="name"
