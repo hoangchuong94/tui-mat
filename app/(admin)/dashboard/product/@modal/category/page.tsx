@@ -27,7 +27,6 @@ export default function CategoryModal() {
     const [success, setSuccess] = useState(false);
     const [errorMessage, setErrorMessage] = useState('');
     const [genders, setGenders] = useState<Gender[]>([]);
-    const [defaultCategory, setDefaultCategory] = useState<Category>();
 
     const form = useForm<z.infer<typeof CreateCategory>>({
         resolver: zodResolver(CreateCategory),
