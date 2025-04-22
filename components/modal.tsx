@@ -17,24 +17,23 @@ interface ModalProps {
     header?: React.ReactNode;
     footer?: React.ReactNode;
     children: React.ReactNode;
-    loading?: boolean;
 }
 
 export default function Modal({ title, description, header, footer, children, open, openChange }: ModalProps) {
     return (
-        <Dialog open={open} onOpenChange={openChange}>
-            <DialogContent aria-describedby={undefined}>
-                <DialogHeader>
-                    <DialogHeader className="capitalize">
-                        {header
-                            ? header
-                            : title && <DialogTitle className="text-center font-thin">{title}</DialogTitle>}
-                        <DialogDescription>{description}</DialogDescription>
+        <div>
+            <Dialog open={open} onOpenChange={openChange}>
+                <DialogContent aria-describedby={undefined}>
+                    <DialogHeader>
+                        <DialogHeader className="capitalize">
+                            {header || <DialogTitle className="text-center font-thin">{title}</DialogTitle>}
+                            <DialogDescription>{description}</DialogDescription>
+                        </DialogHeader>
                     </DialogHeader>
-                </DialogHeader>
-                <div>{children}</div>
-                <DialogFooter className="mt-4">{footer}</DialogFooter>
-            </DialogContent>
-        </Dialog>
+                    <div>{children}</div>
+                    <DialogFooter className="mt-4">{footer}</DialogFooter>
+                </DialogContent>
+            </Dialog>
+        </div>
     );
 }

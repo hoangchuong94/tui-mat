@@ -68,7 +68,7 @@ export default function PopoverSelect<T>({
                         <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
                     </Button>
                 </PopoverTrigger>
-                <PopoverContent className="w-auto p-0 xl:w-96">
+                <PopoverContent className={`p-0 xl:w-96 ${addHref && 'xl:ml-11'}`}>
                     <Command>
                         <CommandInput placeholder="Search..." disabled={disabled} />
                         <CommandList>
@@ -80,7 +80,7 @@ export default function PopoverSelect<T>({
                                     const isSelected = selected && getKey(selected) === getKey(item);
 
                                     return (
-                                        <div className="flex flex-row gap-2" key={getKey(item)}>
+                                        <div className="flex flex-row gap-1" key={getKey(item)}>
                                             <CommandItem
                                                 className="flex flex-1 cursor-pointer capitalize"
                                                 value={itemName}
@@ -103,7 +103,7 @@ export default function PopoverSelect<T>({
                                                         <Button
                                                             type="button"
                                                             size="icon"
-                                                            variant="ghost"
+                                                            variant="outline"
                                                             className="text-blue-600 hover:bg-blue-100"
                                                             aria-label="Edit"
                                                         >
@@ -117,7 +117,7 @@ export default function PopoverSelect<T>({
                                                         <Button
                                                             type="button"
                                                             size="icon"
-                                                            variant="ghost"
+                                                            variant="outline"
                                                             className="text-red-600 hover:bg-red-100"
                                                             aria-label="Delete"
                                                         >

@@ -5,14 +5,16 @@ import { useEffect, useState } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { zodResolver } from '@hookform/resolvers/zod';
 
+import { Loader2, Save } from 'lucide-react';
+import { Form } from '@/components/ui/form';
 import { Button } from '@/components/ui/button';
 
 import Modal from '@/components/modal';
-import { CreateGender } from '@/schema/product';
+import { GenderModalSchema } from '@/schema/product';
+import { createGender, deleteGender, updateGender } from '@/actions/gender';
 import { InputField } from '@/components/custom-field';
 import { FormSuccess } from '@/components/form-success';
 import { FormError } from '@/components/form-error';
-import { Form } from '@/components/ui/form';
 
 export default function GenderModal() {
     const router = useRouter();
@@ -22,201 +24,158 @@ export default function GenderModal() {
 
     const [open, setOpen] = useState(true);
     const [loading, setLoading] = useState(false);
-    const [success, setSuccess] = useState(false);
     const [errorMessage, setErrorMessage] = useState('');
+    const [successMessage, setSuccessMessage] = useState('');
 
-    const form = useForm<z.infer<typeof CreateGender>>({
-        resolver: zodResolver(CreateGender),
+    const form = useForm<z.infer<typeof GenderModalSchema>>({
+        resolver: zodResolver(GenderModalSchema),
         defaultValues: {
             name: '',
         },
     });
 
-    const handleDeleteCategory = () => {
-        alert('delete');
+    const handleDeleteGender = async () => {
+        if (!idGender) return;
+
+        setLoading(true);
+        setErrorMessage('');
+        setSuccessMessage('');
+
+        try {
+            const result = await deleteGender(idGender);
+            if (result.success) {
+                setOpen(false);
+                router.back();
+            } else {
+                setErrorMessage(result.error);
+            }
+        } catch (error) {
+            console.error('Error:', error);
+            setErrorMessage('An error occurred, please try again.');
+        } finally {
+            setLoading(false);
+        }
     };
 
-    const onSubmit = async (values: z.infer<typeof CreateGender>) => {
+    const onSubmit = async (values: z.infer<typeof GenderModalSchema>) => {
         if (!values.name) return;
 
         setLoading(true);
-        setSuccess(false);
         setErrorMessage('');
+        setSuccessMessage('');
 
-        if (action === 'create') {
-            try {
-                const res = await fetch('/api/genders', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ name: values.name }),
-                });
+        try {
+            let result;
 
-                if (res.ok) {
-                    await res.json();
-                    router.refresh();
-                    setSuccess(true);
-                } else {
-                    const error = await res.json();
-                    setErrorMessage(error.error || 'An error occurred');
-                }
-            } catch (error) {
-                console.error('Error adding gender:', error);
-                setErrorMessage('An error occurred, please try again.');
-            } finally {
-                setLoading(false);
+            switch (action) {
+                case 'create':
+                    result = await createGender(values);
+                    break;
+                case 'update':
+                    if (idGender) result = await updateGender(idGender, values);
+                    break;
+                default:
+                    throw new Error('Invalid action');
             }
-        }
 
-        if (action === 'update' && idGender) {
-            try {
-                const res = await fetch(`/api/genders?id=${idGender}`, {
-                    method: 'PATCH',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ name: values.name }),
-                });
-
-                if (res.ok) {
-                    await res.json();
-                    router.refresh();
-                    setSuccess(true);
-                } else {
-                    const error = await res.json();
-                    setErrorMessage(error.error || 'An error occurred');
-                }
-            } catch (error) {
-                console.error('Error adding gender:', error);
-                setErrorMessage('An error occurred, please try again.');
-            } finally {
-                setLoading(false);
-            }
-        }
-
-        if (action === 'delete' && idGender) {
-            try {
-                const res = await fetch(`/api/genders?id=${idGender}`, {
-                    method: 'DELETE',
-                });
-
-                if (res.ok) {
-                    await res.json();
-                    router.refresh();
-                    setSuccess(true);
-                } else {
-                    const error = await res.json();
-                    setErrorMessage(error.error || 'An error occurred');
-                }
-            } catch (error) {
-                console.error('Error deleting gender:', error);
-                setErrorMessage('An error occurred, please try again.');
-            } finally {
-                setLoading(false);
-            }
+            result?.success
+                ? setSuccessMessage(result.message)
+                : setErrorMessage(result?.error || 'An unknown error occurred');
+        } catch (error) {
+            console.error('Error:', error);
+            setErrorMessage('An error occurred, please try again.');
+        } finally {
+            setLoading(false);
         }
     };
 
     useEffect(() => {
-        const setDefaultCategory = async () => {
-            if (action === 'update' && idGender) {
-                try {
-                    const res = await fetch(`/api/genders?id=${idGender}`, {
-                        method: 'GET',
-                        headers: { 'Content-Type': 'application/json' },
-                    });
-
-                    const data = await res.json();
-                    if (data) {
-                        form.setValue('name', data.name);
-                    }
-                } catch (error) {
-                    console.error('An error occurred while fetching category:', error);
-                }
-            }
-        };
-
-        setDefaultCategory();
-    }, []);
+        if (action === 'update' && idGender) {
+            fetch(`/api/genders?id=${idGender}`)
+                .then((res) => res.json())
+                .then((data) => {
+                    if (data?.name) form.reset({ name: data.name });
+                });
+        }
+    }, [action, idGender, form]);
 
     return (
         <Modal
+            title={`${action} Gender`}
             open={open}
             openChange={(value) => {
+                console.log(value);
                 setOpen(value);
                 setErrorMessage('');
-                setSuccess(false);
                 if (!value) router.back();
-                if (success) {
-                    router.push('/dashboard/product/new');
-                }
             }}
-            title={`${action} Gender`}
-            loading={loading}
         >
-            <Form {...form}>
-                <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-2">
-                    {action !== 'delete' ? (
-                        <div>
-                            <InputField
-                                name="name"
-                                label="Name Gender :"
-                                className="bg-slate-200 focus:bg-white"
-                                placeholder="Please enter your name category"
-                            />
-                            <div className="mt-2">
-                                <FormSuccess message={success ? 'Performed successfully' : ''} />
-                                <FormError message={errorMessage} />
-                            </div>
+            {action !== 'delete' ? (
+                <Form {...form}>
+                    <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-2">
+                        <InputField
+                            name="name"
+                            label="Name Gender :"
+                            className="bg-slate-200 focus:bg-white"
+                            placeholder="Please enter your name category"
+                        />
+                        <div className="mt-2">
+                            <FormSuccess message={successMessage} />
+                            <FormError message={errorMessage} />
+                        </div>
 
-                            <div className="float-right space-x-2 pt-4">
-                                <Button
-                                    type="button"
-                                    variant="outline"
-                                    onClick={() => {
-                                        setOpen(false);
-                                        router.back();
-                                        if (success) {
-                                            router.push('/dashboard/product/new');
-                                        }
-                                    }}
-                                >
-                                    Close
-                                </Button>
-                                <Button type="submit" disabled={loading}>
-                                    {loading ? 'Saving...' : 'Save'}
-                                </Button>
-                            </div>
+                        <div className="float-right flex space-x-2 pt-4">
+                            <Button
+                                size="lg"
+                                type="button"
+                                variant="outline"
+                                onClick={() => {
+                                    router.back();
+                                }}
+                            >
+                                Close
+                            </Button>
+                            <Button size="lg" type="submit" disabled={loading} className="flex items-center gap-2">
+                                {loading ? <Loader2 className="animate-spin" /> : <Save />}
+                                {loading ? 'Saving ...' : 'Save'}
+                            </Button>
                         </div>
-                    ) : (
-                        <div className="mt-4 flex w-full flex-col gap-4">
-                            <p className="text-red-600">
-                                Warning: You are about to delete this gender and all associated products. This action
-                                cannot be undone!
-                            </p>
-                            <p className="text-sm text-gray-700">
-                                Note: Products related to this gender will be impacted and cannot be recovered after
-                                deletion.
-                            </p>
-                            <div className="mt-4 flex w-full flex-row gap-4">
-                                <Button
-                                    variant="outline"
-                                    type="button"
-                                    onClick={() => router.back()}
-                                    className="flex min-h-12 flex-1 bg-slate-50 uppercase"
-                                >
-                                    cancel
-                                </Button>
-                                <Button
-                                    variant="destructive"
-                                    type="submit"
-                                    className="flex min-h-12 flex-1 uppercase"
-                                    onClick={handleDeleteCategory}
-                                >
-                                    ok
-                                </Button>
-                            </div>
-                        </div>
-                    )}
-                </form>
-            </Form>
+                    </form>
+                </Form>
+            ) : (
+                <div className="mt-4 flex w-full flex-col gap-4">
+                    <p className="text-red-600">
+                        Warning: You are about to delete this gender and all associated products. This action cannot be
+                        undone!
+                    </p>
+                    <p className="text-sm text-gray-700">
+                        Note: Products related to this gender will be impacted and cannot be recovered after deletion.
+                    </p>
+                    <div className="mt-4 flex w-full flex-row gap-4">
+                        {!loading && (
+                            <Button
+                                variant="outline"
+                                type="button"
+                                onClick={() => {
+                                    router.back();
+                                }}
+                                className="flex min-h-10 flex-1"
+                            >
+                                Cancel
+                            </Button>
+                        )}
+                        <Button
+                            variant="destructive"
+                            type="submit"
+                            className="flex min-h-10 flex-1"
+                            onClick={handleDeleteGender}
+                        >
+                            {loading && <Loader2 className="h-8 w-8 animate-spin" />}
+                            {loading ? 'Delete ...' : 'Ok'}
+                        </Button>
+                    </div>
+                </div>
+            )}
         </Modal>
     );
 }

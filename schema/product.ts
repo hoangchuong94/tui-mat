@@ -169,11 +169,11 @@ export const CreateProductSchema = z
         }
     });
 
+export const GenderModalSchema = z.object({
+    name: z.string().min(1, 'Category name is required'),
+});
+
 export const CreateCategory = z.object({
     name: z.string().min(1, 'Category name is required'),
     genderId: z.string().min(1, 'Gender name is required'),
-});
-
-export const CreateGender = z.object({
-    name: z.string().min(1, 'Category name is required'),
 });
