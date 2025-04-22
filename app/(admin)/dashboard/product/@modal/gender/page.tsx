@@ -78,9 +78,11 @@ export default function GenderModal() {
                     throw new Error('Invalid action');
             }
 
-            result?.success
-                ? setSuccessMessage(result.message)
-                : setErrorMessage(result?.error || 'An unknown error occurred');
+            if (result?.success) {
+                setSuccessMessage(result.message);
+            } else {
+                setErrorMessage(result?.error || 'An unknown error occurred');
+            }
         } catch (error) {
             console.error('Error:', error);
             setErrorMessage('An error occurred, please try again.');
