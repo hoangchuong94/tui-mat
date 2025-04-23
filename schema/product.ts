@@ -159,6 +159,6 @@ export const CategoryModalSchema = z.object({
     genderId: z.string().min(1, 'Gender name is required'),
 });
 
-export type GenderModalForm = z.infer<typeof GenderModalSchema>;
-export type CategoryModalForm = z.infer<typeof CategoryModalSchema>;
-export type CreateProductForm = z.infer<typeof CreateProductSchema>;
+export type GenderModalSchemaType = z.infer<typeof GenderModalSchema>;
+export type CategoryModalSchemaType = z.infer<typeof CategoryModalSchema>;
+export type CreateProductSchemaType = z.infer<typeof CreateProductSchema>;

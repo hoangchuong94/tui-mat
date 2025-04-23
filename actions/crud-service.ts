@@ -3,18 +3,12 @@
 import { z } from 'zod';
 import { revalidatePath } from 'next/cache';
 import prisma from '@/lib/prisma';
-import { GenderModalSchema } from '@/schema/product';
+
+type ModelName = Extract<keyof typeof prisma, string>;
 
 export type WithSoftDelete<T> = T & {
     deletedAt?: Date | null;
 };
-
-type ModelName = Extract<keyof typeof prisma, string>;
-
-interface GetItemOptions {
-    model: ModelName;
-    id?: string;
-}
 
 export interface CrudOptions<T> {
     schema: z.ZodSchema<T>;
@@ -25,201 +19,197 @@ export interface CrudOptions<T> {
     hardDelete?: boolean;
 }
 
-function getModel<T>(model: ModelName) {
-    return prisma[model] as unknown as {
-        findFirst: (args: any) => Promise<any>;
-        findUnique: (args: any) => Promise<any>;
-        create: (args: any) => Promise<any>;
-        update: (args: any) => Promise<any>;
-        delete?: (args: any) => Promise<any>;
-        findMany: (args: any) => Promise<any>;
-    };
+function getModel(model: ModelName) {
+    if (!prisma[model]) throw new Error(`Model "${model}" not found in Prisma`);
+    return prisma[model] as any;
 }
 
-function getWhereClauseForUniqueField<T>(field: keyof T, value: any) {
+function getWhereClause<T>(field: keyof T, value: any) {
     if (typeof value === 'string') {
         return { [field]: { equals: value, mode: 'insensitive' } };
     }
     return { [field]: value };
 }
 
-export async function createItem<T>(values: T, options: CrudOptions<T>) {
+async function executeWithCatch<T>(fn: () => Promise<T>) {
     try {
-        const { schema, model, pathToRevalidate, uniqueField, softDeleteField } = options;
-        const validated = schema.safeParse(values);
+        return await fn();
+    } catch (error: any) {
+        console.error('Error in executeWithCatch:', error);
+        return {
+            success: false,
+            message: '',
+            data: null,
+            error: error?.message || String(error) || 'Unexpected error occurred',
+        };
+    }
+}
 
+export async function createItem<T>(values: T, options: CrudOptions<T>) {
+    return executeWithCatch(async () => {
+        const { schema, model, pathToRevalidate, uniqueField, softDeleteField } = options;
+
+        const validated = schema.safeParse(values);
         if (!validated.success) {
-            return { success: false, message: '', error: 'Invalid data' };
+            console.warn('Validation failed:', validated.error.format());
+            return { success: false, message: '', data: null, error: validated.error.format() };
         }
 
         const data = validated.data;
-        const modelClient = getModel<T>(model);
+        const client = getModel(model);
 
-        const baseCondition = getWhereClauseForUniqueField(uniqueField, data[uniqueField]);
+        const baseWhere = getWhereClause(uniqueField, data[uniqueField]);
+        const where = softDeleteField ? { AND: [baseWhere, { [softDeleteField as string]: null }] } : baseWhere;
 
-        const where = softDeleteField ? { AND: [baseCondition, { [softDeleteField as string]: null }] } : baseCondition;
-
-        const existing = await modelClient.findFirst({ where });
-
-        if (existing) {
+        const exists = await client.findFirst({ where });
+        if (exists) {
             return {
                 success: false,
                 message: '',
-                error: `${String(model)} already exists`,
+                data: null,
+                error: `${model} already exists with the same ${String(uniqueField)}.`,
             };
         }
 
-        await modelClient.create({ data });
+        await client.create({ data });
         revalidatePath(pathToRevalidate);
 
         return {
             success: true,
-            message: `${String(model)} created successfully`,
+            message: `${model} created successfully.`,
+            data: null,
             error: '',
         };
-    } catch (error: any) {
-        console.error(`Error creating ${options.model}:`, error);
-        return {
-            success: false,
-            message: '',
-            error: error?.message || String(error) || 'Unexpected error while creating item',
-        };
-    }
+    });
 }
 
 export async function updateItem<T>(id: string, values: T, options: CrudOptions<T>) {
-    try {
+    return executeWithCatch(async () => {
         const { schema, model, pathToRevalidate, uniqueField, softDeleteField } = options;
-        const validated = schema.safeParse(values);
 
+        const validated = schema.safeParse(values);
         if (!validated.success) {
-            return { success: false, message: '', error: 'Invalid data' };
+            console.warn('Validation failed:', validated.error.format());
+            return { success: false, message: '', data: null, error: validated.error.format() };
         }
 
         const data = validated.data;
-        const modelClient = getModel<T>(model);
+        const client = getModel(model);
 
-        const item = await modelClient.findUnique({ where: { id } });
-
-        if (!item) {
-            return { success: false, message: '', error: `${String(model)} not found` };
+        const current = await client.findUnique({ where: { id } });
+        if (!current) {
+            return { success: false, message: '', data: null, error: `${model} not found.` };
         }
 
-        const baseCondition = getWhereClauseForUniqueField(uniqueField, data[uniqueField]);
-
+        const baseWhere = getWhereClause(uniqueField, data[uniqueField]);
         const where = {
-            AND: [baseCondition, { NOT: { id } }, ...(softDeleteField ? [{ [softDeleteField as string]: null }] : [])],
+            AND: [baseWhere, { NOT: { id } }, ...(softDeleteField ? [{ [softDeleteField as string]: null }] : [])],
         };
 
-        const existing = await modelClient.findFirst({ where });
-
-        if (existing) {
+        const duplicate = await client.findFirst({ where });
+        if (duplicate) {
             return {
                 success: false,
                 message: '',
-                error: `${String(model)} with the same ${String(uniqueField)} already exists`,
+                data: null,
+                error: `${model} with the same ${String(uniqueField)} already exists.`,
             };
         }
 
-        await modelClient.update({ where: { id }, data });
+        await client.update({ where: { id }, data });
         revalidatePath(pathToRevalidate);
 
         return {
             success: true,
-            message: `${String(model)} updated successfully`,
+            message: `${model} updated successfully.`,
+            data: null,
             error: '',
         };
-    } catch (error: any) {
-        console.error(`Error updating ${options.model} (id: ${id}):`, error);
-        return {
-            success: false,
-            message: '',
-            error: error?.message || String(error) || 'Unexpected error while creating item',
-        };
-    }
+    });
 }
 
-export async function deleteItem(id: string, options: CrudOptions<any>) {
-    try {
+export async function deleteItems(ids: string | string[], options: CrudOptions<any>) {
+    return executeWithCatch(async () => {
         const { model, pathToRevalidate, softDeleteField = 'deletedAt', hardDelete = false } = options;
 
-        if (!id) {
-            return { success: false, message: '', error: 'Invalid data' };
+        const idsArray = Array.isArray(ids) ? ids : [ids];
+
+        if (idsArray.length === 0) {
+            return { success: false, message: '', data: null, error: 'Invalid ID list' };
         }
 
-        const modelClient = getModel<any>(model);
-        const item = await modelClient.findUnique({ where: { id } });
+        const client = getModel(model);
 
-        if (!item) {
-            return { success: false, message: '', error: `${String(model)} not found` };
+        const existingItems = await client.findMany({ where: { id: { in: idsArray } } });
+
+        if (existingItems.length !== idsArray.length) {
+            return {
+                success: false,
+                message: '',
+                data: null,
+                error: `${model} not found for some of the provided IDs.`,
+            };
         }
 
-        if (hardDelete && modelClient.delete) {
-            await modelClient.delete({ where: { id } });
-        } else {
-            await modelClient.update({
-                where: { id },
-                data: { [softDeleteField]: new Date() },
-            });
+        for (const id of idsArray) {
+            if (hardDelete && client.delete) {
+                await client.delete({ where: { id } });
+            } else {
+                await client.update({
+                    where: { id },
+                    data: { [softDeleteField]: new Date() },
+                });
+            }
         }
 
         revalidatePath(pathToRevalidate);
 
         return {
             success: true,
-            message: `${String(model)} deleted successfully`,
+            message: `${model} items deleted successfully.`,
+            data: null,
             error: '',
         };
-    } catch (error: any) {
-        console.error(`Error deleting ${options.model} (id: ${id}):`, error);
-        return {
-            success: false,
-            message: '',
-            error: error?.message || String(error) || 'Unexpected error while creating item',
-        };
-    }
+    });
 }
 
-export async function getItems<T>({ model, id }: GetItemOptions) {
-    try {
-        const modelClient = getModel<T>(model);
+export async function getItems<T>(options: CrudOptions<T>, params?: { id?: string; filters?: Record<string, any> }) {
+    return executeWithCatch(async () => {
+        const { model, softDeleteField } = options;
+        const client = getModel(model);
 
-        let items;
+        const where: Record<string, any> = {
+            ...(softDeleteField ? { [softDeleteField as string]: null } : {}),
+            ...(params?.filters ?? {}),
+        };
 
-        if (id) {
-            items = await modelClient.findUnique({ where: { id } });
-        } else {
-            items = await modelClient.findMany({});
-        }
+        if (params?.id) {
+            where.id = params.id;
+            const item = await client.findFirst({ where });
 
-        if (!items) {
-            return { success: false, data: null, error: `${model} not found` };
-        }
-
-        const parsedData = Array.isArray(items)
-            ? items.map((item) => GenderModalSchema.safeParse(item))
-            : GenderModalSchema.safeParse(items);
-
-        if (Array.isArray(parsedData)) {
-            const errors = parsedData.filter((result) => !result.success);
-            if (errors.length > 0) {
+            if (!item) {
                 return {
                     success: false,
+                    message: '',
                     data: null,
-                    error: 'Data does not match schema',
+                    error: `${model} not found.`,
                 };
             }
-        } else if (!parsedData.success) {
-            return { success: false, data: null, error: 'Data does not match schema' };
-        }
 
-        return { success: true, data: items, error: '' };
-    } catch (error: any) {
-        console.error(`Error fetching ${model}:`, error);
-        return {
-            success: false,
-            message: '',
-            error: error?.message || String(error) || 'Unexpected error while creating item',
-        };
-    }
+            return {
+                success: true,
+                message: `${model} fetched successfully.`,
+                data: item as T,
+                error: '',
+            };
+        } else {
+            const list = await client.findMany({ where });
+            return {
+                success: true,
+                message: `${model} list fetched successfully.`,
+                data: list,
+                error: '',
+            };
+        }
+    });
 }

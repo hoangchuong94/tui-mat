@@ -5,7 +5,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { Check, SquarePen } from 'lucide-react';
 
 import { DataCreateProduct } from '@/types/index';
-import { CreateProductSchema, type CreateProductForm } from '@/schema/product';
+import { CreateProductSchemaType, CreateProductSchema } from '@/schema/product';
 import { Button } from '@/components/ui/button';
 import { Form } from '@/components/ui/form';
 import { ImageField, ImagesField, InputField, PopoverSelectField } from '@/components/custom-field';
@@ -20,7 +20,7 @@ export default function CreateProductForm({ dataCreateProduct }: CreateProductFo
     const [thumbnailUrl, setThumbnailUrl] = useState<string>('');
     const [imageUrls, setImageUrls] = useState<string[]>([]);
 
-    const form = useForm<CreateProductForm>({
+    const form = useForm<CreateProductSchemaType>({
         resolver: zodResolver(CreateProductSchema),
         defaultValues: {
             name: '',
@@ -57,7 +57,7 @@ export default function CreateProductForm({ dataCreateProduct }: CreateProductFo
         resetField,
     );
 
-    const onSubmit = (values: CreateProductForm) => {
+    const onSubmit = (values: CreateProductSchemaType) => {
         console.log(`thumbnailUrl : ${thumbnailUrl}`);
         console.log(`imageUrls : ${imageUrls}`);
         console.log(values);

@@ -5,18 +5,26 @@ import { useEffect, useState } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { zodResolver } from '@hookform/resolvers/zod';
 
+import { Gender } from '@prisma/client';
+
 import { Loader2, Save } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 
 import Modal from '@/components/modal';
-import { CategoryModalSchema, type CategoryModalForm } from '@/schema/product';
-import { createCategory, deleteCategory, updateCategory, getGenders } from '@/actions/create-product';
+import { CategoryModalSchema, CategoryModalSchemaType } from '@/schema/product';
 import { InputField } from '@/components/custom-field';
 import { FormSuccess } from '@/components/form-success';
 import { FormError } from '@/components/form-error';
-import { Gender } from '@prisma/client';
+
+import {
+    getAllGenders,
+    updateCategory,
+    deleteCategory,
+    createCategory,
+    getCategoryById,
+} from '@/actions/create-product';
 
 export default function CategoryModal() {
     const router = useRouter();
@@ -29,7 +37,7 @@ export default function CategoryModal() {
     const [errorMessage, setErrorMessage] = useState('');
     const [successMessage, setSuccessMessage] = useState('');
     const [genders, setGenders] = useState<Gender[]>([]);
-    const form = useForm<CategoryModalForm>({
+    const form = useForm<CategoryModalSchemaType>({
         resolver: zodResolver(CategoryModalSchema),
         defaultValues: {
             name: '',
@@ -60,7 +68,7 @@ export default function CategoryModal() {
         }
     };
 
-    const onSubmit = async (values: CategoryModalForm) => {
+    const onSubmit = async (values: CategoryModalSchemaType) => {
         if (!values.name || !values.genderId) return;
 
         setLoading(true);
@@ -96,16 +104,25 @@ export default function CategoryModal() {
 
     useEffect(() => {
         const fetchGenders = async () => {
-            const result = await getGenders();
-            if (result.success) {
-                setGenders(result.data);
-            } else {
-                setErrorMessage(result.error);
-            }
+            const { success, data, error } = await getAllGenders();
+            if (success && data) setGenders(data);
+            else setErrorMessage(error);
         };
 
         fetchGenders();
     }, []);
+
+    useEffect(() => {
+        if (action === 'update' && idCategory) {
+            const fetchCategoryById = async () => {
+                const { success, data, error } = await getCategoryById(idCategory);
+                if (success && data) form.reset(data);
+                else setErrorMessage(error);
+            };
+
+            fetchCategoryById();
+        }
+    }, [action, idCategory, form]);
 
     return (
         <Modal
@@ -207,6 +224,7 @@ export default function CategoryModal() {
                             {loading ? 'Delete ...' : 'Ok'}
                         </Button>
                     </div>
+                    <FormError message={errorMessage} />
                 </div>
             )}
         </Modal>

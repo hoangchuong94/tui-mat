@@ -55,7 +55,7 @@ export const ForgotPasswordSchema = z
         message: 'Password confirmation is incorrect',
     });
 
-export type SignInForm = z.infer<typeof SignInSchema>;
-export type SignUpForm = z.infer<typeof SignUpSchema>;
-export type ForgotPasswordForm = z.infer<typeof ForgotPasswordSchema>;
-export type SendVerificationEmailForm = z.infer<typeof EmailSchema>;
+export type SignInSchemaType = z.infer<typeof SignInSchema>;
+export type SignUpSchemaType = z.infer<typeof SignUpSchema>;
+export type ForgotPasswordSchemaType = z.infer<typeof ForgotPasswordSchema>;
+export type SendVerificationEmailSchemaType = z.infer<typeof EmailSchema>;

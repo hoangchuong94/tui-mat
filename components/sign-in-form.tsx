@@ -15,7 +15,7 @@ import LoadingSpinner from '@/components/loading-spinner';
 import Auth from '@/components/auth-wrapper';
 import { signIn } from 'next-auth/react';
 import { authenticate } from '@/actions/auth';
-import { SignInSchema, type SignInForm } from '@/schema/auth';
+import { SignInSchema, type SignInSchemaType } from '@/schema/auth';
 import { FormError } from '@/components/form-error';
 import { FormSuccess } from '@/components/form-success';
 import { Button } from '@/components/ui/button';
@@ -38,7 +38,7 @@ export default function SignInForm() {
         });
     };
 
-    const form = useForm<SignInForm>({
+    const form = useForm<SignInSchemaType>({
         resolver: zodResolver(SignInSchema),
         defaultValues: {
             email: '',
@@ -46,7 +46,7 @@ export default function SignInForm() {
         },
     });
 
-    const onSubmit = async (values: SignInForm) => {
+    const onSubmit = async (values: SignInSchemaType) => {
         setError('');
         setSuccess('');
 

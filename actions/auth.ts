@@ -9,10 +9,10 @@ import { signIn } from '@/auth';
 import { sendVerificationEmail } from '@/lib/mail';
 import { hashPassword } from '@/actions/hash-password';
 import { generateVerificationToken } from '@/lib/tokens';
-import { SignInSchema, SignUpSchema, type SignInForm, type SignUpForm } from '@/schema/auth';
+import { SignInSchema, SignUpSchema, type SignInSchemaType, type SignUpSchemaType } from '@/schema/auth';
 import { DEFAULT_ADMIN_SIGN_IN_REDIRECT } from '@/routes';
 
-export async function authenticate(values: SignInForm) {
+export async function authenticate(values: SignInSchemaType) {
     let redirectTo = '';
 
     const validatedFields = SignInSchema.safeParse(values);
@@ -64,7 +64,7 @@ export async function authenticate(values: SignInForm) {
     redirect(redirectTo);
 }
 
-export async function signUp(values: SignUpForm) {
+export async function signUp(values: SignUpSchemaType) {
     try {
         const validatedFields = SignUpSchema.safeParse(values);
         if (!validatedFields.success) {

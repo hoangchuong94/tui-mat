@@ -9,7 +9,7 @@ import { Form } from '@/components/ui/form';
 import { Button } from '@/components/ui/button';
 
 import Modal from '@/components/modal';
-import { GenderModalForm, GenderModalSchema } from '@/schema/product';
+import { GenderModalSchemaType, GenderModalSchema } from '@/schema/product';
 import { createGender, deleteGender, getGenderById, updateGender } from '@/actions/create-product';
 import { InputField } from '@/components/custom-field';
 import { FormSuccess } from '@/components/form-success';
@@ -26,7 +26,7 @@ export default function GenderModal() {
     const [errorMessage, setErrorMessage] = useState('');
     const [successMessage, setSuccessMessage] = useState('');
 
-    const form = useForm<GenderModalForm>({
+    const form = useForm<GenderModalSchemaType>({
         resolver: zodResolver(GenderModalSchema),
         defaultValues: {
             name: '',
@@ -56,7 +56,7 @@ export default function GenderModal() {
         }
     };
 
-    const onSubmit = async (values: GenderModalForm) => {
+    const onSubmit = async (values: GenderModalSchemaType) => {
         if (!values.name) return;
 
         setLoading(true);
@@ -93,8 +93,9 @@ export default function GenderModal() {
     useEffect(() => {
         if (action === 'update' && idGender) {
             const fetchGenderById = async () => {
-                const result = await getGenderById(idGender);
-                console.log(result.data);
+                const { data, success, error } = await getGenderById(idGender);
+                if (success && data) form.reset(data);
+                else setErrorMessage(error);
             };
 
             fetchGenderById();
@@ -106,7 +107,6 @@ export default function GenderModal() {
             title={`${action} Gender`}
             open={open}
             openChange={(value) => {
-                console.log(value);
                 setOpen(value);
                 setErrorMessage('');
                 if (!value) router.back();
@@ -176,6 +176,7 @@ export default function GenderModal() {
                             {loading ? 'Delete ...' : 'Ok'}
                         </Button>
                     </div>
+                    <FormError message={errorMessage} />
                 </div>
             )}
         </Modal>

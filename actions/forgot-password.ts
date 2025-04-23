@@ -4,15 +4,15 @@ import prisma from '@/lib/prisma';
 import { hashPassword } from '@/actions/hash-password';
 import { getVerificationByToken } from '@/actions/verification-token';
 import {
-    type ForgotPasswordForm,
-    type SendVerificationEmailForm,
+    type ForgotPasswordSchemaType,
+    type SendVerificationEmailSchemaType,
     ForgotPasswordSchema,
     EmailSchema,
 } from '@/schema/auth';
 import { generateVerificationToken } from '@/lib/tokens';
 import { sendVerificationForgotPassword } from '@/lib/mail';
 
-export const forgotPassword = async (values: ForgotPasswordForm, token?: string | null) => {
+export const forgotPassword = async (values: ForgotPasswordSchemaType, token?: string | null) => {
     try {
         if (!token) {
             return { error: 'Missing token!' };
@@ -64,7 +64,7 @@ export const forgotPassword = async (values: ForgotPasswordForm, token?: string 
     }
 };
 
-export const sendVerificationEmail = async (values: SendVerificationEmailForm) => {
+export const sendVerificationEmail = async (values: SendVerificationEmailSchemaType) => {
     try {
         const validatedFields = EmailSchema.safeParse(values);
 

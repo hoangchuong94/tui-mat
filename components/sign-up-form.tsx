@@ -3,7 +3,7 @@ import { Form } from '@/components/ui/form';
 import { useState, useTransition } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { SignUpSchema, type SignUpForm } from '@/schema/auth';
+import { SignUpSchema, type SignUpSchemaType } from '@/schema/auth';
 import { Button } from '@/components/ui/button';
 import { FormError } from '@/components/form-error';
 import { FormSuccess } from '@/components/form-success';
@@ -18,7 +18,7 @@ export default function SignUpForm() {
     const [success, setSuccess] = useState<string | undefined>('');
     const [isPending, startTransition] = useTransition();
 
-    const form = useForm<SignUpForm>({
+    const form = useForm<SignUpSchemaType>({
         resolver: zodResolver(SignUpSchema),
         defaultValues: {
             email: '',
@@ -28,7 +28,7 @@ export default function SignUpForm() {
         },
     });
 
-    const onSubmit = (values: SignUpForm) => {
+    const onSubmit = (values: SignUpSchemaType) => {
         setError('');
         setSuccess('');
         startTransition(() => {

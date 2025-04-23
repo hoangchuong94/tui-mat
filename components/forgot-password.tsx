@@ -10,8 +10,8 @@ import { Input } from '@/components/ui/input';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 
 import {
-    type SendVerificationEmailForm,
-    type ForgotPasswordForm,
+    type SendVerificationEmailSchemaType,
+    type ForgotPasswordSchemaType,
     EmailSchema,
     ForgotPasswordSchema,
 } from '@/schema/auth';
@@ -40,7 +40,7 @@ export default function ForgotPasswordPage() {
         },
     });
 
-    const formForgotPassword = useForm<ForgotPasswordForm>({
+    const formForgotPassword = useForm<ForgotPasswordSchemaType>({
         resolver: zodResolver(ForgotPasswordSchema),
         defaultValues: {
             password: '',
@@ -48,7 +48,7 @@ export default function ForgotPasswordPage() {
         },
     });
 
-    const onSubmitVerification = (values: SendVerificationEmailForm) => {
+    const onSubmitVerification = (values: SendVerificationEmailSchemaType) => {
         setError('');
         setSuccess('');
 
@@ -60,7 +60,7 @@ export default function ForgotPasswordPage() {
         });
     };
 
-    const onSubmitForgotPassword = (values: ForgotPasswordForm) => {
+    const onSubmitForgotPassword = (values: ForgotPasswordSchemaType) => {
         setError('');
         setSuccess('');
 

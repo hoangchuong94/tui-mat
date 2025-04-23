@@ -1,30 +1,23 @@
 'use server';
-
-import { z } from 'zod';
 import prisma from '@/lib/prisma';
-import { CategoryModalSchema, GenderModalSchema } from '@/schema/product';
-import { DataCreateProduct } from '@/types/index';
+import { DataCreateProduct } from '@/types';
+import {
+    GenderModalSchema,
+    CategoryModalSchema,
+    GenderModalSchemaType,
+    CategoryModalSchemaType,
+} from '@/schema/product';
+
 import {
     createItem,
     updateItem,
-    deleteItem,
+    deleteItems,
+    getItems,
     type CrudOptions,
     type WithSoftDelete,
-    getItems,
 } from '@/actions/crud-service';
 
-type CategoryInput = z.infer<typeof CategoryModalSchema>;
-
-type GenderInput = z.infer<typeof GenderModalSchema>;
-
-const categoryOptions = {
-    schema: CategoryModalSchema,
-    model: 'category' as const,
-    pathToRevalidate: '/dashboard/product/new',
-    uniqueField: 'name' as const,
-};
-
-const genderOptions: CrudOptions<WithSoftDelete<{ name: string }>> = {
+const genderOptions: CrudOptions<WithSoftDelete<GenderModalSchemaType>> = {
     schema: GenderModalSchema,
     model: 'gender',
     pathToRevalidate: '/dashboard/product/new',
@@ -32,38 +25,71 @@ const genderOptions: CrudOptions<WithSoftDelete<{ name: string }>> = {
     softDeleteField: 'deletedAt',
 };
 
-console.log(genderOptions);
+const categoryOptions: CrudOptions<WithSoftDelete<CategoryModalSchemaType>> = {
+    schema: CategoryModalSchema,
+    model: 'category',
+    pathToRevalidate: '/dashboard/product/new',
+    uniqueField: 'name',
+    softDeleteField: 'deletedAt',
+};
 
-export const createGender = async (values: GenderInput) => {
+export const createGender = async (values: GenderModalSchemaType) => {
     return createItem(values, genderOptions);
 };
 
-export const updateGender = async (id: string, values: GenderInput) => {
+export const updateGender = async (id: string, values: GenderModalSchemaType) => {
     return updateItem(id, values, genderOptions);
 };
 
 export const deleteGender = async (id: string) => {
-    return deleteItem(id, genderOptions);
+    const gitListCategoryByGenderId = await getItems(categoryOptions, { filters: { genderId: id } });
+
+    if (gitListCategoryByGenderId.success) {
+        const ids: string[] = gitListCategoryByGenderId.data.map((item: { id: string }) => item.id);
+        const result = await deleteItems(ids, categoryOptions);
+
+        console.log(result.success);
+    }
+
+    const result2 = await getItems<Category>(categoryOptions, { id });
+    if (result2.success) {
+        console.log(result2.data);
+    }
+
+    return deleteItems(id, genderOptions);
 };
 
-export const getGenders = async () => {
-    return await getItems({ model: 'gender' });
+export const getAllGenders = async () => {
+    return getItems(genderOptions);
 };
 
-export const getGenderById = async (id?: string) => {
-    return await getItems({ model: 'gender', id });
+export const getGenderById = async (id: string) => {
+    return getItems(genderOptions, { id });
 };
 
-export const createCategory = async (values: CategoryInput) => {
+export const createCategory = async (values: CategoryModalSchemaType) => {
     return createItem(values, categoryOptions);
 };
 
-export const updateCategory = async (id: string, values: CategoryInput) => {
+export const updateCategory = async (id: string, values: CategoryModalSchemaType) => {
     return updateItem(id, values, categoryOptions);
 };
 
 export const deleteCategory = async (id: string) => {
-    return deleteItem(id, categoryOptions);
+    return deleteItems(id, categoryOptions);
+};
+
+export const getAllCategory = async () => {
+    return getItems(categoryOptions);
+};
+
+interface Category {
+    name: string;
+    genderId: string;
+}
+
+export const getCategoryById = async (id: string) => {
+    return getItems<Category>(categoryOptions, { id });
 };
 
 export const fetchDataCreateProductForm = async (): Promise<DataCreateProduct> => {
