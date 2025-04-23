@@ -1,11 +1,14 @@
 'use client';
-import { Category, Gender, DetailCategory } from '@prisma/client';
+import { Category, DetailCategory, Gender } from '@prisma/client';
 import { useEffect, useMemo } from 'react';
 import { UseFormResetField } from 'react-hook-form';
 
+type FilteredGender = Pick<Gender, 'id' | 'name'>;
+type FilteredCategory = Pick<Category, 'id' | 'name' | 'genderId'>;
+
 export const useFilteredGender = (
-    selectedGender: Gender | undefined,
-    selectedCategory: Category | undefined,
+    selectedGender: FilteredGender | undefined,
+    selectedCategory: FilteredCategory | undefined,
     categories: Category[],
     detailCategories: DetailCategory[],
     resetField: UseFormResetField<any>,

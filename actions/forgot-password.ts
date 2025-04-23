@@ -3,11 +3,16 @@ import * as z from 'zod';
 import prisma from '@/lib/prisma';
 import { hashPassword } from '@/actions/hash-password';
 import { getVerificationByToken } from '@/actions/verification-token';
-import { ForgotPasswordSchema, EmailSchema } from '@/schema/auth';
+import {
+    type ForgotPasswordForm,
+    type SendVerificationEmailForm,
+    ForgotPasswordSchema,
+    EmailSchema,
+} from '@/schema/auth';
 import { generateVerificationToken } from '@/lib/tokens';
 import { sendVerificationForgotPassword } from '@/lib/mail';
 
-export const forgotPassword = async (values: z.infer<typeof ForgotPasswordSchema>, token?: string | null) => {
+export const forgotPassword = async (values: ForgotPasswordForm, token?: string | null) => {
     try {
         if (!token) {
             return { error: 'Missing token!' };
@@ -59,7 +64,7 @@ export const forgotPassword = async (values: z.infer<typeof ForgotPasswordSchema
     }
 };
 
-export const sendVerificationEmail = async (values: z.infer<typeof EmailSchema>) => {
+export const sendVerificationEmail = async (values: SendVerificationEmailForm) => {
     try {
         const validatedFields = EmailSchema.safeParse(values);
 

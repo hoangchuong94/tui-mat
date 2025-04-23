@@ -70,7 +70,7 @@ model VerificationToken {
 
 model Gender {
   id                String        @id @default(cuid())
-  name              String        @unique
+  name              String        
   createdAt         DateTime      @default(now()) @map(name: "created_at")
   updatedAt         DateTime      @updatedAt @map(name: "updated_at")
   deletedAt         DateTime?     @map(name: "deleted_at")
@@ -81,7 +81,7 @@ model Gender {
 
 model Category {
   id                String        @id @default(cuid())
-  name              String        @unique
+  name              String        
   createdAt         DateTime      @default(now()) @map(name: "created_at")
   updatedAt         DateTime      @updatedAt @map(name: "updated_at")
   deletedAt         DateTime?     @map(name: "deleted_at")
@@ -94,7 +94,7 @@ model Category {
 
 model DetailCategory {
   id                String        @id @default(cuid())
-  name              String        @unique
+  name              String        
   createdAt         DateTime      @default(now()) @map(name: "created_at")
   updatedAt         DateTime      @updatedAt @map(name: "updated_at")
   deletedAt         DateTime?     @map(name: "deleted_at")
@@ -107,7 +107,7 @@ model DetailCategory {
 
 model Trademark {
   id                String        @id @default(cuid())
-  name              String        @unique
+  name              String        
   createdAt         DateTime      @default(now()) @map(name: "created_at")
   updatedAt         DateTime      @updatedAt @map(name: "updated_at")
   deletedAt         DateTime?     @map(name: "deleted_at")
@@ -185,7 +185,7 @@ model ProductImage {
 
 model Promotion {
   id                String          @id @default(cuid())
-  name              String          @unique
+  name              String         
   description       String
   startDay          DateTime        @default(now()) @map(name: "start_day")
   endDay            DateTime

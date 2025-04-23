@@ -38,11 +38,12 @@ export default function PopoverSelect<T>({
 }: PopoverSelectProps<T>) {
     const [open, setOpen] = React.useState(false);
 
-    const selected = value ?? defaultValue;
+    const selected = items.find((item) => {
+        const selectedKey = value ? getKey(value) : defaultValue ? getKey(defaultValue) : undefined;
+        return getKey(item) === selectedKey;
+    });
 
-    const matchedItem = selected ? items.find((item) => getKey(item) === getKey(selected)) : undefined;
-
-    const selectedName = matchedItem ? getItemName(matchedItem) : defaultLabel;
+    const selectedName = selected ? getItemName(selected) : defaultLabel;
 
     const handleSelect = React.useCallback(
         (name: string) => {

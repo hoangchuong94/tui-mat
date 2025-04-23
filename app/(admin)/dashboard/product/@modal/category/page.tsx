@@ -1,209 +1,226 @@
 'use client';
+
 import { z } from 'zod';
 import { useForm } from 'react-hook-form';
-import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
-import { Gender } from '@prisma/client';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { useSearchParams } from 'next/navigation';
+
+import { Loader2, Save } from 'lucide-react';
+import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
-import { Button } from '@/components/ui/button';
 
 import Modal from '@/components/modal';
-import { CreateCategory } from '@/schema/product';
+import { CategoryModalSchema } from '@/schema/product';
+import { createCategory, deleteCategory, updateCategory, getGenders } from '@/actions/create-product';
 import { InputField } from '@/components/custom-field';
-import { FormError } from '@/components/form-error';
 import { FormSuccess } from '@/components/form-success';
+import { FormError } from '@/components/form-error';
 
 export default function CategoryModal() {
     const router = useRouter();
     const searchParams = useSearchParams();
     const action = searchParams.get('action');
-    const idCategoryUpdate = searchParams.get('id');
+    const idCategory = searchParams.get('id');
 
     const [open, setOpen] = useState(true);
     const [loading, setLoading] = useState(false);
-    const [success, setSuccess] = useState(false);
     const [errorMessage, setErrorMessage] = useState('');
-    const [genders, setGenders] = useState<Gender[]>([]);
-
-    const form = useForm<z.infer<typeof CreateCategory>>({
-        resolver: zodResolver(CreateCategory),
+    const [successMessage, setSuccessMessage] = useState('');
+    const [genders, setGenders] = useState<any[]>([]);
+    const form = useForm<z.infer<typeof CategoryModalSchema>>({
+        resolver: zodResolver(CategoryModalSchema),
         defaultValues: {
             name: '',
             genderId: '',
         },
     });
 
-    const onSubmit = async (values: z.infer<typeof CreateCategory>) => {
+    const handleDeleteCategory = async () => {
+        if (!idCategory) return;
+
+        setLoading(true);
+        setErrorMessage('');
+        setSuccessMessage('');
+
+        try {
+            const result = await deleteCategory(idCategory);
+            if (result.success) {
+                setOpen(false);
+                router.back();
+            } else {
+                setErrorMessage(result.error);
+            }
+        } catch (error) {
+            console.error('Error:', error);
+            setErrorMessage('An error occurred, please try again.');
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    const onSubmit = async (values: z.infer<typeof CategoryModalSchema>) => {
         if (!values.name || !values.genderId) return;
 
         setLoading(true);
-        setSuccess(false);
         setErrorMessage('');
+        setSuccessMessage('');
 
-        if (action === 'create') {
-            try {
-                const res = await fetch('/api/categories', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({
-                        name: values.name,
-                        genderId: values.genderId,
-                    }),
-                });
+        try {
+            let result;
 
-                if (res.ok) {
-                    await res.json();
-                    router.refresh();
-                    form.reset();
-                    setSuccess(true);
-                } else {
-                    const error = await res.json();
-                    setErrorMessage(error.error || 'An error occurred');
-                }
-            } catch (error) {
-                console.error('Error adding category:', error);
-                setErrorMessage('An error occurred, please try again.');
-            } finally {
-                setLoading(false);
+            switch (action) {
+                case 'create':
+                    result = await createCategory(values);
+                    break;
+                case 'update':
+                    if (idCategory) result = await updateCategory(idCategory, values);
+                    break;
+                default:
+                    throw new Error('Invalid action');
             }
-        } else if (action === 'update' && idCategoryUpdate) {
-            try {
-                const res = await fetch(`/api/categories?id=${idCategoryUpdate}`, {
-                    method: 'PATCH',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({
-                        name: values.name,
-                        genderId: values.genderId,
-                    }),
-                });
 
-                if (res.ok) {
-                    await res.json();
-                    router.refresh();
-                    form.reset();
-                    setSuccess(true);
-                } else {
-                    const error = await res.json();
-                    setErrorMessage(error.error || 'Có lỗi xảy ra khi cập nhật');
-                }
-            } catch (error) {
-                console.error('Lỗi khi cập nhật category:', error);
-                setErrorMessage('Có lỗi xảy ra, vui lòng thử lại.');
-            } finally {
-                setLoading(false);
+            if (result?.success) {
+                setSuccessMessage(result.message);
+            } else {
+                setErrorMessage(result?.error || 'An unknown error occurred');
             }
+        } catch (error) {
+            console.error('Error:', error);
+            setErrorMessage('An error occurred, please try again.');
+        } finally {
+            setLoading(false);
         }
     };
 
     useEffect(() => {
         const fetchGenders = async () => {
-            try {
-                const res = await fetch('/api/genders');
-                const data = await res.json();
-                setGenders(data);
-            } catch (error) {
-                console.error('An error fetching genders:', error);
+            const result = await getGenders();
+            if (result.success) {
+                setGenders(result.data);
+            } else {
+                setErrorMessage(result.error);
             }
         };
 
         fetchGenders();
     }, []);
 
-    useEffect(() => {
-        const setDefaultCategory = async () => {
-            if ((action === 'update' || action === 'delete') && idCategoryUpdate) {
-                try {
-                    const res = await fetch(`/api/categories?id=${idCategoryUpdate}`, {
-                        method: 'GET',
-                        headers: { 'Content-Type': 'application/json' },
-                    });
-
-                    const data = await res.json();
-                    if (data) {
-                        form.setValue('name', data.name);
-                        form.setValue('genderId', data.genderId);
-                    }
-                } catch (error) {
-                    console.error('An error occurred while fetching category:', error);
-                }
-            }
-        };
-
-        setDefaultCategory();
-    }, [action, idCategoryUpdate, form]);
+    // useEffect(() => {
+    //     if (action === 'update' && idCategory) {
+    //         fetch(`/api/categories?id=${idCategory}`)
+    //             .then((res) => res.json())
+    //             .then((data) => {
+    //                 if (data?.name && data?.genderId) {
+    //                     form.reset({ name: data.name, genderId: data.genderId });
+    //                 }
+    //             });
+    //     }
+    // }, [action, idCategory, form]);
 
     return (
         <Modal
+            title={`${action} Category`}
             open={open}
             openChange={(value) => {
                 setOpen(value);
                 setErrorMessage('');
-                setSuccess(false);
                 if (!value) router.back();
-                if (success) {
-                    router.push('/dashboard/product/new');
-                }
             }}
-            title={`${action} Category`}
         >
-            <Form {...form}>
-                <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-2">
-                    <FormField
-                        control={form.control}
-                        name="genderId"
-                        render={({ field }) => (
-                            <FormItem>
-                                <FormLabel>Gender:</FormLabel>
-                                <Select value={field.value} onValueChange={field.onChange}>
-                                    <FormControl className="bg-slate-200 uppercase">
-                                        <SelectTrigger>
-                                            <SelectValue placeholder="Select a gender" />
-                                        </SelectTrigger>
-                                    </FormControl>
-                                    <SelectContent>
-                                        {genders.map((item) => (
-                                            <SelectItem className="uppercase" value={item.id} key={item.id}>
-                                                {item.name}
-                                            </SelectItem>
-                                        ))}
-                                    </SelectContent>
-                                </Select>
-                                <FormMessage />
-                            </FormItem>
-                        )}
-                    />
-                    <InputField
-                        name="name"
-                        label="Name Category :"
-                        className="bg-slate-200 focus:bg-white"
-                        placeholder="Please enter your name category"
-                    />
-                    <FormSuccess message={success ? 'Performed successfully' : ''} />
-                    <FormError message={errorMessage} />
+            {action !== 'delete' ? (
+                <Form {...form}>
+                    <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-2">
+                        <InputField
+                            name="name"
+                            label="Category Name :"
+                            className="bg-slate-200 focus:bg-white"
+                            placeholder="Please enter category name"
+                        />
 
-                    <div className="float-right space-x-2 pt-4">
+                        <FormField
+                            control={form.control}
+                            name="genderId"
+                            render={({ field }) => (
+                                <FormItem>
+                                    <FormLabel>Gender:</FormLabel>
+                                    <Select value={field.value} onValueChange={field.onChange}>
+                                        <FormControl className="bg-slate-200">
+                                            <SelectTrigger className="capitalize">
+                                                <SelectValue placeholder="Select a gender" />
+                                            </SelectTrigger>
+                                        </FormControl>
+                                        <SelectContent>
+                                            {genders.map((item) => (
+                                                <SelectItem className="capitalize" value={item.id} key={item.id}>
+                                                    {item.name}
+                                                </SelectItem>
+                                            ))}
+                                        </SelectContent>
+                                    </Select>
+                                    <FormMessage />
+                                </FormItem>
+                            )}
+                        />
+
+                        <div className="mt-2">
+                            <FormSuccess message={successMessage} />
+                            <FormError message={errorMessage} />
+                        </div>
+
+                        <div className="float-right flex space-x-2 pt-4">
+                            <Button
+                                size="lg"
+                                type="button"
+                                variant="outline"
+                                onClick={() => {
+                                    router.back();
+                                }}
+                            >
+                                Close
+                            </Button>
+                            <Button size="lg" type="submit" disabled={loading} className="flex items-center gap-2">
+                                {loading ? <Loader2 className="animate-spin" /> : <Save />}
+                                {loading ? 'Saving ...' : 'Save'}
+                            </Button>
+                        </div>
+                    </form>
+                </Form>
+            ) : (
+                <div className="mt-4 flex w-full flex-col gap-4">
+                    <p className="text-red-600">
+                        Warning: You are about to delete this category and all associated products. This action cannot
+                        be undone!
+                    </p>
+                    <p className="text-sm text-gray-700">
+                        Note: Products related to this category will be impacted and cannot be recovered after deletion.
+                    </p>
+                    <div className="mt-4 flex w-full flex-row gap-4">
+                        {!loading && (
+                            <Button
+                                variant="outline"
+                                type="button"
+                                onClick={() => {
+                                    router.back();
+                                }}
+                                className="flex min-h-10 flex-1"
+                            >
+                                Cancel
+                            </Button>
+                        )}
                         <Button
-                            type="button"
-                            variant="outline"
-                            onClick={() => {
-                                setOpen(false);
-                                router.back();
-                                if (success) {
-                                    router.push('/dashboard/product/new');
-                                }
-                            }}
+                            variant="destructive"
+                            type="submit"
+                            className="flex min-h-10 flex-1"
+                            onClick={handleDeleteCategory}
                         >
-                            Close
-                        </Button>
-                        <Button type="submit" disabled={loading}>
-                            {loading ? 'Saving...' : 'Save'}
+                            {loading && <Loader2 className="h-8 w-8 animate-spin" />}
+                            {loading ? 'Delete ...' : 'Ok'}
                         </Button>
                     </div>
-                </form>
-            </Form>
+                </div>
+            )}
         </Modal>
     );
 }

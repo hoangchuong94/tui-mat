@@ -9,13 +9,13 @@ import { signIn } from '@/auth';
 import { sendVerificationEmail } from '@/lib/mail';
 import { hashPassword } from '@/actions/hash-password';
 import { generateVerificationToken } from '@/lib/tokens';
-import { LoginSchema, RegisterSchema } from '@/schema/auth';
+import { SignInSchema, SignUpSchema, type SignInForm, type SignUpForm } from '@/schema/auth';
 import { DEFAULT_ADMIN_SIGN_IN_REDIRECT } from '@/routes';
 
-export async function authenticate(values: z.infer<typeof LoginSchema>) {
+export async function authenticate(values: SignInForm) {
     let redirectTo = '';
 
-    const validatedFields = LoginSchema.safeParse(values);
+    const validatedFields = SignInSchema.safeParse(values);
 
     if (!validatedFields.success) {
         return { error: 'Invalid fields!' };
@@ -64,9 +64,9 @@ export async function authenticate(values: z.infer<typeof LoginSchema>) {
     redirect(redirectTo);
 }
 
-export async function register(values: z.infer<typeof RegisterSchema>) {
+export async function signUp(values: SignUpForm) {
     try {
-        const validatedFields = RegisterSchema.safeParse(values);
+        const validatedFields = SignUpSchema.safeParse(values);
         if (!validatedFields.success) {
             return { error: 'Invalid fields!' };
         }

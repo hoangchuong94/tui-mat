@@ -10,8 +10,8 @@ import { Form } from '@/components/ui/form';
 import { Button } from '@/components/ui/button';
 
 import Modal from '@/components/modal';
-import { GenderModalSchema } from '@/schema/product';
-import { createGender, deleteGender, updateGender } from '@/actions/gender';
+import { GenderModalForm, GenderModalSchema } from '@/schema/product';
+import { createGender, deleteGender, getGenderById, getGenders, updateGender } from '@/actions/create-product';
 import { InputField } from '@/components/custom-field';
 import { FormSuccess } from '@/components/form-success';
 import { FormError } from '@/components/form-error';
@@ -27,7 +27,7 @@ export default function GenderModal() {
     const [errorMessage, setErrorMessage] = useState('');
     const [successMessage, setSuccessMessage] = useState('');
 
-    const form = useForm<z.infer<typeof GenderModalSchema>>({
+    const form = useForm<GenderModalForm>({
         resolver: zodResolver(GenderModalSchema),
         defaultValues: {
             name: '',
@@ -57,7 +57,7 @@ export default function GenderModal() {
         }
     };
 
-    const onSubmit = async (values: z.infer<typeof GenderModalSchema>) => {
+    const onSubmit = async (values: GenderModalForm) => {
         if (!values.name) return;
 
         setLoading(true);
@@ -93,11 +93,12 @@ export default function GenderModal() {
 
     useEffect(() => {
         if (action === 'update' && idGender) {
-            fetch(`/api/genders?id=${idGender}`)
-                .then((res) => res.json())
-                .then((data) => {
-                    if (data?.name) form.reset({ name: data.name });
-                });
+            const fetchGenderById = async () => {
+                const result = await getGenderById(idGender);
+                console.log(result.data);
+            };
+
+            fetchGenderById();
         }
     }, [action, idGender, form]);
 

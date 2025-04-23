@@ -9,7 +9,12 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { Input } from '@/components/ui/input';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 
-import { ForgotPasswordSchema, EmailSchema } from '@/schema/auth';
+import {
+    type SendVerificationEmailForm,
+    type ForgotPasswordForm,
+    EmailSchema,
+    ForgotPasswordSchema,
+} from '@/schema/auth';
 import { Button } from '@/components/ui/button';
 import { FormError } from '@/components/form-error';
 import { FormSuccess } from '@/components/form-success';
@@ -35,7 +40,7 @@ export default function ForgotPasswordPage() {
         },
     });
 
-    const formForgotPassword = useForm<z.infer<typeof ForgotPasswordSchema>>({
+    const formForgotPassword = useForm<ForgotPasswordForm>({
         resolver: zodResolver(ForgotPasswordSchema),
         defaultValues: {
             password: '',
@@ -43,7 +48,7 @@ export default function ForgotPasswordPage() {
         },
     });
 
-    const onSubmitVerification = (values: z.infer<typeof EmailSchema>) => {
+    const onSubmitVerification = (values: SendVerificationEmailForm) => {
         setError('');
         setSuccess('');
 
@@ -55,7 +60,7 @@ export default function ForgotPasswordPage() {
         });
     };
 
-    const onSubmitForgotPassword = (values: z.infer<typeof ForgotPasswordSchema>) => {
+    const onSubmitForgotPassword = (values: ForgotPasswordForm) => {
         setError('');
         setSuccess('');
 

@@ -4,11 +4,11 @@ import { Form } from '@/components/ui/form';
 import { useState, useTransition } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { RegisterSchema } from '@/schema/auth';
+import { SignUpSchema, type SignUpForm } from '@/schema/auth';
 import { Button } from '@/components/ui/button';
 import { FormError } from '@/components/form-error';
 import { FormSuccess } from '@/components/form-success';
-import { register } from '@/actions/auth';
+import { signUp } from '@/actions/auth';
 import { ArrowRight } from 'lucide-react';
 import LoadingSpinner from '@/components/loading-spinner';
 import AuthCardWrapper from '@/components/auth-wrapper';
@@ -19,8 +19,8 @@ export default function SignUpForm() {
     const [success, setSuccess] = useState<string | undefined>('');
     const [isPending, startTransition] = useTransition();
 
-    const form = useForm<z.infer<typeof RegisterSchema>>({
-        resolver: zodResolver(RegisterSchema),
+    const form = useForm<SignUpForm>({
+        resolver: zodResolver(SignUpSchema),
         defaultValues: {
             email: '',
             password: '',
@@ -29,11 +29,11 @@ export default function SignUpForm() {
         },
     });
 
-    const onSubmit = (values: z.infer<typeof RegisterSchema>) => {
+    const onSubmit = (values: SignUpForm) => {
         setError('');
         setSuccess('');
         startTransition(() => {
-            register(values)
+            signUp(values)
                 .then((data) => {
                     if (data?.error) {
                         form.reset();

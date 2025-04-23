@@ -6,7 +6,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { Check, SquarePen } from 'lucide-react';
 
 import { DataCreateProduct } from '@/types/index';
-import { CreateProductSchema } from '@/schema/product';
+import { CreateProductSchema, type CreateProductForm } from '@/schema/product';
 import { Button } from '@/components/ui/button';
 import { Form } from '@/components/ui/form';
 import { ImageField, ImagesField, InputField, PopoverSelectField } from '@/components/custom-field';
@@ -21,7 +21,7 @@ export default function CreateProductForm({ dataCreateProduct }: CreateProductFo
     const [thumbnailUrl, setThumbnailUrl] = useState<string>('');
     const [imageUrls, setImageUrls] = useState<string[]>([]);
 
-    const form = useForm<z.infer<typeof CreateProductSchema>>({
+    const form = useForm<CreateProductForm>({
         resolver: zodResolver(CreateProductSchema),
         defaultValues: {
             name: '',
@@ -33,18 +33,14 @@ export default function CreateProductForm({ dataCreateProduct }: CreateProductFo
             discount: 0,
             imageFiles: [],
             origin: '',
-            gender: { id: '', name: '', createdAt: new Date(), updatedAt: new Date(), deletedAt: new Date() },
-            category: { id: '', name: '', genderId: '', createdAt: new Date(), updatedAt: new Date() },
-            detailCategory: { id: '', name: '', categoryId: '', createdAt: new Date(), updatedAt: new Date() },
-            trademark: { id: '', name: '', createdAt: new Date(), updatedAt: new Date() },
+            gender: { id: '', name: '' },
+            category: { id: '', name: '', genderId: '' },
+            detailCategory: { id: '', name: '', categoryId: '' },
+            trademark: { id: '', name: '' },
             promotions: {
                 id: '',
                 name: '',
                 description: '',
-                startDay: new Date(),
-                endDay: new Date(),
-                createdAt: new Date(),
-                updatedAt: new Date(),
             },
         },
     });
@@ -62,7 +58,7 @@ export default function CreateProductForm({ dataCreateProduct }: CreateProductFo
         resetField,
     );
 
-    const onSubmit = (values: z.infer<typeof CreateProductSchema>) => {
+    const onSubmit = (values: CreateProductForm) => {
         console.log(`thumbnailUrl : ${thumbnailUrl}`);
         console.log(`imageUrls : ${imageUrls}`);
         console.log(values);
@@ -112,6 +108,7 @@ export default function CreateProductForm({ dataCreateProduct }: CreateProductFo
                                 items={dataCreateProduct.genders}
                                 getItemKey={(item) => item.id}
                                 renderItem={(item) => item.name}
+                                defaultLabel="Select an gender"
                             />
                         </div>
 
@@ -206,6 +203,7 @@ export default function CreateProductForm({ dataCreateProduct }: CreateProductFo
                             renderItem={(item) => item.name}
                             description="Please select a gender."
                             disabled={selectedGender.id ? false : true}
+                            defaultLabel="Select an category"
                         />
 
                         <PopoverSelectField
@@ -217,6 +215,7 @@ export default function CreateProductForm({ dataCreateProduct }: CreateProductFo
                             renderItem={(item) => item.name}
                             description="Please select a category."
                             disabled={selectedCategory.id ? false : true}
+                            defaultLabel="Select an detail category"
                         />
                     </div>
                 </form>
