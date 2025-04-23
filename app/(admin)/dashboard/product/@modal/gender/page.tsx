@@ -1,5 +1,4 @@
 'use client';
-import { z } from 'zod';
 import { useForm } from 'react-hook-form';
 import { useEffect, useState } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
@@ -11,7 +10,7 @@ import { Button } from '@/components/ui/button';
 
 import Modal from '@/components/modal';
 import { GenderModalForm, GenderModalSchema } from '@/schema/product';
-import { createGender, deleteGender, getGenderById, getGenders, updateGender } from '@/actions/create-product';
+import { createGender, deleteGender, getGenderById, updateGender } from '@/actions/create-product';
 import { InputField } from '@/components/custom-field';
 import { FormSuccess } from '@/components/form-success';
 import { FormError } from '@/components/form-error';

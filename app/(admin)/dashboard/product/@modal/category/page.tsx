@@ -1,6 +1,5 @@
 'use client';
 
-import { z } from 'zod';
 import { useForm } from 'react-hook-form';
 import { useEffect, useState } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
@@ -12,11 +11,12 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 
 import Modal from '@/components/modal';
-import { CategoryModalSchema } from '@/schema/product';
+import { CategoryModalSchema, type CategoryModalForm } from '@/schema/product';
 import { createCategory, deleteCategory, updateCategory, getGenders } from '@/actions/create-product';
 import { InputField } from '@/components/custom-field';
 import { FormSuccess } from '@/components/form-success';
 import { FormError } from '@/components/form-error';
+import { Gender } from '@prisma/client';
 
 export default function CategoryModal() {
     const router = useRouter();
@@ -28,8 +28,8 @@ export default function CategoryModal() {
     const [loading, setLoading] = useState(false);
     const [errorMessage, setErrorMessage] = useState('');
     const [successMessage, setSuccessMessage] = useState('');
-    const [genders, setGenders] = useState<any[]>([]);
-    const form = useForm<z.infer<typeof CategoryModalSchema>>({
+    const [genders, setGenders] = useState<Gender[]>([]);
+    const form = useForm<CategoryModalForm>({
         resolver: zodResolver(CategoryModalSchema),
         defaultValues: {
             name: '',
@@ -60,7 +60,7 @@ export default function CategoryModal() {
         }
     };
 
-    const onSubmit = async (values: z.infer<typeof CategoryModalSchema>) => {
+    const onSubmit = async (values: CategoryModalForm) => {
         if (!values.name || !values.genderId) return;
 
         setLoading(true);
@@ -106,18 +106,6 @@ export default function CategoryModal() {
 
         fetchGenders();
     }, []);
-
-    // useEffect(() => {
-    //     if (action === 'update' && idCategory) {
-    //         fetch(`/api/categories?id=${idCategory}`)
-    //             .then((res) => res.json())
-    //             .then((data) => {
-    //                 if (data?.name && data?.genderId) {
-    //                     form.reset({ name: data.name, genderId: data.genderId });
-    //                 }
-    //             });
-    //     }
-    // }, [action, idCategory, form]);
 
     return (
         <Modal

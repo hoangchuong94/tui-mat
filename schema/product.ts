@@ -160,4 +160,5 @@ export const CategoryModalSchema = z.object({
 });
 
 export type GenderModalForm = z.infer<typeof GenderModalSchema>;
+export type CategoryModalForm = z.infer<typeof CategoryModalSchema>;
 export type CreateProductForm = z.infer<typeof CreateProductSchema>;
