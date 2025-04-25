@@ -92,13 +92,13 @@ export default function GenderModal() {
 
     useEffect(() => {
         if (action === 'update' && idGender) {
-            const fetchGenderById = async () => {
+            const fetchGenderUpdateById = async () => {
                 const { data, success, error } = await getGenderById(idGender);
                 if (success && data) form.reset(data);
                 else setErrorMessage(error);
             };
 
-            fetchGenderById();
+            fetchGenderUpdateById();
         }
     }, [action, idGender, form]);
 
@@ -120,6 +120,7 @@ export default function GenderModal() {
                             label="Name Gender :"
                             className="bg-slate-200 focus:bg-white"
                             placeholder="Please enter your name category"
+                            disabled={action === 'update' && !form.getValues('name') ? true : false}
                         />
                         <div className="mt-2">
                             <FormSuccess message={successMessage} />
@@ -137,7 +138,12 @@ export default function GenderModal() {
                             >
                                 Close
                             </Button>
-                            <Button size="lg" type="submit" disabled={loading} className="flex items-center gap-2">
+                            <Button
+                                size="lg"
+                                type="submit"
+                                disabled={loading}
+                                className="flex items-center gap-2 bg-blue-500 hover:bg-blue-600"
+                            >
                                 {loading ? <Loader2 className="animate-spin" /> : <Save />}
                                 {loading ? 'Saving ...' : 'Save'}
                             </Button>

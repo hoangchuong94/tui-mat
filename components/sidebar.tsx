@@ -37,7 +37,7 @@ import {
 } from '@/components/ui/dropdown-menu';
 import { Button } from '@/components/ui/button';
 import { Avatar, AvatarImage } from '@/components/ui/avatar';
-import logo from '@/public/static/logo-retina.png';
+import logo from '@/public/static/logo-1.png';
 
 interface Profile {
     username: string;
@@ -65,23 +65,15 @@ const transactionItems = [
 
 export default function DashboardSidebar({ profile }: DashboardSidebarProps) {
     const pathname = usePathname();
-    const { open } = useSidebar();
+    const { open, setOpen } = useSidebar();
     const isActive = (path: string) => pathname.includes(`/dashboard/${path}`);
 
     return (
         <Sidebar variant="floating" collapsible="icon" className="bg-slate-300">
             <SidebarHeader>
                 <SidebarMenu>
-                    <SidebarMenuItem className="flex items-center justify-center">
-                        <Link href={'/dashboard/overview'}>
-                            <Image
-                                src={logo}
-                                alt="logo"
-                                quality={100}
-                                priority
-                                className="h-10 w-auto cursor-pointer"
-                            />
-                        </Link>
+                    <SidebarMenuItem className="flex items-center justify-center" onClick={() => setOpen(!open)}>
+                        <Image src={logo} alt="logo" quality={100} priority className="cursor-pointer" />
                     </SidebarMenuItem>
                 </SidebarMenu>
             </SidebarHeader>

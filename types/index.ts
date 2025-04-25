@@ -5,7 +5,7 @@ export type DataCreateProduct = {
     detailCategories: DetailCategory[];
     genders: Gender[];
     promotions: Promotion[];
-    trademark: Trademark[];
+    trademarks: Trademark[];
 };
 
 export type UploadedImage = {

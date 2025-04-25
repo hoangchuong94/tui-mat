@@ -90,6 +90,7 @@ model Category {
   detailCategories  DetailCategory[]
 
   @@map("categories")
+  @@unique([name, genderId])
 }
 
 model DetailCategory {

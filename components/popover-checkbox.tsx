@@ -11,7 +11,7 @@ interface PopoverCheckboxProps<T> {
     items: T[];
     value: T[];
     onChange: (value: T[]) => void;
-    renderItem: (item: T) => string;
+    getItemName: (item: T) => string;
     getItemKey: (item: T) => string | number;
     placeholder?: string;
     disabled?: boolean;
@@ -21,7 +21,7 @@ const PopoverCheckbox = <T,>({
     items = [],
     value,
     onChange,
-    renderItem,
+    getItemName,
     getItemKey,
     placeholder = 'Select Item',
     disabled = false,
@@ -75,7 +75,7 @@ const PopoverCheckbox = <T,>({
                                                     htmlFor={String(getItemKey(item))}
                                                     className="text-sm font-medium"
                                                 >
-                                                    {renderItem(item)}
+                                                    {getItemName(item)}
                                                 </label>
                                             </div>
                                         </CommandItem>
@@ -89,7 +89,7 @@ const PopoverCheckbox = <T,>({
                     <Separator />
                 </PopoverContent>
             </Popover>
-            <TagList tagList={value} renderItem={renderItem} />
+            <TagList tagList={value} getItemName={getItemName} />
         </div>
     );
 };

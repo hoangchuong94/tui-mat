@@ -1,26 +1,28 @@
 'use client';
 
 import * as React from 'react';
+import Link from 'next/link';
+
 import { Check, ChevronsUpDown, Plus, Trash, Pencil } from 'lucide-react';
 
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
 import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from '@/components/ui/command';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
-import Link from 'next/link';
 
 interface PopoverSelectProps<T> {
     items: T[];
-    defaultValue?: T;
-    value?: T;
+    defaultValue?: T | string;
+    value?: T | string;
     getItemName: (item: T) => string;
-    getKey: (item: T) => string | number;
-    onChange: (value: T | undefined) => void;
+    getKey: (item: T) => string;
+    onChange: (value: T | string | undefined) => void;
     disabled?: boolean;
     addHref?: string;
     updateHref?: string;
     deleteHref?: string;
     defaultLabel?: string;
+    className?: string;
 }
 
 export default function PopoverSelect<T>({
@@ -35,23 +37,31 @@ export default function PopoverSelect<T>({
     deleteHref,
     disabled = false,
     defaultLabel = 'Select an item',
+    className,
 }: PopoverSelectProps<T>) {
     const [open, setOpen] = React.useState(false);
 
-    const selected = items.find((item) => {
-        const selectedKey = value ? getKey(value) : defaultValue ? getKey(defaultValue) : undefined;
-        return getKey(item) === selectedKey;
-    });
+    const selected = React.useMemo(() => {
+        const selectedItem = value ?? defaultValue;
+        if (!selectedItem) return undefined;
+        const selectedKey = typeof selectedItem === 'string' ? selectedItem : getKey(selectedItem);
+        return items.find((item) => getKey(item) === selectedKey);
+    }, [value, defaultValue, items, getKey]);
 
     const selectedName = selected ? getItemName(selected) : defaultLabel;
 
     const handleSelect = React.useCallback(
-        (name: string) => {
-            const selectedItem = items.find((item) => getItemName(item) === name);
-            if (selectedItem) onChange(selectedItem);
+        (key: string) => {
+            if (typeof value === 'string') {
+                const selectedItem = items.map((item) => getKey(item).toString()).find((item) => item === key);
+                if (selectedItem) onChange(selectedItem);
+            } else {
+                const selectedItem = items.find((item) => getKey(item).toString() === key);
+                if (selectedItem) onChange(selectedItem);
+            }
             setOpen(false);
         },
-        [items, getItemName, onChange],
+        [items, getKey, onChange],
     );
 
     return (
@@ -62,14 +72,14 @@ export default function PopoverSelect<T>({
                         variant="outline"
                         role="combobox"
                         aria-expanded={open}
-                        className="w-full justify-between bg-slate-200"
+                        className="w-full justify-between bg-slate-200 capitalize"
                         disabled={disabled}
                     >
-                        {selectedName || defaultLabel}
+                        {selectedName}
                         <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
                     </Button>
                 </PopoverTrigger>
-                <PopoverContent className={`p-0 xl:w-96 ${addHref && 'xl:ml-11'}`}>
+                <PopoverContent className={cn('w-96 p-0', { 'ml-11': addHref }, className)}>
                     <Command>
                         <CommandInput placeholder="Search..." disabled={disabled} />
                         <CommandList>
@@ -77,15 +87,15 @@ export default function PopoverSelect<T>({
                             <CommandGroup>
                                 {items.map((item) => {
                                     const itemName = getItemName(item);
-                                    const id = getKey(item);
-                                    const isSelected = selected && getKey(selected) === getKey(item);
+                                    const id = getKey(item).toString();
+                                    const isSelected = selected && getKey(selected) === id;
 
                                     return (
-                                        <div className="flex flex-row gap-1" key={getKey(item)}>
+                                        <div className="flex flex-row gap-1 pb-1" key={id}>
                                             <CommandItem
                                                 className="flex flex-1 cursor-pointer capitalize"
-                                                value={itemName}
-                                                onSelect={() => handleSelect(itemName)}
+                                                value={id}
+                                                onSelect={() => handleSelect(id)}
                                                 disabled={disabled}
                                             >
                                                 <div className="flex flex-1">

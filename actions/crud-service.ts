@@ -14,14 +14,16 @@ export interface CrudOptions<T> {
     schema: z.ZodSchema<T>;
     model: ModelName;
     pathToRevalidate: string;
-    uniqueField: keyof T;
+    uniqueFields: (keyof T)[];
     softDeleteField?: keyof (T & { deletedAt?: Date | null });
     hardDelete?: boolean;
+    include?: Record<string, any>;
 }
 
-function getModel(model: ModelName) {
-    if (!prisma[model]) throw new Error(`Model "${model}" not found in Prisma`);
-    return prisma[model] as any;
+function getModel<T = any>(model: ModelName): T {
+    const client = prisma[model];
+    if (!client) throw new Error(`Model "${model}" not found in Prisma`);
+    return client as T;
 }
 
 function getWhereClause<T>(field: keyof T, value: any) {
@@ -29,6 +31,10 @@ function getWhereClause<T>(field: keyof T, value: any) {
         return { [field]: { equals: value, mode: 'insensitive' } };
     }
     return { [field]: value };
+}
+
+function buildUniqueWhere<T>(fields: (keyof T)[], data: T) {
+    return fields.map((field) => getWhereClause(field, data[field]));
 }
 
 async function executeWithCatch<T>(fn: () => Promise<T>) {
@@ -47,19 +53,24 @@ async function executeWithCatch<T>(fn: () => Promise<T>) {
 
 export async function createItem<T>(values: T, options: CrudOptions<T>) {
     return executeWithCatch(async () => {
-        const { schema, model, pathToRevalidate, uniqueField, softDeleteField } = options;
+        const { schema, model, pathToRevalidate, uniqueFields, softDeleteField } = options;
 
         const validated = schema.safeParse(values);
         if (!validated.success) {
-            console.warn('Validation failed:', validated.error.format());
             return { success: false, message: '', data: null, error: validated.error.format() };
         }
 
         const data = validated.data;
         const client = getModel(model);
 
-        const baseWhere = getWhereClause(uniqueField, data[uniqueField]);
-        const where = softDeleteField ? { AND: [baseWhere, { [softDeleteField as string]: null }] } : baseWhere;
+        const whereConditions = buildUniqueWhere(uniqueFields, data);
+
+        console.log(whereConditions);
+        const where = softDeleteField
+            ? { AND: [...whereConditions, { [softDeleteField as string]: null }] }
+            : { AND: whereConditions };
+
+        console.log(where);
 
         const exists = await client.findFirst({ where });
         if (exists) {
@@ -67,9 +78,11 @@ export async function createItem<T>(values: T, options: CrudOptions<T>) {
                 success: false,
                 message: '',
                 data: null,
-                error: `${model} already exists with the same ${String(uniqueField)}.`,
+                error: `${model} already exists with the same unique fields.`,
             };
         }
+
+        console.log(data);
 
         await client.create({ data });
         revalidatePath(pathToRevalidate);
@@ -85,11 +98,10 @@ export async function createItem<T>(values: T, options: CrudOptions<T>) {
 
 export async function updateItem<T>(id: string, values: T, options: CrudOptions<T>) {
     return executeWithCatch(async () => {
-        const { schema, model, pathToRevalidate, uniqueField, softDeleteField } = options;
+        const { schema, model, pathToRevalidate, uniqueFields, softDeleteField } = options;
 
         const validated = schema.safeParse(values);
         if (!validated.success) {
-            console.warn('Validation failed:', validated.error.format());
             return { success: false, message: '', data: null, error: validated.error.format() };
         }
 
@@ -101,9 +113,13 @@ export async function updateItem<T>(id: string, values: T, options: CrudOptions<
             return { success: false, message: '', data: null, error: `${model} not found.` };
         }
 
-        const baseWhere = getWhereClause(uniqueField, data[uniqueField]);
+        const whereConditions = buildUniqueWhere(uniqueFields, data);
         const where = {
-            AND: [baseWhere, { NOT: { id } }, ...(softDeleteField ? [{ [softDeleteField as string]: null }] : [])],
+            AND: [
+                ...whereConditions,
+                { NOT: { id } },
+                ...(softDeleteField ? [{ [softDeleteField as string]: null }] : []),
+            ],
         };
 
         const duplicate = await client.findFirst({ where });
@@ -112,7 +128,7 @@ export async function updateItem<T>(id: string, values: T, options: CrudOptions<
                 success: false,
                 message: '',
                 data: null,
-                error: `${model} with the same ${String(uniqueField)} already exists.`,
+                error: `${model} with the same unique fields already exists.`,
             };
         }
 
@@ -133,13 +149,11 @@ export async function deleteItems(ids: string | string[], options: CrudOptions<a
         const { model, pathToRevalidate, softDeleteField = 'deletedAt', hardDelete = false } = options;
 
         const idsArray = Array.isArray(ids) ? ids : [ids];
-
         if (idsArray.length === 0) {
             return { success: false, message: '', data: null, error: 'Invalid ID list' };
         }
 
         const client = getModel(model);
-
         const existingItems = await client.findMany({ where: { id: { in: idsArray } } });
 
         if (existingItems.length !== idsArray.length) {
@@ -155,10 +169,7 @@ export async function deleteItems(ids: string | string[], options: CrudOptions<a
             if (hardDelete && client.delete) {
                 await client.delete({ where: { id } });
             } else {
-                await client.update({
-                    where: { id },
-                    data: { [softDeleteField]: new Date() },
-                });
+                await client.update({ where: { id }, data: { [softDeleteField]: new Date() } });
             }
         }
 
@@ -173,9 +184,12 @@ export async function deleteItems(ids: string | string[], options: CrudOptions<a
     });
 }
 
-export async function getItems<T>(options: CrudOptions<T>, params?: { id?: string; filters?: Record<string, any> }) {
+export async function getItems<T>(
+    options: CrudOptions<T> & { include?: Record<string, any> },
+    params?: { id?: string; filters?: Record<string, any> },
+) {
     return executeWithCatch(async () => {
-        const { model, softDeleteField } = options;
+        const { model, softDeleteField, include } = options;
         const client = getModel(model);
 
         const where: Record<string, any> = {
@@ -185,7 +199,7 @@ export async function getItems<T>(options: CrudOptions<T>, params?: { id?: strin
 
         if (params?.id) {
             where.id = params.id;
-            const item = await client.findFirst({ where });
+            const item = await client.findFirst({ where, include });
 
             if (!item) {
                 return {
@@ -203,7 +217,7 @@ export async function getItems<T>(options: CrudOptions<T>, params?: { id?: strin
                 error: '',
             };
         } else {
-            const list = await client.findMany({ where });
+            const list = await client.findMany({ where, include });
             return {
                 success: true,
                 message: `${model} list fetched successfully.`,

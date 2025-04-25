@@ -68,7 +68,7 @@ export const productTableColumn: ColumnDef<ProductDetail>[] = [
             const product = row.original;
             const colors = product.colors.map((item) => item);
 
-            return <TagList tagList={colors} renderItem={(item) => item.name} />;
+            return <TagList tagList={colors} getItemName={(item) => item.name} />;
         },
     },
 

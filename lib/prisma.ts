@@ -1,6 +1,8 @@
 import { PrismaClient } from '@prisma/client/edge';
 import { withAccelerate } from '@prisma/extension-accelerate';
 
+export const runtime = 'nodejs';
+
 const globalForPrisma = globalThis as unknown as { prisma: PrismaClient };
 
 const prisma = globalForPrisma.prisma || new PrismaClient().$extends(withAccelerate());

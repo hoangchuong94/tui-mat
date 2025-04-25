@@ -26,12 +26,13 @@ interface InputFieldProps<TFieldValues extends FieldValues> extends UseControlle
 }
 
 interface PopoverSelectFieldProps<TFieldValues extends FieldValues, TItem> extends UseControllerProps<TFieldValues> {
+    className?: string;
     defaultLabel?: string;
     defaultValue?: PathValue<TFieldValues, Path<TFieldValues>>;
     label: string;
     items: TItem[];
-    getItemKey: (item: TItem) => string | number;
-    renderItem: (item: TItem) => string;
+    getItemKey: (item: TItem) => string;
+    getItemName: (item: TItem) => string;
     disabled?: boolean;
     description?: string;
     addHref?: string;
@@ -43,7 +44,7 @@ interface PopoverCheckboxFieldProps<TFieldValues extends FieldValues, TItem> ext
     label: string;
     items: TItem[];
     getItemKey: (item: TItem) => string | number;
-    renderItem: (item: TItem) => string;
+    getItemName: (item: TItem) => string;
     disabled?: boolean;
 }
 
@@ -51,7 +52,7 @@ interface ToggleGroupFieldProps<TFieldValues extends FieldValues, TItem> extends
     label: string;
     items: TItem[];
     getItemKey: (item: TItem) => string | number;
-    renderItem: (item: TItem) => string;
+    getItemName: (item: TItem) => string;
     description: string;
     className?: string;
 }
@@ -60,7 +61,7 @@ interface RadioGroupFieldProps<TFieldValues extends FieldValues, TItem> extends 
     label: string;
     items: TItem[];
     getItemKey: (item: TItem) => string | number;
-    renderItem: (item: TItem) => string;
+    getItemName: (item: TItem) => string;
     description: string;
     className?: string;
 }
@@ -159,14 +160,14 @@ export const PopoverSelectField = <TFieldValues extends FieldValues, TItem>({
     deleteHref,
     items = [],
     getItemKey,
-    renderItem,
+    getItemName,
     disabled,
     defaultValue,
     description,
+    className,
     ...fieldProps
 }: PopoverSelectFieldProps<TFieldValues, TItem>) => {
-    const memoizedItems = useMemo(() => items, [items]);
-    const memoizedRenderItem = useCallback((item: TItem) => renderItem(item), [renderItem]);
+    const memoizedGetItemName = useCallback((item: TItem) => getItemName(item), [getItemName]);
     return (
         <GenericField
             label={label}
@@ -174,14 +175,15 @@ export const PopoverSelectField = <TFieldValues extends FieldValues, TItem>({
             {...fieldProps}
             renderInput={(field) => (
                 <PopoverSelect
+                    className={className}
                     defaultLabel={defaultLabel}
                     addHref={addHref}
                     updateHref={updateHref}
                     deleteHref={deleteHref}
                     defaultValue={defaultValue}
-                    items={memoizedItems}
+                    items={items}
                     value={field.value}
-                    getItemName={memoizedRenderItem}
+                    getItemName={memoizedGetItemName}
                     getKey={getItemKey}
                     onChange={field.onChange}
                     disabled={disabled}
@@ -195,12 +197,11 @@ export const PopoverCheckboxField = <TFieldValues extends FieldValues, TItem>({
     label,
     items,
     getItemKey,
-    renderItem,
+    getItemName,
     disabled,
     ...fieldProps
 }: PopoverCheckboxFieldProps<TFieldValues, TItem>) => {
-    const memoizedItems = useMemo(() => items, [items]);
-    const memoizedRenderItem = useCallback((item: TItem) => renderItem(item), [renderItem]);
+    const memoizedGetItemName = useCallback((item: TItem) => getItemName(item), [getItemName]);
 
     return (
         <GenericField
@@ -208,10 +209,10 @@ export const PopoverCheckboxField = <TFieldValues extends FieldValues, TItem>({
             {...fieldProps}
             renderInput={(field) => (
                 <PopoverCheckbox
-                    items={memoizedItems}
+                    items={items}
                     value={field.value}
                     onChange={field.onChange}
-                    renderItem={memoizedRenderItem}
+                    getItemName={memoizedGetItemName}
                     getItemKey={getItemKey}
                     disabled={disabled}
                 />
@@ -268,7 +269,7 @@ export const RadioGroupField = <TFieldValues extends FieldValues, TItem>({
     label,
     items = [],
     getItemKey,
-    renderItem,
+    getItemName,
     description,
     className,
     ...fieldProps
@@ -284,9 +285,9 @@ export const RadioGroupField = <TFieldValues extends FieldValues, TItem>({
                         return (
                             <FormItem className="flex items-center space-x-3 space-y-0" key={getItemKey(item)}>
                                 <FormControl>
-                                    <RadioGroupItem value={renderItem(item)} className={className} />
+                                    <RadioGroupItem value={getItemName(item)} className={className} />
                                 </FormControl>
-                                <FormLabel className="font-normal">{renderItem(item)}</FormLabel>
+                                <FormLabel className="font-normal">{getItemName(item)}</FormLabel>
                             </FormItem>
                         );
                     })}
@@ -300,7 +301,7 @@ export const ToggleGroupField = <TFieldValues extends FieldValues, TItem>({
     label,
     items = [],
     getItemKey,
-    renderItem,
+    getItemName,
     description,
     className,
     ...fieldProps
@@ -319,8 +320,8 @@ export const ToggleGroupField = <TFieldValues extends FieldValues, TItem>({
                 >
                     {items.map((item) => {
                         return (
-                            <ToggleGroupItem key={getItemKey(item)} value={renderItem(item)} className={className}>
-                                {renderItem(item)}
+                            <ToggleGroupItem key={getItemKey(item)} value={getItemName(item)} className={className}>
+                                {getItemName(item)}
                             </ToggleGroupItem>
                         );
                     })}

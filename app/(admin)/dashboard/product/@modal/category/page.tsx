@@ -9,12 +9,11 @@ import { Gender } from '@prisma/client';
 
 import { Loader2, Save } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
+import { Form } from '@/components/ui/form';
 
 import Modal from '@/components/modal';
 import { CategoryModalSchema, CategoryModalSchemaType } from '@/schema/product';
-import { InputField } from '@/components/custom-field';
+import { InputField, PopoverSelectField } from '@/components/custom-field';
 import { FormSuccess } from '@/components/form-success';
 import { FormError } from '@/components/form-error';
 
@@ -37,6 +36,7 @@ export default function CategoryModal() {
     const [errorMessage, setErrorMessage] = useState('');
     const [successMessage, setSuccessMessage] = useState('');
     const [genders, setGenders] = useState<Gender[]>([]);
+
     const form = useForm<CategoryModalSchemaType>({
         resolver: zodResolver(CategoryModalSchema),
         defaultValues: {
@@ -114,13 +114,13 @@ export default function CategoryModal() {
 
     useEffect(() => {
         if (action === 'update' && idCategory) {
-            const fetchCategoryById = async () => {
-                const { success, data, error } = await getCategoryById(idCategory);
+            const fetchCategoryUpdateById = async () => {
+                const { error, data, success } = await getCategoryById(idCategory);
                 if (success && data) form.reset(data);
                 else setErrorMessage(error);
             };
 
-            fetchCategoryById();
+            fetchCategoryUpdateById();
         }
     }, [action, idCategory, form]);
 
@@ -142,31 +142,17 @@ export default function CategoryModal() {
                             label="Category Name :"
                             className="bg-slate-200 focus:bg-white"
                             placeholder="Please enter category name"
+                            disabled={action === 'update' && !form.getValues('name') ? true : false}
                         />
 
-                        <FormField
-                            control={form.control}
+                        <PopoverSelectField
+                            className="w-[462px] p-0"
                             name="genderId"
-                            render={({ field }) => (
-                                <FormItem>
-                                    <FormLabel>Gender:</FormLabel>
-                                    <Select value={field.value} onValueChange={field.onChange}>
-                                        <FormControl className="bg-slate-200">
-                                            <SelectTrigger className="capitalize">
-                                                <SelectValue placeholder="Select a gender" />
-                                            </SelectTrigger>
-                                        </FormControl>
-                                        <SelectContent>
-                                            {genders.map((item) => (
-                                                <SelectItem className="capitalize" value={item.id} key={item.id}>
-                                                    {item.name}
-                                                </SelectItem>
-                                            ))}
-                                        </SelectContent>
-                                    </Select>
-                                    <FormMessage />
-                                </FormItem>
-                            )}
+                            label="Gender :"
+                            items={genders}
+                            getItemKey={(item) => item.id}
+                            getItemName={(item) => item.name}
+                            disabled={action === 'update' && !form.getValues('genderId') ? true : false}
                         />
 
                         <div className="mt-2">
@@ -185,7 +171,12 @@ export default function CategoryModal() {
                             >
                                 Close
                             </Button>
-                            <Button size="lg" type="submit" disabled={loading} className="flex items-center gap-2">
+                            <Button
+                                size="lg"
+                                type="submit"
+                                disabled={loading}
+                                className="flex items-center gap-2 bg-blue-500 hover:bg-blue-600"
+                            >
                                 {loading ? <Loader2 className="animate-spin" /> : <Save />}
                                 {loading ? 'Saving ...' : 'Save'}
                             </Button>

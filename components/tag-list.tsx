@@ -2,14 +2,14 @@ import React from 'react';
 
 interface TagListProps<T> {
     tagList: T[];
-    renderItem: (item: T) => React.ReactNode;
+    getItemName: (item: T) => React.ReactNode;
 }
 
-const TagList = <T,>({ tagList, renderItem }: TagListProps<T>) => {
+const TagList = <T,>({ tagList, getItemName }: TagListProps<T>) => {
     return (
         <div className="flex w-full flex-row items-center justify-start rounded-md border border-gray-300 bg-white p-2">
             {tagList
-                .map((item) => renderItem(item))
+                .map((item) => getItemName(item))
                 .reverse()
                 .slice(0, 3)
                 .map((renderedItem, index) => (
@@ -17,9 +17,7 @@ const TagList = <T,>({ tagList, renderItem }: TagListProps<T>) => {
                         {renderedItem}
                     </span>
                 ))}
-            {tagList.length > 3 && (
-                <span className="mr-2 text-xs">...+ {tagList.length - 3}</span>
-            )}
+            {tagList.length > 3 && <span className="mr-2 text-xs">...+ {tagList.length - 3}</span>}
         </div>
     );
 };

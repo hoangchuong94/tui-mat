@@ -75,7 +75,7 @@ export default function CreateProductForm({ dataCreateProduct }: CreateProductFo
                                 <SquarePen className="mr-2" />
                                 <span>Create Product</span>
                             </h1>
-                            <Button className="rounded-3xl bg-green-400 text-white">
+                            <Button className="rounded-3xl bg-green-400 text-white hover:bg-blue-400">
                                 <Check />
                                 Add Product
                             </Button>
@@ -106,7 +106,7 @@ export default function CreateProductForm({ dataCreateProduct }: CreateProductFo
                                 label="Gender"
                                 items={dataCreateProduct.genders}
                                 getItemKey={(item) => item.id}
-                                renderItem={(item) => item.name}
+                                getItemName={(item) => item.name}
                                 defaultLabel="Select an gender"
                             />
                         </div>
@@ -167,7 +167,7 @@ export default function CreateProductForm({ dataCreateProduct }: CreateProductFo
                                 label="Discount Type"
                                 items={dataCreateProduct.promotions}
                                 getItemKey={(item) => item.id}
-                                renderItem={(item) => item.name}
+                                getItemName={(item) => item.name}
                                 disabled={!form.getValues('discount') ? true : false}
                             />
                         </div>
@@ -184,14 +184,15 @@ export default function CreateProductForm({ dataCreateProduct }: CreateProductFo
                                 addHref="/dashboard/product/trademark?action=create"
                                 name="trademark"
                                 label="Trademark"
-                                items={dataCreateProduct.trademark}
+                                items={dataCreateProduct.trademarks}
                                 getItemKey={(item) => item.id}
-                                renderItem={(item) => item.name}
+                                getItemName={(item) => item.name}
                             />
                         </div>
                     </div>
                     <div className="space-y-2 rounded-2xl bg-slate-100 p-4 md:col-span-5 lg:col-span-4 xl:col-span-3">
                         <PopoverSelectField
+                            className="w-80"
                             addHref="/dashboard/product/category?action=create"
                             updateHref="/dashboard/product/category?action=update"
                             deleteHref="/dashboard/product/category?action=delete"
@@ -199,7 +200,7 @@ export default function CreateProductForm({ dataCreateProduct }: CreateProductFo
                             label="Category"
                             items={filteredCategories}
                             getItemKey={(item) => item.id}
-                            renderItem={(item) => item.name}
+                            getItemName={(item) => item.name}
                             description="Please select a gender."
                             disabled={selectedGender.id ? false : true}
                             defaultLabel="Select an category"
@@ -211,7 +212,7 @@ export default function CreateProductForm({ dataCreateProduct }: CreateProductFo
                             label="Detail Category"
                             items={filteredDetailCategories}
                             getItemKey={(item) => item.id}
-                            renderItem={(item) => item.name}
+                            getItemName={(item) => item.name}
                             description="Please select a category."
                             disabled={selectedCategory.id ? false : true}
                             defaultLabel="Select an detail category"
