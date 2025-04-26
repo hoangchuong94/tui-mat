@@ -141,7 +141,7 @@ export default function CategoryModal() {
                             name="name"
                             label="Category Name :"
                             className="bg-slate-200 focus:bg-white"
-                            placeholder="Please enter category name"
+                            placeholder={action !== 'update' ? 'Please enter category name' : ''}
                             disabled={action === 'update' && !form.getValues('name') ? true : false}
                         />
 
@@ -153,6 +153,7 @@ export default function CategoryModal() {
                             getItemKey={(item) => item.id}
                             getItemName={(item) => item.name}
                             disabled={action === 'update' && !form.getValues('genderId') ? true : false}
+                            defaultLabel={action !== 'update' ? 'Select an item' : ''}
                         />
 
                         <div className="mt-2">

@@ -75,7 +75,7 @@ export default function CreateProductForm({ dataCreateProduct }: CreateProductFo
                                 <SquarePen className="mr-2" />
                                 <span>Create Product</span>
                             </h1>
-                            <Button className="rounded-3xl bg-green-400 text-white hover:bg-blue-400">
+                            <Button className="rounded-3xl bg-green-400 text-white hover:bg-blue-500">
                                 <Check />
                                 Add Product
                             </Button>

@@ -42,28 +42,29 @@ export const updateGender = async (id: string, values: GenderModalSchemaType) =>
 };
 
 export const deleteGender = async (genderId: string) => {
-    return await prisma.$transaction(async () => {
-        const { data } = await getCategoryByIdGender(genderId);
+    return deleteItems(genderId, genderOptions);
+    // return await prisma.$transaction(async () => {
+    //     const { data } = await getCategoryByIdGender(genderId);
 
-        const categoryIds = Array.isArray(data) ? data.map((item) => item.id) : [];
+    //     const categoryIds = Array.isArray(data) ? data.map((item) => item.id) : [];
 
-        const promises = [];
+    //     const promises = [];
 
-        if (categoryIds.length > 0) {
-            promises.push(deleteCategory(categoryIds));
-        }
+    //     if (categoryIds.length > 0) {
+    //         promises.push(deleteCategory(categoryIds));
+    //     }
 
-        promises.push(deleteItems(genderId, genderOptions));
+    //     promises.push(deleteItems(genderId, genderOptions));
 
-        await Promise.all(promises);
+    //     await Promise.all(promises);
 
-        return {
-            success: true,
-            message: 'items deleted successfully.',
-            data: null,
-            error: '',
-        };
-    });
+    //     return {
+    //         success: true,
+    //         message: 'items deleted successfully.',
+    //         data: null,
+    //         error: '',
+    //     };
+    // });
 };
 
 export const getAllGenders = async () => {

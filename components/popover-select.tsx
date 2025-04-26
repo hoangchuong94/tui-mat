@@ -52,16 +52,13 @@ export default function PopoverSelect<T>({
 
     const handleSelect = React.useCallback(
         (key: string) => {
-            if (typeof value === 'string') {
-                const selectedItem = items.map((item) => getKey(item).toString()).find((item) => item === key);
-                if (selectedItem) onChange(selectedItem);
-            } else {
-                const selectedItem = items.find((item) => getKey(item).toString() === key);
-                if (selectedItem) onChange(selectedItem);
+            const selectedItem = items.find((item) => getKey(item).toString() === key);
+            if (selectedItem) {
+                onChange(typeof value === 'string' ? key : selectedItem);
             }
             setOpen(false);
         },
-        [items, getKey, onChange],
+        [items, value, getKey, onChange],
     );
 
     return (
@@ -115,7 +112,7 @@ export default function PopoverSelect<T>({
                                                             type="button"
                                                             size="icon"
                                                             variant="outline"
-                                                            className="text-blue-600 hover:bg-blue-100"
+                                                            className="text-blue-600 hover:bg-blue-500 hover:text-white"
                                                             aria-label="Edit"
                                                         >
                                                             <Pencil className="h-4 w-4" />
@@ -129,7 +126,7 @@ export default function PopoverSelect<T>({
                                                             type="button"
                                                             size="icon"
                                                             variant="outline"
-                                                            className="text-red-600 hover:bg-red-100"
+                                                            className="text-red-600 hover:bg-red-500 hover:text-white"
                                                             aria-label="Delete"
                                                         >
                                                             <Trash className="h-4 w-4" />

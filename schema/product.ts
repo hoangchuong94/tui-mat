@@ -141,13 +141,25 @@ export const CreateProductSchema = z
                 message: 'Price should not be greater than Stock',
             });
         }
-        if (data.discount && data.price - data.price * (data.discount / 100) < data.price) {
+
+        const { price, stock, discount = 0 } = data;
+        const discountedPrice = price - (price * discount) / 100;
+
+        if (discountedPrice < stock) {
             ctx.addIssue({
                 code: 'custom',
                 path: ['discount'],
-                message: 'Discounted price should not be greater than the original price',
+                message: 'Discounted price must not be less than cost (no loss allowed)',
             });
         }
+
+        // if (data.discount && data.price - data.price * (data.discount / 100) < data.price) {
+        //     ctx.addIssue({
+        //         code: 'custom',
+        //         path: ['discount'],
+        //         message: 'Discounted price should not be greater than the original price',
+        //     });
+        // }
     });
 
 export const GenderModalSchema = z.object({
