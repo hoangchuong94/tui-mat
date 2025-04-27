@@ -52,7 +52,7 @@ export default function UploadImages({ setUrls, onChange, initialFilesState = []
                             });
                             return res;
                         } catch (err: unknown) {
-                            console.log(err);
+                            console.error('Error sending verification email:', err);
                             updateFileProgress(file.key, 'ERROR');
                         }
                     } else {

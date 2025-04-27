@@ -43,28 +43,6 @@ export const updateGender = async (id: string, values: GenderModalSchemaType) =>
 
 export const deleteGender = async (genderId: string) => {
     return deleteItems(genderId, genderOptions);
-    // return await prisma.$transaction(async () => {
-    //     const { data } = await getCategoryByIdGender(genderId);
-
-    //     const categoryIds = Array.isArray(data) ? data.map((item) => item.id) : [];
-
-    //     const promises = [];
-
-    //     if (categoryIds.length > 0) {
-    //         promises.push(deleteCategory(categoryIds));
-    //     }
-
-    //     promises.push(deleteItems(genderId, genderOptions));
-
-    //     await Promise.all(promises);
-
-    //     return {
-    //         success: true,
-    //         message: 'items deleted successfully.',
-    //         data: null,
-    //         error: '',
-    //     };
-    // });
 };
 
 export const getAllGenders = async () => {
@@ -129,4 +107,17 @@ export const fetchDataCreateProductForm = async (): Promise<DataCreateProduct> =
             trademarks: [],
         };
     }
+};
+
+export const fetchGenders = async () => {
+    return getItems({
+        ...genderOptions,
+        include: {
+            categories: {
+                include: {
+                    detailCategories: true,
+                },
+            },
+        },
+    });
 };

@@ -20,9 +20,6 @@ export default function CreateProductForm({ dataCreateProduct }: CreateProductFo
     const [thumbnailUrl, setThumbnailUrl] = useState<string>('');
     const [imageUrls, setImageUrls] = useState<string[]>([]);
 
-    console.log(dataCreateProduct.categories.length);
-    console.log(dataCreateProduct.genders.length);
-
     const form = useForm<CreateProductSchemaType>({
         resolver: zodResolver(CreateProductSchema),
         defaultValues: {

@@ -59,7 +59,6 @@ export const forgotPassword = async (values: ForgotPasswordSchemaType, token?: s
         });
         return { success: 'Password updated!' };
     } catch (error: unknown) {
-        console.log(error);
         return { error: 'something wrong.' };
     }
 };
@@ -98,7 +97,6 @@ export const sendVerificationEmail = async (values: SendVerificationEmailSchemaT
             };
         }
     } catch (error: unknown) {
-        console.log(error);
         return { error: 'something wrong.' };
     }
 };

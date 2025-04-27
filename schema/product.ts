@@ -13,20 +13,16 @@ export const ImagesSchema = z
         message: 'Please check image uploader ',
     });
 
-export const ThumbnailSchema = z
-    .preprocess(
-        (input) => {
-            if (input instanceof File || typeof input === 'string') return input;
-            return undefined;
-        },
-        z.union([
-            z.instanceof(File, { message: 'Thumbnail is required' }),
-            z.string().min(1, { message: 'Thumbnail is required' }),
-        ]),
-    )
-    .superRefine((data, ctx) => {
-        console.log(data, ctx);
-    });
+export const ThumbnailSchema = z.preprocess(
+    (input) => {
+        if (input instanceof File || typeof input === 'string') return input;
+        return undefined;
+    },
+    z.union([
+        z.instanceof(File, { message: 'Thumbnail is required' }),
+        z.string().min(1, { message: 'Thumbnail is required' }),
+    ]),
+);
 
 export const CreateProductSchema = z
     .object({

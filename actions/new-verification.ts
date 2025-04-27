@@ -45,7 +45,6 @@ export const newVerificationEmail = async (token: string) => {
 
         return { success: 'Email verified!' };
     } catch (error: unknown) {
-        console.log(error);
         return { error: 'something wrong.' };
     }
 };
