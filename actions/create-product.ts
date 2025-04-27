@@ -1,4 +1,5 @@
 'use server';
+
 import prisma from '@/lib/prisma';
 import { DataCreateProduct } from '@/types';
 import {
@@ -17,6 +18,7 @@ import {
     type WithSoftDelete,
 } from '@/actions/crud-service';
 
+/** === CRUD Options === */
 const genderOptions: CrudOptions<WithSoftDelete<GenderModalSchemaType>> = {
     schema: GenderModalSchema,
     model: 'gender',
@@ -33,54 +35,43 @@ const categoryOptions: CrudOptions<WithSoftDelete<CategoryModalSchemaType>> = {
     softDeleteField: 'deletedAt',
 };
 
-export const createGender = async (values: GenderModalSchemaType) => {
-    return createItem(values, genderOptions);
-};
+/** === Gender Actions === */
+export const createGender = async (values: GenderModalSchemaType) => createItem(values, genderOptions);
 
-export const updateGender = async (id: string, values: GenderModalSchemaType) => {
-    return updateItem(id, values, genderOptions);
-};
+export const updateGender = async (id: string, values: GenderModalSchemaType) => updateItem(id, values, genderOptions);
 
-export const deleteGender = async (genderId: string) => {
-    return deleteItems(genderId, genderOptions);
-};
+export const deleteGender = async (id: string) => deleteItems(id, genderOptions);
 
-export const getAllGenders = async () => {
-    return getItems(genderOptions);
-};
+export const getAllGenders = async () => getItems(genderOptions);
 
-export const getGenderById = async (id: string) => {
-    return getItems(genderOptions, { id });
-};
+export const getGenderById = async (id: string) => getItems(genderOptions, { id });
 
-export const createCategory = async (values: CategoryModalSchemaType) => {
-    return createItem(values, categoryOptions);
-};
-
-export const updateCategory = async (id: string, values: CategoryModalSchemaType) => {
-    return updateItem(id, values, categoryOptions);
-};
-
-export const deleteCategory = async (ids: string[] | string) => {
-    return deleteItems(ids, categoryOptions);
-};
-
-export const getAllCategory = async () => {
-    return getItems(categoryOptions);
-};
-
-export const getCategoryByIdGender = async (genderId: string) => {
-    return getItems(categoryOptions, {
-        filters: {
-            genderId,
+export const fetchGenders = async () =>
+    getItems({
+        ...genderOptions,
+        include: {
+            categories: true,
         },
     });
-};
 
-export const getCategoryById = async (id: string) => {
-    return getItems(categoryOptions, { id });
-};
+/** === Category Actions === */
+export const createCategory = async (values: CategoryModalSchemaType) => createItem(values, categoryOptions);
 
+export const updateCategory = async (id: string, values: CategoryModalSchemaType) =>
+    updateItem(id, values, categoryOptions);
+
+export const deleteCategory = async (ids: string[] | string) => deleteItems(ids, categoryOptions);
+
+export const getAllCategories = async () => getItems(categoryOptions);
+
+export const getCategoryById = async (id: string) => getItems(categoryOptions, { id });
+
+export const getCategoriesByGenderId = async (genderId: string) =>
+    getItems(categoryOptions, {
+        filters: { genderId },
+    });
+
+/** === Form Data Fetch === */
 export const fetchDataCreateProductForm = async (): Promise<DataCreateProduct> => {
     try {
         const [categories, genders, detailCategories, promotions, trademarks] = await Promise.all([
@@ -91,14 +82,9 @@ export const fetchDataCreateProductForm = async (): Promise<DataCreateProduct> =
             prisma.trademark.findMany({ where: { deletedAt: null } }),
         ]);
 
-        return {
-            categories,
-            genders,
-            detailCategories,
-            promotions,
-            trademarks,
-        };
+        return { categories, genders, detailCategories, promotions, trademarks };
     } catch (error) {
+        console.error('Error fetching create product form data:', error);
         return {
             categories: [],
             genders: [],
@@ -107,13 +93,4 @@ export const fetchDataCreateProductForm = async (): Promise<DataCreateProduct> =
             trademarks: [],
         };
     }
-};
-
-export const fetchGenders = async () => {
-    return getItems({
-        ...genderOptions,
-        include: {
-            category: true,
-        },
-    });
 };

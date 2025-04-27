@@ -14,112 +14,120 @@ enum UserRole {
 }
 
 model User {
-  id                String        @default(cuid()) @id
-  name              String?          
-  email             String?       @unique
-  emailVerified     DateTime?     @map("email_verified")
-  password          String?
-  image             String? 
-  createdAt         DateTime      @default(now()) @map(name: "created_at")
-  updatedAt         DateTime      @updatedAt @map(name: "updated_at")
-  role              UserRole      @default(USER) 
-  accounts          Account[]
-  sessions          Session[]
+  id            String    @id @default(cuid())
+  name          String?
+  email         String?   @unique
+  emailVerified DateTime? @map("email_verified")
+  password      String?
+  image         String?
+  createdAt     DateTime  @default(now()) @map("created_at")
+  updatedAt     DateTime  @updatedAt @map("updated_at")
+  role          UserRole  @default(USER)
 
-  @@map(name: "users")
+  accounts      Account[] @relation(name: "AccountUser")
+  sessions      Session[] @relation(name: "SessionUser")
+
+  @@map("users")
 }
 
 model Account {
-  id                String        @id @default(cuid())
-  userId            String        @map("user_id")
+  id                String   @id @default(cuid())
+  userId            String   @map("user_id")
   type              String
   provider          String
-  providerAccountId String        @map("provider_account_id")
-  refresh_token     String?       @db.Text
-  access_token      String?       @db.Text
-  expires_at        Int?          
+  providerAccountId String   @map("provider_account_id")
+  refresh_token     String?  @db.Text
+  access_token      String?  @db.Text
+  expires_at        Int?
   token_type        String?
   scope             String?
-  id_token          String?       @db.Text
+  id_token          String?  @db.Text
   session_state     String?
-  createdAt         DateTime      @default(now()) @map(name: "created_at")
-  updatedAt         DateTime      @updatedAt @map(name: "updated_at")
-  user              User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  createdAt         DateTime @default(now()) @map("created_at")
+  updatedAt         DateTime @updatedAt @map("updated_at")
+
+  user              User     @relation(name: "AccountUser", fields: [userId], references: [id], onDelete: Cascade)
 
   @@unique([provider, providerAccountId])
   @@map("accounts")
 }
 
 model Session {
-  sessionToken      String        @unique
-  userId            String
-  expires           DateTime
-  user              User          @relation(fields: [userId], references: [id], onDelete: Cascade)
-  createdAt         DateTime      @default(now())
-  updatedAt         DateTime      @updatedAt
+  id            String    @id @default(cuid())
+  sessionToken  String    @unique
+  userId        String
+  expires       DateTime
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  user          User      @relation(name: "SessionUser", fields: [userId], references: [id], onDelete: Cascade)
 }
 
 model VerificationToken {
-  id                String        @id @default(cuid())
-  email             String
-  token             String        @unique
-  expires           DateTime
+  id      String   @id @default(cuid())
+  email   String
+  token   String   @unique
+  expires DateTime
 
   @@unique([email, token])
 }
 
 model Gender {
-  id                String        @id @default(cuid())
-  name              String        
-  createdAt         DateTime      @default(now()) @map(name: "created_at")
-  updatedAt         DateTime      @updatedAt @map(name: "updated_at")
-  deletedAt         DateTime?     @map(name: "deleted_at")
-  category          Category[]
+  id            String     @id @default(cuid())
+  name          String
+  createdAt     DateTime   @default(now()) @map("created_at")
+  updatedAt     DateTime   @updatedAt @map("updated_at")
+  deletedAt     DateTime?  @map("deleted_at")
+
+  category      Category[] @relation(name: "CategoryGender")
 
   @@map("genders")
 }
 
 model Category {
-  id                String        @id @default(cuid())
-  name              String        
-  createdAt         DateTime      @default(now()) @map(name: "created_at")
-  updatedAt         DateTime      @updatedAt @map(name: "updated_at")
-  deletedAt         DateTime?     @map(name: "deleted_at")
-  genderId          String        @map("gender_id")
-  gender            Gender        @relation(fields: [genderId], references: [id])
-  detailCategories  DetailCategory[]
+  id            String            @id @default(cuid())
+  name          String
+  genderId      String             @map("gender_id")
+  createdAt     DateTime           @default(now()) @map("created_at")
+  updatedAt     DateTime           @updatedAt @map("updated_at")
+  deletedAt     DateTime?          @map("deleted_at")
+
+  gender        Gender             @relation(name: "CategoryGender", fields: [genderId], references: [id])
+  detailCategories DetailCategory[] @relation(name: "DetailCategoryCategory")
 
   @@map("categories")
   @@unique([name, genderId])
 }
 
 model DetailCategory {
-  id                String        @id @default(cuid())
-  name              String        
-  createdAt         DateTime      @default(now()) @map(name: "created_at")
-  updatedAt         DateTime      @updatedAt @map(name: "updated_at")
-  deletedAt         DateTime?     @map(name: "deleted_at")
-  categoryId        String        @map("category_id")
-  category          Category      @relation(fields: [categoryId], references: [id])
-  products          Product[]  
+  id            String       @id @default(cuid())
+  name          String
+  categoryId    String        @map("category_id")
+  createdAt     DateTime      @default(now()) @map("created_at")
+  updatedAt     DateTime      @updatedAt @map("updated_at")
+  deletedAt     DateTime?     @map("deleted_at")
+
+  category      Category      @relation(name: "DetailCategoryCategory", fields: [categoryId], references: [id])
+  products      Product[]     @relation(name: "ProductDetailCategory")
 
   @@map("detail_categories")
 }
 
 model Trademark {
-  id                String        @id @default(cuid())
-  name              String        
-  createdAt         DateTime      @default(now()) @map(name: "created_at")
-  updatedAt         DateTime      @updatedAt @map(name: "updated_at")
-  deletedAt         DateTime?     @map(name: "deleted_at")
-  products          Product []
+  id            String     @id @default(cuid())
+  name          String
+  createdAt     DateTime   @default(now()) @map("created_at")
+  updatedAt     DateTime   @updatedAt @map("updated_at")
+  deletedAt     DateTime?  @map("deleted_at")
+
+  products      Product[]  @relation(name: "ProductTrademark")
 
   @@map("trademark")
 }
 
 model Product {
-  id                String         @id @default(cuid())
-  name              String         
+  id                String              @id @default(cuid())
+  name              String
   description       String
   price             Float
   stock             Float
@@ -127,82 +135,98 @@ model Product {
   discount          Float
   thumbnail         String
   origin            String
-  images            ProductImage[]
-  colors            ProductColor[] 
-  promotions        ProductPromotion[]
-  createdAt         DateTime       @default(now()) @map(name: "created_at")
-  updatedAt         DateTime       @updatedAt @map(name: "updated_at")
-  deletedAt         DateTime?      @map(name: "deleted_at")
-  detailCategoryId  String         @map("detail_category_id")
-  detailCategory    DetailCategory @relation(fields: [detailCategoryId], references: [id])
-  trademarkId       String         @map("trademark_id")
-  trademark         Trademark      @relation(fields: [trademarkId], references: [id])
+  detailCategoryId  String               @map("detail_category_id")
+  trademarkId       String               @map("trademark_id")
+  createdAt         DateTime             @default(now()) @map("created_at")
+  updatedAt         DateTime             @updatedAt @map("updated_at")
+  deletedAt         DateTime?            @map("deleted_at")
+
+  detailCategory    DetailCategory       @relation(name: "ProductDetailCategory", fields: [detailCategoryId], references: [id])
+  trademark         Trademark            @relation(name: "ProductTrademark", fields: [trademarkId], references: [id])
+  images            ProductImage[]       @relation(name: "ProductImageProduct")
+  colors            ProductColor[]       @relation(name: "ProductColorProduct")
+  promotions        ProductPromotion[]   @relation(name: "ProductPromotionProduct")
 
   @@map("products")
 }
 
 model Color {
-  id                String          @id @default(cuid())
-  name              String          @unique
-  code              String
-  createdAt         DateTime        @default(now()) @map(name: "created_at")
-  updatedAt         DateTime        @updatedAt @map(name: "updated_at")
-  deletedAt         DateTime?       @map(name: "deleted_at")
-  products          ProductColor[]
+  id            String         @id @default(cuid())
+  name          String         @unique
+  code          String
+  createdAt     DateTime        @default(now()) @map("created_at")
+  updatedAt     DateTime        @updatedAt @map("updated_at")
+  deletedAt     DateTime?       @map("deleted_at")
+
+  products      ProductColor[] @relation(name: "ProductColorColor")
 
   @@map("colors")
 }
 
 model ProductColor {
-  productId         String
-  colorId           String
-  product           Product         @relation(fields: [productId], references: [id])
-  color             Color           @relation(fields: [colorId], references: [id])
+  productId     String
+  colorId       String
+  createdAt     DateTime @default(now()) @map("created_at")
+  updatedAt     DateTime @updatedAt @map("updated_at")
+  deletedAt     DateTime? @map("deleted_at")
+
+  product       Product @relation(name: "ProductColorProduct", fields: [productId], references: [id])
+  color         Color   @relation(name: "ProductColorColor", fields: [colorId], references: [id])
 
   @@id([productId, colorId])
   @@map("product_colors")
 }
 
 model Image {
-  id                String          @id @default(cuid())
-  url               String
-  createdAt         DateTime        @default(now()) @map(name: "created_at")
-  updatedAt         DateTime        @updatedAt @map(name: "updated_at")
-  deletedAt         DateTime?       @map(name: "deleted_at")
-  products          ProductImage[]
-  
+  id            String          @id @default(cuid())
+  url           String
+  createdAt     DateTime         @default(now()) @map("created_at")
+  updatedAt     DateTime         @updatedAt @map("updated_at")
+  deletedAt     DateTime?        @map("deleted_at")
+
+  products      ProductImage[]   @relation(name: "ProductImageImage")
+
   @@map("images")
 }
 
 model ProductImage {
-  productId         String
-  imageId           String
-  product           Product         @relation(fields: [productId], references: [id])
-  image             Image           @relation(fields: [imageId], references: [id])
+  productId     String
+  imageId       String
+  createdAt     DateTime @default(now()) @map("created_at")
+  updatedAt     DateTime @updatedAt @map("updated_at")
+  deletedAt     DateTime? @map("deleted_at")
+
+  product       Product @relation(name: "ProductImageProduct", fields: [productId], references: [id])
+  image         Image   @relation(name: "ProductImageImage", fields: [imageId], references: [id])
 
   @@id([productId, imageId])
   @@map("product_images")
 }
 
 model Promotion {
-  id                String          @id @default(cuid())
-  name              String         
-  description       String
-  startDay          DateTime        @default(now()) @map(name: "start_day")
-  endDay            DateTime
-  createdAt         DateTime        @default(now()) @map(name: "created_at")
-  updatedAt         DateTime        @updatedAt @map(name: "updated_at")
-  deletedAt         DateTime?       @map(name: "deleted_at")
-  products          ProductPromotion[]
+  id            String          @id @default(cuid())
+  name          String
+  description   String
+  startDay      DateTime         @default(now()) @map("start_day")
+  endDay        DateTime
+  createdAt     DateTime         @default(now()) @map("created_at")
+  updatedAt     DateTime         @updatedAt @map("updated_at")
+  deletedAt     DateTime?        @map("deleted_at")
+
+  products      ProductPromotion[] @relation(name: "ProductPromotionPromotion")
 
   @@map("promotions")
 }
 
 model ProductPromotion {
-  productId         String
-  promotionId       String
-  product           Product         @relation(fields: [productId], references: [id])
-  promotion         Promotion       @relation(fields: [promotionId], references: [id])
+  productId     String
+  promotionId   String
+  createdAt     DateTime @default(now()) @map("created_at")
+  updatedAt     DateTime @updatedAt @map("updated_at")
+  deletedAt     DateTime? @map("deleted_at")
+
+  product       Product   @relation(name: "ProductPromotionProduct", fields: [productId], references: [id])
+  promotion     Promotion @relation(name: "ProductPromotionPromotion", fields: [promotionId], references: [id])
 
   @@id([productId, promotionId])
   @@map("product_promotions")
