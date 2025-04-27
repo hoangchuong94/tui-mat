@@ -1,6 +1,6 @@
 'use client';
 import { useForm } from 'react-hook-form';
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { zodResolver } from '@hookform/resolvers/zod';
 
@@ -33,6 +33,18 @@ export default function GenderModal() {
         },
     });
 
+    const toggleModal = useCallback(
+        (isOpen: boolean) => {
+            setOpen(isOpen);
+            if (!isOpen) {
+                router.back();
+                setErrorMessage('');
+                setSuccessMessage('');
+            }
+        },
+        [router],
+    );
+
     const handleDeleteGender = async () => {
         if (!idGender) return;
 
@@ -43,8 +55,7 @@ export default function GenderModal() {
         try {
             const result = await deleteGender(idGender);
             if (result.success) {
-                setOpen(false);
-                router.push('/dashboard/product/new');
+                toggleModal(false);
             } else {
                 setErrorMessage(result.error);
             }
@@ -100,17 +111,15 @@ export default function GenderModal() {
         }
     }, [action, idGender, form]);
 
+    useEffect(() => {
+        if (!open) {
+            setErrorMessage('');
+            setSuccessMessage('');
+        }
+    }, [open]);
+
     return (
-        <Modal
-            title={`${action} Gender`}
-            open={open}
-            openChange={(value) => {
-                setOpen(value);
-                setErrorMessage('');
-                setSuccessMessage('');
-                if (!value) router.back();
-            }}
-        >
+        <Modal title={`${action} Gender`} open={open} openChange={toggleModal}>
             {action !== 'delete' ? (
                 <Form {...form}>
                     <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-2">

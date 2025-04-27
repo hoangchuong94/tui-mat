@@ -57,14 +57,19 @@ export async function createItem<T>(values: T, options: CrudOptions<T>) {
 
         const validated = schema.safeParse(values);
         if (!validated.success) {
-            return { success: false, message: '', data: null, error: validated.error.format() };
+            const errorMessage = validated.error.issues.map((issue) => issue.message).join(', ');
+            return {
+                success: false,
+                message: '',
+                data: null,
+                error: errorMessage,
+            };
         }
 
         const data = validated.data;
         const client = getModel(model);
 
         const whereConditions = buildUniqueWhere(uniqueFields, data);
-
         const where = softDeleteField
             ? { AND: [...whereConditions, { [softDeleteField as string]: null }] }
             : { AND: whereConditions };
@@ -97,7 +102,13 @@ export async function updateItem<T>(id: string, values: T, options: CrudOptions<
 
         const validated = schema.safeParse(values);
         if (!validated.success) {
-            return { success: false, message: '', data: null, error: validated.error.format() };
+            const errorMessage = validated.error.issues.map((issue) => issue.message).join(', ');
+            return {
+                success: false,
+                message: '',
+                data: null,
+                error: errorMessage,
+            };
         }
 
         const data = validated.data;
