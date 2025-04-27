@@ -108,3 +108,12 @@ export const fetchDataCreateProductForm = async (): Promise<DataCreateProduct> =
         };
     }
 };
+
+export const fetchGenders = async () => {
+    return getItems({
+        ...genderOptions,
+        include: {
+            category: true,
+        },
+    });
+};
