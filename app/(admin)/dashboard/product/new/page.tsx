@@ -4,6 +4,5 @@ import { fetchDataCreateProductForm } from '@/actions/create-product';
 
 export default async function NewProductPage() {
     const data = await fetchDataCreateProductForm();
-
     return <CreateProductForm dataCreateProduct={data} />;
 }

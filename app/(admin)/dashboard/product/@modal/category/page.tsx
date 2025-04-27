@@ -142,7 +142,7 @@ export default function CategoryModal() {
                             label="Category Name :"
                             className="bg-slate-200 focus:bg-white"
                             placeholder={action !== 'update' ? 'Please enter category name' : ''}
-                            disabled={action === 'update' && !form.getValues('name') ? true : false}
+                            disabled={(action === 'update' && !form.getValues('name') ? true : false) || loading}
                         />
 
                         <PopoverSelectField
@@ -163,6 +163,7 @@ export default function CategoryModal() {
 
                         <div className="float-right flex space-x-2 pt-4">
                             <Button
+                                disabled={loading}
                                 size="lg"
                                 type="button"
                                 variant="outline"

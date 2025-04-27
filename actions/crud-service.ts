@@ -65,12 +65,9 @@ export async function createItem<T>(values: T, options: CrudOptions<T>) {
 
         const whereConditions = buildUniqueWhere(uniqueFields, data);
 
-        console.log(whereConditions);
         const where = softDeleteField
             ? { AND: [...whereConditions, { [softDeleteField as string]: null }] }
             : { AND: whereConditions };
-
-        console.log(where);
 
         const exists = await client.findFirst({ where });
         if (exists) {
@@ -81,8 +78,6 @@ export async function createItem<T>(values: T, options: CrudOptions<T>) {
                 error: `${model} already exists with the same unique fields.`,
             };
         }
-
-        console.log(data);
 
         await client.create({ data });
         revalidatePath(pathToRevalidate);

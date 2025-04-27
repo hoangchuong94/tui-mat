@@ -44,7 +44,7 @@ export default function GenderModal() {
             const result = await deleteGender(idGender);
             if (result.success) {
                 setOpen(false);
-                router.back();
+                router.push('/dashboard/product/new');
             } else {
                 setErrorMessage(result.error);
             }
@@ -58,11 +58,9 @@ export default function GenderModal() {
 
     const onSubmit = async (values: GenderModalSchemaType) => {
         if (!values.name) return;
-
         setLoading(true);
         setErrorMessage('');
         setSuccessMessage('');
-
         try {
             let result;
 
@@ -109,6 +107,7 @@ export default function GenderModal() {
             openChange={(value) => {
                 setOpen(value);
                 setErrorMessage('');
+                setSuccessMessage('');
                 if (!value) router.back();
             }}
         >
@@ -120,7 +119,7 @@ export default function GenderModal() {
                             label="Name Gender :"
                             className="bg-slate-200 focus:bg-white"
                             placeholder="Please enter your name category"
-                            disabled={action === 'update' && !form.getValues('name') ? true : false}
+                            disabled={(action === 'update' && !form.getValues('name') ? true : false) || loading}
                         />
                         <div className="mt-2">
                             <FormSuccess message={successMessage} />
@@ -129,6 +128,7 @@ export default function GenderModal() {
 
                         <div className="float-right flex space-x-2 pt-4">
                             <Button
+                                disabled={loading}
                                 size="lg"
                                 type="button"
                                 variant="outline"

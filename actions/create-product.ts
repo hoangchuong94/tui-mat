@@ -20,7 +20,7 @@ import {
 const genderOptions: CrudOptions<WithSoftDelete<GenderModalSchemaType>> = {
     schema: GenderModalSchema,
     model: 'gender',
-    pathToRevalidate: '/dashboard/product/new',
+    pathToRevalidate: '/dashboard/product',
     uniqueFields: ['name'],
     softDeleteField: 'deletedAt',
 };
@@ -28,7 +28,7 @@ const genderOptions: CrudOptions<WithSoftDelete<GenderModalSchemaType>> = {
 const categoryOptions: CrudOptions<WithSoftDelete<CategoryModalSchemaType>> = {
     schema: CategoryModalSchema,
     model: 'category',
-    pathToRevalidate: '/dashboard/product/new',
+    pathToRevalidate: '/dashboard/product',
     uniqueFields: ['name', 'genderId'],
     softDeleteField: 'deletedAt',
 };

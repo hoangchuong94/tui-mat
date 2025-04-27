@@ -1,15 +1,15 @@
 'use client';
 import React, { useState } from 'react';
-import { useForm } from 'react-hook-form';
+import { useForm, useWatch } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Check, SquarePen } from 'lucide-react';
 
-import { DataCreateProduct } from '@/types/index';
-import { CreateProductSchemaType, CreateProductSchema } from '@/schema/product';
-import { Button } from '@/components/ui/button';
 import { Form } from '@/components/ui/form';
-import { ImageField, ImagesField, InputField, PopoverSelectField } from '@/components/custom-field';
+import { Button } from '@/components/ui/button';
+import { DataCreateProduct } from '@/types/index';
 import { useFilteredGender } from '@/hooks/use-filtered-gender';
+import { CreateProductSchemaType, CreateProductSchema } from '@/schema/product';
+import { ImageField, ImagesField, InputField, PopoverSelectField } from '@/components/custom-field';
 
 interface CreateProductFormProps {
     dataCreateProduct: DataCreateProduct;
@@ -19,6 +19,9 @@ export default function CreateProductForm({ dataCreateProduct }: CreateProductFo
     // const [isPending, startTransition] = useTransition();
     const [thumbnailUrl, setThumbnailUrl] = useState<string>('');
     const [imageUrls, setImageUrls] = useState<string[]>([]);
+
+    console.log(dataCreateProduct.categories.length);
+    console.log(dataCreateProduct.genders.length);
 
     const form = useForm<CreateProductSchemaType>({
         resolver: zodResolver(CreateProductSchema),
@@ -44,10 +47,10 @@ export default function CreateProductForm({ dataCreateProduct }: CreateProductFo
         },
     });
 
-    const { watch, resetField } = form;
+    const { control, resetField } = form;
 
-    const selectedGender = watch('gender');
-    const selectedCategory = watch('category');
+    const selectedGender = useWatch({ control, name: 'gender' });
+    const selectedCategory = useWatch({ control, name: 'category' });
 
     const { filteredCategories, filteredDetailCategories } = useFilteredGender(
         selectedGender,
@@ -62,6 +65,7 @@ export default function CreateProductForm({ dataCreateProduct }: CreateProductFo
         console.log(`imageUrls : ${imageUrls}`);
         console.log(values);
     };
+
     return (
         <div className="px-4 pb-4">
             <Form {...form}>
