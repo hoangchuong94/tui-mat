@@ -6,11 +6,10 @@ import { useRouter, useSearchParams } from 'next/navigation';
 import { zodResolver } from '@hookform/resolvers/zod';
 
 import { Gender } from '@prisma/client';
-
 import { Loader2, Save } from 'lucide-react';
+
 import { Button } from '@/components/ui/button';
 import { Form } from '@/components/ui/form';
-
 import Modal from '@/components/modal';
 import { CategoryModalSchema, CategoryModalSchemaType } from '@/schema/product';
 import { InputField, PopoverSelectField } from '@/components/custom-field';
@@ -28,8 +27,10 @@ import {
 export default function CategoryModal() {
     const router = useRouter();
     const searchParams = useSearchParams();
+
     const action = searchParams.get('action');
-    const idCategory = searchParams.get('id');
+    const categoryId = searchParams.get('id');
+    const genderId = searchParams.get('genderId');
 
     const [open, setOpen] = useState(true);
     const [loading, setLoading] = useState(false);
@@ -41,19 +42,24 @@ export default function CategoryModal() {
         resolver: zodResolver(CategoryModalSchema),
         defaultValues: {
             name: '',
-            genderId: '',
+            genderId: genderId ?? '',
         },
     });
 
-    const handleDeleteCategory = async () => {
-        if (!idCategory) return;
+    console.log(form.getValues('genderId'));
 
-        setLoading(true);
-        setErrorMessage('');
-        setSuccessMessage('');
+    const { handleSubmit } = form;
+
+    const handleDeleteCategory = async () => {
+        if (!categoryId) return;
 
         try {
-            const result = await deleteCategory(idCategory);
+            setLoading(true);
+            setErrorMessage('');
+            setSuccessMessage('');
+
+            const result = await deleteCategory(categoryId);
+
             if (result.success) {
                 setOpen(false);
                 router.back();
@@ -71,11 +77,11 @@ export default function CategoryModal() {
     const onSubmit = async (values: CategoryModalSchemaType) => {
         if (!values.name || !values.genderId) return;
 
-        setLoading(true);
-        setErrorMessage('');
-        setSuccessMessage('');
-
         try {
+            setLoading(true);
+            setErrorMessage('');
+            setSuccessMessage('');
+
             let result;
 
             switch (action) {
@@ -83,7 +89,7 @@ export default function CategoryModal() {
                     result = await createCategory(values);
                     break;
                 case 'update':
-                    if (idCategory) result = await updateCategory(idCategory, values);
+                    if (categoryId) result = await updateCategory(categoryId, values);
                     break;
                 default:
                     throw new Error('Invalid action');
@@ -103,26 +109,32 @@ export default function CategoryModal() {
     };
 
     useEffect(() => {
-        const fetchGenders = async () => {
-            const { success, data, error } = await getAllGenders();
-            if (success && data) setGenders(data);
-            else setErrorMessage(error);
-        };
-
-        fetchGenders();
-    }, []);
+        if (action !== 'delete') {
+            const fetchGenders = async () => {
+                const { success, data, error } = await getAllGenders();
+                if (success && data) {
+                    setGenders(data);
+                } else {
+                    setErrorMessage(error || 'Failed to fetch genders');
+                }
+            };
+            fetchGenders();
+        }
+    }, [action]);
 
     useEffect(() => {
-        if (action === 'update' && idCategory) {
-            const fetchCategoryUpdateById = async () => {
-                const { error, data, success } = await getCategoryById(idCategory);
-                if (success && data) form.reset(data);
-                else setErrorMessage(error);
+        if (action === 'update' && categoryId) {
+            const fetchCategory = async () => {
+                const { success, data, error } = await getCategoryById(categoryId);
+                if (success && data) {
+                    form.reset(data);
+                } else {
+                    setErrorMessage(error || 'Failed to fetch category');
+                }
             };
-
-            fetchCategoryUpdateById();
+            fetchCategory();
         }
-    }, [action, idCategory, form]);
+    }, [action, categoryId, form]);
 
     return (
         <Modal
@@ -136,10 +148,10 @@ export default function CategoryModal() {
         >
             {action !== 'delete' ? (
                 <Form {...form}>
-                    <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-2">
+                    <form onSubmit={handleSubmit(onSubmit)} className="space-y-2">
                         <InputField
                             name="name"
-                            label="Category Name :"
+                            label="Category Name:"
                             className="bg-slate-200 focus:bg-white"
                             placeholder={action !== 'update' ? 'Please enter category name' : ''}
                             disabled={(action === 'update' && !form.getValues('name') ? true : false) || loading}
@@ -148,12 +160,12 @@ export default function CategoryModal() {
                         <PopoverSelectField
                             className="w-[462px] p-0"
                             name="genderId"
-                            label="Gender :"
+                            label="Gender:"
                             items={genders}
                             getItemKey={(item) => item.id}
                             getItemName={(item) => item.name}
-                            disabled={action === 'update' && !form.getValues('genderId') ? true : false}
-                            defaultLabel={action !== 'update' ? 'Select an item' : ''}
+                            disabled={(action === 'update' && !form.getValues('genderId') ? true : false) || loading}
+                            defaultLabel={action === 'update' || form.getValues('genderId') ? '' : 'Select an item'}
                         />
 
                         <div className="mt-2">
@@ -163,24 +175,22 @@ export default function CategoryModal() {
 
                         <div className="float-right flex space-x-2 pt-4">
                             <Button
-                                disabled={loading}
-                                size="lg"
                                 type="button"
                                 variant="outline"
-                                onClick={() => {
-                                    router.back();
-                                }}
+                                size="lg"
+                                disabled={loading}
+                                onClick={() => router.back()}
                             >
                                 Close
                             </Button>
                             <Button
-                                size="lg"
                                 type="submit"
+                                size="lg"
                                 disabled={loading}
                                 className="flex items-center gap-2 bg-blue-500 hover:bg-blue-600"
                             >
                                 {loading ? <Loader2 className="animate-spin" /> : <Save />}
-                                {loading ? 'Saving ...' : 'Save'}
+                                {loading ? 'Saving...' : 'Save'}
                             </Button>
                         </div>
                     </form>
@@ -194,29 +204,29 @@ export default function CategoryModal() {
                     <p className="text-sm text-gray-700">
                         Note: Products related to this category will be impacted and cannot be recovered after deletion.
                     </p>
+
                     <div className="mt-4 flex w-full flex-row gap-4">
-                        {!loading && (
-                            <Button
-                                variant="outline"
-                                type="button"
-                                onClick={() => {
-                                    router.back();
-                                }}
-                                className="flex min-h-10 flex-1"
-                            >
-                                Cancel
-                            </Button>
-                        )}
                         <Button
+                            type="button"
+                            variant="outline"
+                            className="flex min-h-10 flex-1"
+                            onClick={() => router.back()}
+                            disabled={loading}
+                        >
+                            Cancel
+                        </Button>
+                        <Button
+                            type="button"
                             variant="destructive"
-                            type="submit"
                             className="flex min-h-10 flex-1"
                             onClick={handleDeleteCategory}
+                            disabled={loading}
                         >
-                            {loading && <Loader2 className="h-8 w-8 animate-spin" />}
-                            {loading ? 'Delete ...' : 'Ok'}
+                            {loading ? <Loader2 className="h-8 w-8 animate-spin" /> : null}
+                            {loading ? 'Deleting...' : 'Ok'}
                         </Button>
                     </div>
+
                     <FormError message={errorMessage} />
                 </div>
             )}

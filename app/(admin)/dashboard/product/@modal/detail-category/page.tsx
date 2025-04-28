@@ -9,27 +9,38 @@ import { Form } from '@/components/ui/form';
 import { Button } from '@/components/ui/button';
 
 import Modal from '@/components/modal';
-import { GenderModalSchemaType, GenderModalSchema } from '@/schema/product';
-import { createGender, deleteGender, getGenderById, updateGender } from '@/actions/create-product';
-import { InputField } from '@/components/custom-field';
+import { DetailCategoryModalSchema, DetailCategoryModalSchemaType } from '@/schema/product';
+import {
+    createDetailCategory,
+    deleteDetailCategory,
+    getCategoriesByGenderId,
+    getDetailCategoryById,
+    updateDetailCategory,
+} from '@/actions/create-product';
+import { InputField, PopoverSelectField } from '@/components/custom-field';
 import { FormSuccess } from '@/components/form-success';
 import { FormError } from '@/components/form-error';
+import { Category } from '@prisma/client';
 
-export default function GenderModal() {
+export default function DetailCategoryModal() {
     const router = useRouter();
     const searchParams = useSearchParams();
     const action = searchParams.get('action');
-    const genderId = searchParams.get('id');
+    const idDetailCategory = searchParams.get('id');
+    const genderId = searchParams.get('genderId');
 
     const [open, setOpen] = useState(true);
     const [loading, setLoading] = useState(false);
     const [errorMessage, setErrorMessage] = useState('');
     const [successMessage, setSuccessMessage] = useState('');
 
-    const form = useForm<GenderModalSchemaType>({
-        resolver: zodResolver(GenderModalSchema),
+    const [categories, setCategories] = useState<Category[]>([]);
+
+    const form = useForm<DetailCategoryModalSchemaType>({
+        resolver: zodResolver(DetailCategoryModalSchema),
         defaultValues: {
             name: '',
+            categoryId: '',
         },
     });
 
@@ -45,15 +56,15 @@ export default function GenderModal() {
         [router],
     );
 
-    const handleDeleteGender = async () => {
-        if (!genderId) return;
+    const handleDelete = async () => {
+        if (!idDetailCategory) return;
 
         setLoading(true);
         setErrorMessage('');
         setSuccessMessage('');
 
         try {
-            const result = await deleteGender(genderId);
+            const result = await deleteDetailCategory(idDetailCategory);
             if (result.success) {
                 toggleModal(false);
             } else {
@@ -67,20 +78,21 @@ export default function GenderModal() {
         }
     };
 
-    const onSubmit = async (values: GenderModalSchemaType) => {
+    const onSubmit = async (values: DetailCategoryModalSchemaType) => {
         if (!values.name) return;
         setLoading(true);
         setErrorMessage('');
         setSuccessMessage('');
+
         try {
             let result;
 
             switch (action) {
                 case 'create':
-                    result = await createGender(values);
+                    result = await createDetailCategory(values);
                     break;
                 case 'update':
-                    if (genderId) result = await updateGender(genderId, values);
+                    if (idDetailCategory) result = await updateDetailCategory(idDetailCategory, values);
                     break;
                 default:
                     throw new Error('Invalid action');
@@ -100,35 +112,50 @@ export default function GenderModal() {
     };
 
     useEffect(() => {
-        if (action === 'update' && genderId) {
-            const fetchGenderUpdateById = async () => {
-                const { data, success, error } = await getGenderById(genderId);
+        if (action === 'update' && idDetailCategory) {
+            const fetchData = async () => {
+                const { data, success, error } = await getDetailCategoryById(idDetailCategory);
                 if (success && data) form.reset(data);
                 else setErrorMessage(error);
             };
 
-            fetchGenderUpdateById();
+            fetchData();
         }
-    }, [action, genderId, form]);
+    }, [action, idDetailCategory, form]);
 
     useEffect(() => {
-        if (!open) {
-            setErrorMessage('');
-            setSuccessMessage('');
+        if (action === 'create' && genderId) {
+            const fetchCategories = async () => {
+                const { success, data, error } = await getCategoriesByGenderId(genderId);
+                if (success && data) setCategories(data);
+                else setErrorMessage(error);
+            };
+
+            fetchCategories();
         }
-    }, [open]);
+    }, [action, genderId]);
 
     return (
-        <Modal title={`${action} Gender`} open={open} openChange={toggleModal}>
+        <Modal title={`${action} Detail Category`} open={open} openChange={toggleModal}>
             {action !== 'delete' ? (
                 <Form {...form}>
                     <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-2">
                         <InputField
                             name="name"
-                            label="Gender Name :"
+                            label="Detail Category Name:"
+                            placeholder="Enter detail category name"
                             className="bg-slate-200 focus:bg-white"
-                            placeholder={action !== 'update' ? 'Please enter your name gender' : ''}
-                            disabled={(action === 'update' && !form.getValues('name') ? true : false) || loading}
+                            disabled={loading}
+                        />
+                        <PopoverSelectField
+                            className="w-[462px] p-0"
+                            name="categoryId"
+                            label="Category :"
+                            items={categories}
+                            getItemKey={(item) => item.id}
+                            getItemName={(item) => item.name}
+                            disabled={action === 'update' && !form.getValues('categoryId') ? true : false}
+                            defaultLabel={action !== 'update' ? 'Select an item' : ''}
                         />
                         <div className="mt-2">
                             <FormSuccess message={successMessage} />
@@ -141,9 +168,7 @@ export default function GenderModal() {
                                 size="lg"
                                 type="button"
                                 variant="outline"
-                                onClick={() => {
-                                    router.back();
-                                }}
+                                onClick={() => router.back()}
                             >
                                 Close
                             </Button>
@@ -162,20 +187,14 @@ export default function GenderModal() {
             ) : (
                 <div className="mt-4 flex w-full flex-col gap-4">
                     <p className="text-red-600">
-                        Warning: You are about to delete this gender and all associated products. This action cannot be
-                        undone!
-                    </p>
-                    <p className="text-sm text-gray-700">
-                        Note: Products related to this gender will be impacted and cannot be recovered after deletion.
+                        Warning: This will delete the detail category. This action is irreversible.
                     </p>
                     <div className="mt-4 flex w-full flex-row gap-4">
                         {!loading && (
                             <Button
                                 variant="outline"
                                 type="button"
-                                onClick={() => {
-                                    router.back();
-                                }}
+                                onClick={() => router.back()}
                                 className="flex min-h-10 flex-1"
                             >
                                 Cancel
@@ -185,10 +204,10 @@ export default function GenderModal() {
                             variant="destructive"
                             type="submit"
                             className="flex min-h-10 flex-1"
-                            onClick={handleDeleteGender}
+                            onClick={handleDelete}
                         >
                             {loading && <Loader2 className="h-8 w-8 animate-spin" />}
-                            {loading ? 'Delete ...' : 'Ok'}
+                            {loading ? 'Deleting...' : 'Confirm'}
                         </Button>
                     </div>
                     <FormError message={errorMessage} />

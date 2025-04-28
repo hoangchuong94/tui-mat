@@ -79,7 +79,7 @@ model Gender {
   updatedAt     DateTime   @updatedAt @map("updated_at")
   deletedAt     DateTime?  @map("deleted_at")
 
-  category      Category[] @relation(name: "CategoryGender")
+  categories      Category[] @relation(name: "CategoryGender")
 
   @@map("genders")
 }

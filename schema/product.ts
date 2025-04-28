@@ -159,14 +159,31 @@ export const CreateProductSchema = z
     });
 
 export const GenderModalSchema = z.object({
-    name: z.string().min(1, 'Category name is required'),
+    name: z.string().min(1, 'Gender name is required').max(255, 'Gender name is too long'),
 });
 
 export const CategoryModalSchema = z.object({
-    name: z.string().min(1, 'Name is required').max(255, 'Name is too long'),
+    name: z.string().min(1, 'Category name is required').max(255, 'Category name is too long'),
     genderId: z.string().min(1, 'Gender name is required'),
+});
+
+export const DetailCategoryModalSchema = z.object({
+    name: z.string().min(1, 'Detail category name is required').max(255, 'Detail category name is too long'),
+    categoryId: z.string().min(1, 'Category ID in DetailCategory is required'),
+});
+
+export const PromotionModalSchema = z.object({
+    name: z.string().min(1, 'Promotion is required').max(255, 'Promotion is too long'),
+    description: z.string().min(1, 'Description promotion  is required').max(255, 'Description promotion is too long'),
+});
+
+export const TrademarkModalSchema = z.object({
+    name: z.string().min(1, 'Trademark is required').max(255, 'Trademark is too long'),
 });
 
 export type GenderModalSchemaType = z.infer<typeof GenderModalSchema>;
 export type CategoryModalSchemaType = z.infer<typeof CategoryModalSchema>;
 export type CreateProductSchemaType = z.infer<typeof CreateProductSchema>;
+export type PromotionModalSchemaType = z.infer<typeof PromotionModalSchema>;
+export type TrademarkModalSchemaType = z.infer<typeof TrademarkModalSchema>;
+export type DetailCategoryModalSchemaType = z.infer<typeof DetailCategoryModalSchema>;

@@ -48,6 +48,7 @@ export default function CreateProductForm({ dataCreateProduct }: CreateProductFo
 
     const selectedGender = useWatch({ control, name: 'gender' });
     const selectedCategory = useWatch({ control, name: 'category' });
+    const discount = useWatch({ control, name: 'discount' });
 
     const { filteredCategories, filteredDetailCategories } = useFilteredGender(
         selectedGender,
@@ -163,13 +164,15 @@ export default function CreateProductForm({ dataCreateProduct }: CreateProductFo
                                 placeholder="Please enter your discount"
                             />
                             <PopoverSelectField
-                                addHref="/dashboard/product/discount-type?action=create"
-                                name="discountType"
-                                label="Discount Type"
+                                addHref="/dashboard/product/promotion?action=create"
+                                updateHref="/dashboard/product/promotion?action=update"
+                                deleteHref="/dashboard/product/promotion?action=delete"
+                                name="promotion"
+                                label="Promotion"
                                 items={dataCreateProduct.promotions}
                                 getItemKey={(item) => item.id}
                                 getItemName={(item) => item.name}
-                                disabled={!form.getValues('discount') ? true : false}
+                                disabled={!discount}
                             />
                         </div>
                         <div className="grid-cols-2 gap-2 max-lg:space-y-2 lg:grid">
@@ -183,6 +186,8 @@ export default function CreateProductForm({ dataCreateProduct }: CreateProductFo
 
                             <PopoverSelectField
                                 addHref="/dashboard/product/trademark?action=create"
+                                updateHref="/dashboard/product/trademark?action=update"
+                                deleteHref="/dashboard/product/trademark?action=delete"
                                 name="trademark"
                                 label="Trademark"
                                 items={dataCreateProduct.trademarks}
@@ -194,7 +199,7 @@ export default function CreateProductForm({ dataCreateProduct }: CreateProductFo
                     <div className="space-y-2 rounded-2xl bg-slate-100 p-4 md:col-span-5 lg:col-span-4 xl:col-span-3">
                         <PopoverSelectField
                             className="w-80"
-                            addHref="/dashboard/product/category?action=create"
+                            addHref={`/dashboard/product/category?action=create&genderId=${selectedGender.id}`}
                             updateHref="/dashboard/product/category?action=update"
                             deleteHref="/dashboard/product/category?action=delete"
                             name="category"
@@ -208,7 +213,10 @@ export default function CreateProductForm({ dataCreateProduct }: CreateProductFo
                         />
 
                         <PopoverSelectField
-                            addHref="/dashboard/product/detail-category?action=create"
+                            className="w-80"
+                            addHref={`/dashboard/product/detail-category?action=create&genderId=${selectedGender.id}`}
+                            updateHref="/dashboard/product/detail-category?action=update"
+                            deleteHref="/dashboard/product/detail-category?action=delete"
                             name="detailCategory"
                             label="Detail Category"
                             items={filteredDetailCategories}
