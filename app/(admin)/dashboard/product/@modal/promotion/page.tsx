@@ -110,7 +110,7 @@ export default function PromotionModal() {
                         <InputField
                             name="name"
                             label="Promotion Name:"
-                            placeholder="Enter promotion name"
+                            placeholder="Please enter promotion name"
                             disabled={loading}
                         />
                         <InputField

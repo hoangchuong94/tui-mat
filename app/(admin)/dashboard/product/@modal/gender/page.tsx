@@ -127,7 +127,7 @@ export default function GenderModal() {
                             name="name"
                             label="Gender Name :"
                             className="bg-slate-200 focus:bg-white"
-                            placeholder={action !== 'update' ? 'Please enter your name gender' : ''}
+                            placeholder={action !== 'update' ? 'Please enter gender name' : ''}
                             disabled={(action === 'update' && !form.getValues('name') ? true : false) || loading}
                         />
                         <div className="mt-2">
@@ -183,7 +183,7 @@ export default function GenderModal() {
                         )}
                         <Button
                             variant="destructive"
-                            type="submit"
+                            type="button"
                             className="flex min-h-10 flex-1"
                             onClick={handleDeleteGender}
                         >

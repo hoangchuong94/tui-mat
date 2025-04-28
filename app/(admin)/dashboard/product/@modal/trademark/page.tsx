@@ -109,7 +109,7 @@ export default function TrademarkModal() {
                         <InputField
                             name="name"
                             label="Trademark Name:"
-                            placeholder="Enter trademark name"
+                            placeholder="Please enter trademark name"
                             disabled={loading}
                         />
                         <div className="mt-2">

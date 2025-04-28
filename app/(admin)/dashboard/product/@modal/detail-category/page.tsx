@@ -143,7 +143,7 @@ export default function DetailCategoryModal() {
                         <InputField
                             name="name"
                             label="Detail Category Name:"
-                            placeholder="Enter detail category name"
+                            placeholder="Please enter detail category name"
                             className="bg-slate-200 focus:bg-white"
                             disabled={loading}
                         />
@@ -202,7 +202,7 @@ export default function DetailCategoryModal() {
                         )}
                         <Button
                             variant="destructive"
-                            type="submit"
+                            type="button"
                             className="flex min-h-10 flex-1"
                             onClick={handleDelete}
                         >
