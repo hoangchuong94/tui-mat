@@ -23,6 +23,7 @@ import {
     createCategory,
     getCategoryById,
 } from '@/actions/create-product';
+import { LoadingSkeletonUpdateCategoryForm } from '@/components/loading-skeleton';
 
 export default function CategoryModal() {
     const router = useRouter();
@@ -45,8 +46,6 @@ export default function CategoryModal() {
             genderId: genderId ?? '',
         },
     });
-
-    console.log(form.getValues('genderId'));
 
     const { handleSubmit } = form;
 
@@ -125,12 +124,14 @@ export default function CategoryModal() {
     useEffect(() => {
         if (action === 'update' && categoryId) {
             const fetchCategory = async () => {
+                setLoading(true);
                 const { success, data, error } = await getCategoryById(categoryId);
                 if (success && data) {
                     form.reset(data);
                 } else {
                     setErrorMessage(error || 'Failed to fetch category');
                 }
+                setLoading(false);
             };
             fetchCategory();
         }
@@ -148,52 +149,55 @@ export default function CategoryModal() {
         >
             {action !== 'delete' ? (
                 <Form {...form}>
-                    <form onSubmit={handleSubmit(onSubmit)} className="space-y-2">
-                        <InputField
-                            name="name"
-                            label="Category Name:"
-                            className="bg-slate-200 focus:bg-white"
-                            placeholder={action !== 'update' ? 'Please enter category name' : ''}
-                            disabled={(action === 'update' && !form.getValues('name') ? true : false) || loading}
-                        />
-
-                        <PopoverSelectField
-                            className="w-[462px] p-0"
-                            name="genderId"
-                            label="Gender:"
-                            items={genders}
-                            getItemKey={(item) => item.id}
-                            getItemName={(item) => item.name}
-                            disabled={(action === 'update' && !form.getValues('genderId') ? true : false) || loading}
-                            defaultLabel={action === 'update' || form.getValues('genderId') ? '' : 'Select an item'}
-                        />
-
-                        <div className="mt-2">
-                            <FormSuccess message={successMessage} />
-                            <FormError message={errorMessage} />
-                        </div>
-
-                        <div className="float-right flex space-x-2 pt-4">
-                            <Button
-                                type="button"
-                                variant="outline"
-                                size="lg"
+                    {loading ? (
+                        <LoadingSkeletonUpdateCategoryForm />
+                    ) : (
+                        <form onSubmit={handleSubmit(onSubmit)} className="space-y-2">
+                            <InputField
+                                name="name"
+                                label="Category Name:"
+                                className="bg-slate-200 focus:bg-white"
+                                placeholder="Please enter category name"
                                 disabled={loading}
-                                onClick={() => router.back()}
-                            >
-                                Close
-                            </Button>
-                            <Button
-                                type="submit"
-                                size="lg"
+                            />
+
+                            <PopoverSelectField
+                                className="w-[462px] p-0"
+                                name="genderId"
+                                label="Gender:"
+                                items={genders}
+                                getItemKey={(item) => item.id}
+                                getItemName={(item) => item.name}
                                 disabled={loading}
-                                className="flex items-center gap-2 bg-blue-500 hover:bg-blue-600"
-                            >
-                                {loading ? <Loader2 className="animate-spin" /> : <Save />}
-                                {loading ? 'Saving...' : 'Save'}
-                            </Button>
-                        </div>
-                    </form>
+                            />
+
+                            <div className="mt-2">
+                                <FormSuccess message={successMessage} />
+                                <FormError message={errorMessage} />
+                            </div>
+
+                            <div className="float-right flex space-x-2 pt-4">
+                                <Button
+                                    type="button"
+                                    variant="outline"
+                                    size="lg"
+                                    disabled={loading}
+                                    onClick={() => router.back()}
+                                >
+                                    Close
+                                </Button>
+                                <Button
+                                    type="submit"
+                                    size="lg"
+                                    disabled={loading}
+                                    className="flex items-center gap-2 bg-blue-500 hover:bg-blue-600"
+                                >
+                                    {loading ? <Loader2 className="animate-spin" /> : <Save />}
+                                    {loading ? 'Saving...' : 'Save'}
+                                </Button>
+                            </div>
+                        </form>
+                    )}
                 </Form>
             ) : (
                 <div className="mt-4 flex w-full flex-col gap-4">

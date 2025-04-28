@@ -24,17 +24,17 @@ export const useFilteredGender = (
     }, [selectedCategory, detailCategories]);
 
     useEffect(() => {
-        if (selectedGender) {
+        if (selectedGender?.id) {
             resetField('category');
             resetField('detailCategory');
         }
-    }, [selectedGender, resetField]);
+    }, [selectedGender?.id, resetField]);
 
     useEffect(() => {
-        if (selectedCategory) {
+        if (selectedCategory?.id) {
             resetField('detailCategory');
         }
-    }, [selectedCategory, resetField]);
+    }, [selectedCategory?.id, resetField]);
 
     return { filteredCategories, filteredDetailCategories };
 };

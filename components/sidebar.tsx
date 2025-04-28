@@ -72,8 +72,21 @@ export default function DashboardSidebar({ profile }: DashboardSidebarProps) {
         <Sidebar variant="floating" collapsible="icon" className="bg-slate-300">
             <SidebarHeader>
                 <SidebarMenu>
-                    <SidebarMenuItem className="flex items-center justify-center" onClick={() => setOpen(!open)}>
-                        <Image src={logo} alt="logo" quality={100} priority className="cursor-pointer" />
+                    <SidebarMenuItem
+                        className="flex items-center justify-center rounded-md bg-slate-100 p-2"
+                        onClick={() => setOpen(!open)}
+                    >
+                        <div className="overflow-hidden rounded-md">
+                            <Image
+                                src={logo}
+                                alt="logo"
+                                width={200}
+                                height={200}
+                                quality={100}
+                                priority
+                                className="cursor-pointer"
+                            />
+                        </div>
                     </SidebarMenuItem>
                 </SidebarMenu>
             </SidebarHeader>

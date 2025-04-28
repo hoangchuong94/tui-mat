@@ -114,9 +114,11 @@ export default function DetailCategoryModal() {
     useEffect(() => {
         if (action === 'update' && idDetailCategory) {
             const fetchData = async () => {
+                setLoading(true);
                 const { data, success, error } = await getDetailCategoryById(idDetailCategory);
                 if (success && data) form.reset(data);
                 else setErrorMessage(error);
+                setLoading(false);
             };
 
             fetchData();
@@ -139,50 +141,53 @@ export default function DetailCategoryModal() {
         <Modal title={`${action} Detail Category`} open={open} openChange={toggleModal}>
             {action !== 'delete' ? (
                 <Form {...form}>
-                    <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-2">
-                        <InputField
-                            name="name"
-                            label="Detail Category Name:"
-                            placeholder="Please enter detail category name"
-                            className="bg-slate-200 focus:bg-white"
-                            disabled={loading}
-                        />
-                        <PopoverSelectField
-                            className="w-[462px] p-0"
-                            name="categoryId"
-                            label="Category :"
-                            items={categories}
-                            getItemKey={(item) => item.id}
-                            getItemName={(item) => item.name}
-                            disabled={action === 'update' && !form.getValues('categoryId') ? true : false}
-                            defaultLabel={action !== 'update' ? 'Select an item' : ''}
-                        />
-                        <div className="mt-2">
-                            <FormSuccess message={successMessage} />
-                            <FormError message={errorMessage} />
-                        </div>
+                    {loading ? (
+                        <>loading...</>
+                    ) : (
+                        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-2">
+                            <InputField
+                                name="name"
+                                label="Detail Category Name:"
+                                placeholder="Please enter detail category name"
+                                className="bg-slate-200 focus:bg-white"
+                                disabled={loading}
+                            />
+                            <PopoverSelectField
+                                className="w-[462px] p-0"
+                                name="categoryId"
+                                label="Category :"
+                                items={categories}
+                                getItemKey={(item) => item.id}
+                                getItemName={(item) => item.name}
+                                disabled={loading}
+                            />
+                            <div className="mt-2">
+                                <FormSuccess message={successMessage} />
+                                <FormError message={errorMessage} />
+                            </div>
 
-                        <div className="float-right flex space-x-2 pt-4">
-                            <Button
-                                disabled={loading}
-                                size="lg"
-                                type="button"
-                                variant="outline"
-                                onClick={() => router.back()}
-                            >
-                                Close
-                            </Button>
-                            <Button
-                                size="lg"
-                                type="submit"
-                                disabled={loading}
-                                className="flex items-center gap-2 bg-blue-500 hover:bg-blue-600"
-                            >
-                                {loading ? <Loader2 className="animate-spin" /> : <Save />}
-                                {loading ? 'Saving ...' : 'Save'}
-                            </Button>
-                        </div>
-                    </form>
+                            <div className="float-right flex space-x-2 pt-4">
+                                <Button
+                                    disabled={loading}
+                                    size="lg"
+                                    type="button"
+                                    variant="outline"
+                                    onClick={() => router.back()}
+                                >
+                                    Close
+                                </Button>
+                                <Button
+                                    size="lg"
+                                    type="submit"
+                                    disabled={loading}
+                                    className="flex items-center gap-2 bg-blue-500 hover:bg-blue-600"
+                                >
+                                    {loading ? <Loader2 className="animate-spin" /> : <Save />}
+                                    {loading ? 'Saving ...' : 'Save'}
+                                </Button>
+                            </div>
+                        </form>
+                    )}
                 </Form>
             ) : (
                 <div className="mt-4 flex w-full flex-col gap-4">
