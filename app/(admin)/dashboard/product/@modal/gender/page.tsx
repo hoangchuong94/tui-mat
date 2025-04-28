@@ -128,48 +128,50 @@ export default function GenderModal() {
     return (
         <Modal title={`${action} Gender`} open={open} openChange={toggleModal}>
             {action !== 'delete' ? (
-                <Form {...form}>
+                <div>
                     {loading ? (
                         <LoadingSkeletonUpdateGenderForm />
                     ) : (
-                        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-2">
-                            <InputField
-                                name="name"
-                                label="Gender Name :"
-                                className="bg-slate-200 focus:bg-white"
-                                placeholder={action !== 'update' ? 'Please enter gender name' : ''}
-                                disabled={loading}
-                            />
-                            <div className="mt-2">
-                                <FormSuccess message={successMessage} />
-                                <FormError message={errorMessage} />
-                            </div>
+                        <Form {...form}>
+                            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-2">
+                                <InputField
+                                    name="name"
+                                    label="Gender Name :"
+                                    className="bg-slate-200 focus:bg-white"
+                                    placeholder={action !== 'update' ? 'Please enter gender name' : ''}
+                                    disabled={loading}
+                                />
+                                <div className="mt-2">
+                                    <FormSuccess message={successMessage} />
+                                    <FormError message={errorMessage} />
+                                </div>
 
-                            <div className="float-right flex space-x-2 pt-4">
-                                <Button
-                                    disabled={loading}
-                                    size="lg"
-                                    type="button"
-                                    variant="outline"
-                                    onClick={() => {
-                                        router.back();
-                                    }}
-                                >
-                                    Close
-                                </Button>
-                                <Button
-                                    size="lg"
-                                    type="submit"
-                                    disabled={loading}
-                                    className="flex items-center gap-2 bg-blue-500 hover:bg-blue-600"
-                                >
-                                    {loading ? <Loader2 className="animate-spin" /> : <Save />}
-                                    {loading ? 'Saving ...' : 'Save'}
-                                </Button>
-                            </div>
-                        </form>
+                                <div className="float-right flex space-x-2 pt-4">
+                                    <Button
+                                        disabled={loading}
+                                        size="lg"
+                                        type="button"
+                                        variant="outline"
+                                        onClick={() => {
+                                            router.back();
+                                        }}
+                                    >
+                                        Close
+                                    </Button>
+                                    <Button
+                                        size="lg"
+                                        type="submit"
+                                        disabled={loading}
+                                        className="flex items-center gap-2 bg-blue-500 hover:bg-blue-600"
+                                    >
+                                        {loading ? <Loader2 className="animate-spin" /> : <Save />}
+                                        {loading ? 'Saving ...' : 'Save'}
+                                    </Button>
+                                </div>
+                            </form>
+                        </Form>
                     )}
-                </Form>
+                </div>
             ) : (
                 <div className="mt-4 flex w-full flex-col gap-4">
                     <p className="text-red-600">

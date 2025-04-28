@@ -1,14 +1,15 @@
 'use client';
 import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
 import { useEffect, useState, useCallback } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
-import { zodResolver } from '@hookform/resolvers/zod';
 
-import { Loader2, Save } from 'lucide-react';
+import { Category } from '@prisma/client';
+
 import { Form } from '@/components/ui/form';
+import { Loader2, Save } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 
-import Modal from '@/components/modal';
 import { DetailCategoryModalSchema, DetailCategoryModalSchemaType } from '@/schema/product';
 import {
     createDetailCategory,
@@ -20,7 +21,8 @@ import {
 import { InputField, PopoverSelectField } from '@/components/custom-field';
 import { FormSuccess } from '@/components/form-success';
 import { FormError } from '@/components/form-error';
-import { Category } from '@prisma/client';
+import { LoadingSkeletonUpdateDetailCategoryForm } from '@/components/loading-skeleton';
+import Modal from '@/components/modal';
 
 export default function DetailCategoryModal() {
     const router = useRouter();
@@ -140,55 +142,57 @@ export default function DetailCategoryModal() {
     return (
         <Modal title={`${action} Detail Category`} open={open} openChange={toggleModal}>
             {action !== 'delete' ? (
-                <Form {...form}>
+                <div>
                     {loading ? (
-                        <>loading...</>
+                        <LoadingSkeletonUpdateDetailCategoryForm />
                     ) : (
-                        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-2">
-                            <InputField
-                                name="name"
-                                label="Detail Category Name:"
-                                placeholder="Please enter detail category name"
-                                className="bg-slate-200 focus:bg-white"
-                                disabled={loading}
-                            />
-                            <PopoverSelectField
-                                className="w-[462px] p-0"
-                                name="categoryId"
-                                label="Category :"
-                                items={categories}
-                                getItemKey={(item) => item.id}
-                                getItemName={(item) => item.name}
-                                disabled={loading}
-                            />
-                            <div className="mt-2">
-                                <FormSuccess message={successMessage} />
-                                <FormError message={errorMessage} />
-                            </div>
+                        <Form {...form}>
+                            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-2">
+                                <InputField
+                                    name="name"
+                                    label="Detail Category Name:"
+                                    placeholder="Please enter detail category name"
+                                    className="bg-slate-200 focus:bg-white"
+                                    disabled={loading}
+                                />
+                                <PopoverSelectField
+                                    className="w-[462px] p-0"
+                                    name="categoryId"
+                                    label="Category :"
+                                    items={categories}
+                                    getItemKey={(item) => item.id}
+                                    getItemName={(item) => item.name}
+                                    disabled={loading}
+                                />
+                                <div className="mt-2">
+                                    <FormSuccess message={successMessage} />
+                                    <FormError message={errorMessage} />
+                                </div>
 
-                            <div className="float-right flex space-x-2 pt-4">
-                                <Button
-                                    disabled={loading}
-                                    size="lg"
-                                    type="button"
-                                    variant="outline"
-                                    onClick={() => router.back()}
-                                >
-                                    Close
-                                </Button>
-                                <Button
-                                    size="lg"
-                                    type="submit"
-                                    disabled={loading}
-                                    className="flex items-center gap-2 bg-blue-500 hover:bg-blue-600"
-                                >
-                                    {loading ? <Loader2 className="animate-spin" /> : <Save />}
-                                    {loading ? 'Saving ...' : 'Save'}
-                                </Button>
-                            </div>
-                        </form>
+                                <div className="float-right flex space-x-2 pt-4">
+                                    <Button
+                                        disabled={loading}
+                                        size="lg"
+                                        type="button"
+                                        variant="outline"
+                                        onClick={() => router.back()}
+                                    >
+                                        Close
+                                    </Button>
+                                    <Button
+                                        size="lg"
+                                        type="submit"
+                                        disabled={loading}
+                                        className="flex items-center gap-2 bg-blue-500 hover:bg-blue-600"
+                                    >
+                                        {loading ? <Loader2 className="animate-spin" /> : <Save />}
+                                        {loading ? 'Saving ...' : 'Save'}
+                                    </Button>
+                                </div>
+                            </form>
+                        </Form>
                     )}
-                </Form>
+                </div>
             ) : (
                 <div className="mt-4 flex w-full flex-col gap-4">
                     <p className="text-red-600">

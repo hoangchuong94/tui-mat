@@ -30,7 +30,8 @@ export const CreateProductSchema = z
             .string({ required_error: 'Product name is required' })
             .min(1, 'Product name is required')
             .min(6, 'Product name must be more than 6 characters')
-            .max(32, 'Product name must be less than 32 characters'),
+            .max(32, 'Product name must be less than 32 characters')
+            .transform((val) => val.trim().replace(/\s+/g, ' ')),
 
         description: z
             .string({ required_error: 'Product description is required' })
@@ -59,30 +60,39 @@ export const CreateProductSchema = z
 
         gender: z.object({
             id: z.string().min(1, 'Gender ID is required'),
-            name: z.string().min(1, 'Gender name is required'),
+            name: z
+                .string()
+                .min(1, 'Gender name is required')
+                .transform((val) => val.trim().replace(/\s+/g, ' ')),
         }),
 
         category: z.object({
             id: z.string().min(1, 'Category ID is required'),
-            name: z.string().min(1, 'Category name is required'),
+            name: z
+                .string()
+                .min(1, 'Category name is required')
+                .transform((val) => val.trim().replace(/\s+/g, ' ')),
             genderId: z.string().min(1, 'Gender ID in category is required'),
         }),
 
         detailCategory: z.object({
             id: z.string().min(1, 'DetailCategory ID is required'),
-            name: z.string().min(1, 'DetailCategory name is required'),
+            name: z
+                .string()
+                .min(1, 'DetailCategory name is required')
+                .transform((val) => val.trim().replace(/\s+/g, ' ')),
             categoryId: z.string().min(1, 'Category ID in DetailCategory is required'),
         }),
 
         promotions: z.object({
             id: z.string(),
-            name: z.string(),
+            name: z.string().transform((val) => val.trim().replace(/\s+/g, ' ')),
             description: z.string(),
         }),
 
         trademark: z.object({
             id: z.string(),
-            name: z.string(),
+            name: z.string().transform((val) => val.trim().replace(/\s+/g, ' ')),
         }),
     })
     .superRefine((data, ctx) => {
@@ -159,26 +169,46 @@ export const CreateProductSchema = z
     });
 
 export const GenderModalSchema = z.object({
-    name: z.string().min(1, 'Gender name is required').max(255, 'Gender name is too long'),
+    name: z
+        .string()
+        .min(1, 'Gender name is required')
+        .max(255, 'Gender name is too long')
+        .transform((val) => val.trim().replace(/\s+/g, ' ')),
 });
 
 export const CategoryModalSchema = z.object({
-    name: z.string().min(1, 'Category name is required').max(255, 'Category name is too long'),
+    name: z
+        .string()
+        .min(1, 'Category name is required')
+        .max(255, 'Category name is too long')
+        .transform((val) => val.trim().replace(/\s+/g, ' ')),
     genderId: z.string().min(1, 'Gender name is required'),
 });
 
 export const DetailCategoryModalSchema = z.object({
-    name: z.string().min(1, 'Detail category name is required').max(255, 'Detail category name is too long'),
+    name: z
+        .string()
+        .min(1, 'Detail category name is required')
+        .max(255, 'Detail category name is too long')
+        .transform((val) => val.trim().replace(/\s+/g, ' ')),
     categoryId: z.string().min(1, 'Category ID in DetailCategory is required'),
 });
 
 export const PromotionModalSchema = z.object({
-    name: z.string().min(1, 'Promotion is required').max(255, 'Promotion is too long'),
+    name: z
+        .string()
+        .min(1, 'Promotion is required')
+        .max(255, 'Promotion is too long')
+        .transform((val) => val.trim().replace(/\s+/g, ' ')),
     description: z.string().min(1, 'Description promotion  is required').max(255, 'Description promotion is too long'),
 });
 
 export const TrademarkModalSchema = z.object({
-    name: z.string().min(1, 'Trademark is required').max(255, 'Trademark is too long'),
+    name: z
+        .string()
+        .min(1, 'Trademark is required')
+        .max(255, 'Trademark is too long')
+        .transform((val) => val.trim().replace(/\s+/g, ' ')),
 });
 
 export type GenderModalSchemaType = z.infer<typeof GenderModalSchema>;
