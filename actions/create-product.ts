@@ -1,6 +1,4 @@
 'use server';
-
-import prisma from '@/lib/prisma';
 import { DataCreateProduct } from '@/types';
 import {
     GenderModalSchema,
@@ -23,7 +21,6 @@ import {
     type CrudOptions,
     type WithSoftDelete,
 } from '@/actions/crud-service';
-import { Category, Gender } from '@prisma/client';
 
 /** === CRUD Options === */
 const genderOptions: CrudOptions<WithSoftDelete<GenderModalSchemaType>> = {
