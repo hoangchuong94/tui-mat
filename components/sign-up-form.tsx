@@ -9,7 +9,7 @@ import { FormError } from '@/components/form-error';
 import { FormSuccess } from '@/components/form-success';
 import { signUp } from '@/actions/auth';
 import { ArrowRight } from 'lucide-react';
-import LoadingSpinner from '@/components/loading-spinner';
+import { LoadingSpinnerBtn } from '@/components/loading-spinner';
 import AuthCardWrapper from '@/components/auth-wrapper';
 import { InputField } from '@/components/custom-field';
 
@@ -72,7 +72,7 @@ export default function SignUpForm() {
                     <div>
                         <Button className="mt-4 w-full" aria-disabled={isPending} disabled={isPending} type="submit">
                             {isPending ? (
-                                <LoadingSpinner />
+                                <LoadingSpinnerBtn />
                             ) : (
                                 <>
                                     <span>Sign Up</span>

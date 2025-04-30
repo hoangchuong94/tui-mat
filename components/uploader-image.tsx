@@ -11,7 +11,7 @@ interface UploadImageProps {
     className?: string;
 }
 
-export default function UploadImage({ initialFile: file, setUrl, onChange, className }: UploadImageProps) {
+export const UploadImage = ({ initialFile: file, setUrl, onChange, className }: UploadImageProps) => {
     const { edgestore } = useEdgeStore();
     const [error, setError] = useState<string>('');
     const [isAutoUpdate, setIsAutoUpdate] = useState(true);
@@ -64,4 +64,4 @@ export default function UploadImage({ initialFile: file, setUrl, onChange, class
             <p className="text-xs text-red-500">{error}</p>
         </>
     );
-}
+};

@@ -1,9 +1,5 @@
 import React from 'react';
 
 export default function DashboardPage() {
-    return (
-        <div>
-            <h1>DashboardPage</h1>
-        </div>
-    );
+    return <div className="group relative mx-2 inline-block"></div>;
 }

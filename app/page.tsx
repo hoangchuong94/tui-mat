@@ -9,9 +9,11 @@ export default async function Home() {
         return (
             <main className="flex h-screen flex-col bg-slate-200">
                 <div className="p-4">
-                    <Link className="float-right" href={'/sign-in'}>
-                        <Button type="submit">Sign In</Button>
-                    </Link>
+                    <Button type="submit" asChild>
+                        <Link className="float-right" href={'/sign-in'}>
+                            Sign In
+                        </Link>
+                    </Button>
                 </div>
                 <div className="flex flex-1 items-center justify-center">
                     <span>Not authenticated</span>

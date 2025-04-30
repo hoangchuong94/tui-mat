@@ -15,6 +15,7 @@ import { createPromotion, updatePromotion, deletePromotion, getPromotionById } f
 import { InputField } from '@/components/custom-field';
 import { FormSuccess } from '@/components/form-success';
 import { FormError } from '@/components/form-error';
+import { LoadingSkeletonUpdatePromotion } from '@/components/loading-skeleton';
 
 export default function PromotionModal() {
     const router = useRouter();
@@ -23,6 +24,7 @@ export default function PromotionModal() {
     const idPromotion = searchParams.get('id');
 
     const [open, setOpen] = useState(true);
+    const [isFetching, setIsFetching] = useState(false);
     const [loading, setLoading] = useState(false);
     const [errorMessage, setErrorMessage] = useState('');
     const [successMessage, setSuccessMessage] = useState('');
@@ -94,9 +96,11 @@ export default function PromotionModal() {
     useEffect(() => {
         if (action === 'update' && idPromotion) {
             const fetchData = async () => {
+                setIsFetching(true);
                 const { data, success, error } = await getPromotionById(idPromotion);
                 if (success && data) form.reset(data);
                 else setErrorMessage(error);
+                setIsFetching(false);
             };
             fetchData();
         }
@@ -105,42 +109,53 @@ export default function PromotionModal() {
     return (
         <Modal title={`${action} Promotion`} open={open} openChange={toggleModal}>
             {action !== 'delete' ? (
-                <Form {...form}>
-                    <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-2">
-                        <InputField
-                            name="name"
-                            label="Promotion Name:"
-                            placeholder="Please enter promotion name"
-                            disabled={loading}
-                        />
-                        <InputField
-                            name="description"
-                            label="Description"
-                            placeholder="Enter description"
-                            type="area"
-                            disabled={loading}
-                        />
+                <div>
+                    {isFetching ? (
+                        <LoadingSkeletonUpdatePromotion />
+                    ) : (
+                        <Form {...form}>
+                            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-2">
+                                <InputField
+                                    name="name"
+                                    label="Promotion Name:"
+                                    placeholder="Please enter promotion name"
+                                    disabled={loading}
+                                />
+                                <InputField
+                                    name="description"
+                                    label="Description"
+                                    placeholder="Enter description"
+                                    type="area"
+                                    disabled={loading}
+                                />
 
-                        <div className="mt-2">
-                            <FormSuccess message={successMessage} />
-                            <FormError message={errorMessage} />
-                        </div>
+                                <div className="mt-2">
+                                    <FormSuccess message={successMessage} />
+                                    <FormError message={errorMessage} />
+                                </div>
 
-                        <div className="float-right flex space-x-2 pt-4">
-                            <Button disabled={loading} type="button" variant="outline" onClick={() => router.back()}>
-                                Close
-                            </Button>
-                            <Button
-                                type="submit"
-                                disabled={loading}
-                                className="flex items-center gap-2 bg-blue-500 hover:bg-blue-600"
-                            >
-                                {loading ? <Loader2 className="animate-spin" /> : <Save />}
-                                {loading ? 'Saving ...' : 'Save'}
-                            </Button>
-                        </div>
-                    </form>
-                </Form>
+                                <div className="float-right flex space-x-2 pt-4">
+                                    <Button
+                                        disabled={loading}
+                                        type="button"
+                                        variant="outline"
+                                        onClick={() => router.back()}
+                                    >
+                                        Close
+                                    </Button>
+                                    <Button
+                                        type="submit"
+                                        disabled={loading}
+                                        className="flex items-center gap-2 bg-blue-500 hover:bg-blue-600"
+                                    >
+                                        {loading ? <Loader2 className="animate-spin" /> : <Save />}
+                                        {loading ? 'Saving ...' : 'Save'}
+                                    </Button>
+                                </div>
+                            </form>
+                        </Form>
+                    )}
+                </div>
             ) : (
                 <div className="mt-4 flex flex-col gap-4">
                     <p className="text-red-600">Warning: This will permanently delete this promotion.</p>

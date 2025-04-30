@@ -12,7 +12,7 @@ import { Button } from '@/components/ui/button';
 import { Form } from '@/components/ui/form';
 import Modal from '@/components/modal';
 import { CategoryModalSchema, CategoryModalSchemaType } from '@/schema/product';
-import { InputField, PopoverSelectField } from '@/components/custom-field';
+import { InputField, PopoverCheckboxField, PopoverSelectField } from '@/components/custom-field';
 import { FormSuccess } from '@/components/form-success';
 import { FormError } from '@/components/form-error';
 
@@ -34,6 +34,7 @@ export default function CategoryModal() {
     const genderId = searchParams.get('genderId');
 
     const [open, setOpen] = useState(true);
+    const [isFetching, setIsFetching] = useState(false);
     const [loading, setLoading] = useState(false);
     const [errorMessage, setErrorMessage] = useState('');
     const [successMessage, setSuccessMessage] = useState('');
@@ -43,11 +44,26 @@ export default function CategoryModal() {
         resolver: zodResolver(CategoryModalSchema),
         defaultValues: {
             name: '',
-            genderId: genderId ?? '',
+            genderIds: [],
         },
     });
 
+    console.log(form.getValues('genderIds'));
+
     const { handleSubmit } = form;
+
+    const getTitle = () => {
+        switch (action) {
+            case 'create':
+                return 'Create Category';
+            case 'update':
+                return 'Update Category';
+            case 'delete':
+                return 'Delete Category';
+            default:
+                return 'Category';
+        }
+    };
 
     const handleDeleteCategory = async () => {
         if (!categoryId) return;
@@ -74,7 +90,7 @@ export default function CategoryModal() {
     };
 
     const onSubmit = async (values: CategoryModalSchemaType) => {
-        if (!values.name || !values.genderId) return;
+        if (!values.name || !values.genderIds) return;
 
         try {
             setLoading(true);
@@ -124,14 +140,14 @@ export default function CategoryModal() {
     useEffect(() => {
         if (action === 'update' && categoryId) {
             const fetchCategory = async () => {
-                setLoading(true);
+                setIsFetching(true);
                 const { success, data, error } = await getCategoryById(categoryId);
                 if (success && data) {
                     form.reset(data);
                 } else {
                     setErrorMessage(error || 'Failed to fetch category');
                 }
-                setLoading(false);
+                setIsFetching(false);
             };
             fetchCategory();
         }
@@ -139,7 +155,7 @@ export default function CategoryModal() {
 
     return (
         <Modal
-            title={`${action} Category`}
+            title={getTitle()}
             open={open}
             openChange={(value) => {
                 setOpen(value);
@@ -149,28 +165,29 @@ export default function CategoryModal() {
         >
             {action !== 'delete' ? (
                 <div>
-                    {loading ? (
+                    {isFetching ? (
                         <LoadingSkeletonUpdateCategoryForm />
                     ) : (
                         <Form {...form}>
-                            <form onSubmit={handleSubmit(onSubmit)} className="space-y-2">
+                            <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
                                 <InputField
                                     name="name"
-                                    label="Category Name:"
+                                    label="Category Name"
                                     className="bg-slate-200 focus:bg-white"
                                     placeholder="Please enter category name"
                                     disabled={loading}
                                 />
 
-                                <PopoverSelectField
-                                    className="w-[462px] p-0"
-                                    name="genderId"
-                                    label="Gender:"
-                                    items={genders}
-                                    getItemKey={(item) => item.id}
-                                    getItemName={(item) => item.name}
-                                    disabled={loading}
-                                />
+                                <div className="rounded-md border border-gray-300 bg-slate-200 p-2">
+                                    <PopoverCheckboxField
+                                        name="genderId"
+                                        label="Gender"
+                                        items={genders}
+                                        getItemKey={(item) => item.id}
+                                        getItemName={(item) => item.name}
+                                        disabled={loading}
+                                    />
+                                </div>
 
                                 <div className="mt-2">
                                     <FormSuccess message={successMessage} />

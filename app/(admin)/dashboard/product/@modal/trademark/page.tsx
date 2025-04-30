@@ -15,6 +15,7 @@ import { createTrademark, updateTrademark, deleteTrademark, getTrademarkById } f
 import { InputField } from '@/components/custom-field';
 import { FormSuccess } from '@/components/form-success';
 import { FormError } from '@/components/form-error';
+import { LoadingSkeletonUpdateTrademark } from '@/components/loading-skeleton';
 
 export default function TrademarkModal() {
     const router = useRouter();
@@ -24,6 +25,7 @@ export default function TrademarkModal() {
 
     const [open, setOpen] = useState(true);
     const [loading, setLoading] = useState(false);
+    const [isFetching, setIsFetching] = useState(false);
     const [errorMessage, setErrorMessage] = useState('');
     const [successMessage, setSuccessMessage] = useState('');
 
@@ -93,9 +95,11 @@ export default function TrademarkModal() {
     useEffect(() => {
         if (action === 'update' && idTrademark) {
             const fetchData = async () => {
+                setIsFetching(true);
                 const { data, success, error } = await getTrademarkById(idTrademark);
                 if (success && data) form.reset(data);
                 else setErrorMessage(error);
+                setIsFetching(false);
             };
             fetchData();
         }
@@ -104,34 +108,45 @@ export default function TrademarkModal() {
     return (
         <Modal title={`${action} Trademark`} open={open} openChange={toggleModal}>
             {action !== 'delete' ? (
-                <Form {...form}>
-                    <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-2">
-                        <InputField
-                            name="name"
-                            label="Trademark Name:"
-                            placeholder="Please enter trademark name"
-                            disabled={loading}
-                        />
-                        <div className="mt-2">
-                            <FormSuccess message={successMessage} />
-                            <FormError message={errorMessage} />
-                        </div>
+                <>
+                    {isFetching ? (
+                        <LoadingSkeletonUpdateTrademark />
+                    ) : (
+                        <Form {...form}>
+                            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-2">
+                                <InputField
+                                    name="name"
+                                    label="Trademark Name:"
+                                    placeholder="Please enter trademark name"
+                                    disabled={loading}
+                                />
+                                <div className="mt-2">
+                                    <FormSuccess message={successMessage} />
+                                    <FormError message={errorMessage} />
+                                </div>
 
-                        <div className="float-right flex space-x-2 pt-4">
-                            <Button disabled={loading} type="button" variant="outline" onClick={() => router.back()}>
-                                Close
-                            </Button>
-                            <Button
-                                type="submit"
-                                disabled={loading}
-                                className="flex items-center gap-2 bg-blue-500 hover:bg-blue-600"
-                            >
-                                {loading ? <Loader2 className="animate-spin" /> : <Save />}
-                                {loading ? 'Saving ...' : 'Save'}
-                            </Button>
-                        </div>
-                    </form>
-                </Form>
+                                <div className="float-right flex space-x-2 pt-4">
+                                    <Button
+                                        disabled={loading}
+                                        type="button"
+                                        variant="outline"
+                                        onClick={() => router.back()}
+                                    >
+                                        Close
+                                    </Button>
+                                    <Button
+                                        type="submit"
+                                        disabled={loading}
+                                        className="flex items-center gap-2 bg-blue-500 hover:bg-blue-600"
+                                    >
+                                        {loading ? <Loader2 className="animate-spin" /> : <Save />}
+                                        {loading ? 'Saving ...' : 'Save'}
+                                    </Button>
+                                </div>
+                            </form>
+                        </Form>
+                    )}
+                </>
             ) : (
                 <div className="mt-4 flex flex-col gap-4">
                     <p className="text-red-600">Warning: This will permanently delete this trademark.</p>

@@ -72,21 +72,16 @@ export default function DashboardSidebar({ profile }: DashboardSidebarProps) {
         <Sidebar variant="floating" collapsible="icon" className="bg-slate-300">
             <SidebarHeader>
                 <SidebarMenu>
-                    <SidebarMenuItem
-                        className="flex items-center justify-center rounded-md bg-slate-100 p-2"
-                        onClick={() => setOpen(!open)}
-                    >
-                        <div className="overflow-hidden rounded-md">
-                            <Image
-                                src={logo}
-                                alt="logo"
-                                width={200}
-                                height={200}
-                                quality={100}
-                                priority
-                                className="cursor-pointer"
-                            />
-                        </div>
+                    <SidebarMenuItem onClick={() => setOpen(!open)}>
+                        <Image
+                            src={logo}
+                            alt="logo"
+                            width={280}
+                            height={280}
+                            quality={100}
+                            priority
+                            className="animate-pulse cursor-pointer rounded-md"
+                        />
                     </SidebarMenuItem>
                 </SidebarMenu>
             </SidebarHeader>
@@ -141,10 +136,12 @@ export default function DashboardSidebar({ profile }: DashboardSidebarProps) {
                                         <Avatar className="cursor-pointer">
                                             <AvatarImage src={profile.avatar} alt={profile.username} />
                                         </Avatar>
-                                        <SidebarMenuButton className={`flex justify-between ${!open && 'hidden'}`}>
-                                            <span>{profile.username}</span>
-                                            <ChevronsUpDown />
-                                        </SidebarMenuButton>
+                                        {open && (
+                                            <SidebarMenuButton className="flex justify-between">
+                                                <span>{profile.username}</span>
+                                                <ChevronsUpDown />
+                                            </SidebarMenuButton>
+                                        )}
                                     </div>
                                 </DropdownMenuTrigger>
                                 <DropdownMenuContent className="w-[--radix-popper-anchor-width]">

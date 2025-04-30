@@ -11,7 +11,7 @@ interface UploadImagesProps {
     className?: string;
 }
 
-export default function UploadImages({ setUrls, onChange, initialFilesState = [], className }: UploadImagesProps) {
+export const UploadImages = ({ setUrls, onChange, initialFilesState = [], className }: UploadImagesProps) => {
     const { edgestore } = useEdgeStore();
     const [fileStates, setFileStates] = useState<FileState[]>(initialFilesState);
     const previousFileStates = useRef<FileState[]>([]);
@@ -98,4 +98,4 @@ export default function UploadImages({ setUrls, onChange, initialFilesState = []
             onFilesAdded={handleOnFilesAdded}
         />
     );
-}
+};

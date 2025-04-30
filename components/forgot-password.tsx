@@ -20,7 +20,7 @@ import { FormError } from '@/components/form-error';
 import { FormSuccess } from '@/components/form-success';
 import { forgotPassword, sendVerificationEmail } from '@/actions/forgot-password';
 import { ArrowRight } from 'lucide-react';
-import LoadingSpinner from '@/components/loading-spinner';
+import { LoadingSpinnerBtn } from '@/components/loading-spinner';
 import Link from 'next/link';
 import { InputField } from '@/components/custom-field';
 
@@ -85,7 +85,7 @@ export default function ForgotPasswordPage() {
                         <FormSuccess message={success} />
                         <Button disabled={isPending || !!success} type="submit" className="w-full">
                             {isPending ? (
-                                <LoadingSpinner />
+                                <LoadingSpinnerBtn />
                             ) : (
                                 <>
                                     <p>Send Email</p>
@@ -149,7 +149,7 @@ export default function ForgotPasswordPage() {
                             type="submit"
                         >
                             {isPending ? (
-                                <LoadingSpinner />
+                                <LoadingSpinnerBtn />
                             ) : (
                                 <>
                                     <p>Reset password</p>

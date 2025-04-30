@@ -24,7 +24,7 @@ export default function GenderModal() {
 
     const [open, setOpen] = useState(true);
     const [loading, setLoading] = useState(false);
-
+    const [isFetching, setIsFetching] = useState(false);
     const [errorMessage, setErrorMessage] = useState('');
     const [successMessage, setSuccessMessage] = useState('');
 
@@ -104,14 +104,14 @@ export default function GenderModal() {
     useEffect(() => {
         if (action === 'update' && genderId) {
             const fetchGenderUpdateById = async () => {
-                setLoading(true);
+                setIsFetching(true);
                 const { data, success, error } = await getGenderById(genderId);
                 if (success && data) {
                     form.reset(data);
                 } else {
                     setErrorMessage(error);
                 }
-                setLoading(false);
+                setIsFetching(false);
             };
 
             fetchGenderUpdateById();
@@ -129,14 +129,14 @@ export default function GenderModal() {
         <Modal title={`${action} Gender`} open={open} openChange={toggleModal}>
             {action !== 'delete' ? (
                 <div>
-                    {loading ? (
+                    {isFetching ? (
                         <LoadingSkeletonUpdateGenderForm />
                     ) : (
                         <Form {...form}>
                             <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-2">
                                 <InputField
                                     name="name"
-                                    label="Gender Name :"
+                                    label="Gender Name"
                                     className="bg-slate-200 focus:bg-white"
                                     placeholder={action !== 'update' ? 'Please enter gender name' : ''}
                                     disabled={loading}

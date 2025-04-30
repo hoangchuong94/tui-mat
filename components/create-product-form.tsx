@@ -65,7 +65,7 @@ export default function CreateProductForm({ dataCreateProduct }: CreateProductFo
     };
 
     return (
-        <div className="px-4 pb-4">
+        <div className="px-4 py-4">
             <Form {...form}>
                 <form
                     onSubmit={form.handleSubmit(onSubmit)}
@@ -101,7 +101,7 @@ export default function CreateProductForm({ dataCreateProduct }: CreateProductFo
                                 placeholder="Please enter your price"
                             />
                             <PopoverSelectField
-                                addHref="/dashboard/product/gender?action=create"
+                                createHref="/dashboard/product/gender?action=create"
                                 updateHref="/dashboard/product/gender?action=update"
                                 deleteHref="/dashboard/product/gender?action=delete"
                                 name="gender"
@@ -164,7 +164,7 @@ export default function CreateProductForm({ dataCreateProduct }: CreateProductFo
                                 placeholder="Please enter your discount"
                             />
                             <PopoverSelectField
-                                addHref="/dashboard/product/promotion?action=create"
+                                createHref="/dashboard/product/promotion?action=create"
                                 updateHref="/dashboard/product/promotion?action=update"
                                 deleteHref="/dashboard/product/promotion?action=delete"
                                 name="promotion"
@@ -185,7 +185,7 @@ export default function CreateProductForm({ dataCreateProduct }: CreateProductFo
                             />
 
                             <PopoverSelectField
-                                addHref="/dashboard/product/trademark?action=create"
+                                createHref="/dashboard/product/trademark?action=create"
                                 updateHref="/dashboard/product/trademark?action=update"
                                 deleteHref="/dashboard/product/trademark?action=delete"
                                 name="trademark"
@@ -199,7 +199,7 @@ export default function CreateProductForm({ dataCreateProduct }: CreateProductFo
                     <div className="space-y-2 rounded-2xl bg-slate-100 p-4 md:col-span-5 lg:col-span-4 xl:col-span-3">
                         <PopoverSelectField
                             className="w-80"
-                            addHref={`/dashboard/product/category?action=create&genderId=${selectedGender.id}`}
+                            createHref={`/dashboard/product/category?action=create&genderId=${selectedGender.id}`}
                             updateHref="/dashboard/product/category?action=update"
                             deleteHref="/dashboard/product/category?action=delete"
                             name="category"
@@ -214,7 +214,7 @@ export default function CreateProductForm({ dataCreateProduct }: CreateProductFo
 
                         <PopoverSelectField
                             className="w-80"
-                            addHref={`/dashboard/product/detail-category?action=create&genderId=${selectedGender.id}`}
+                            createHref={`/dashboard/product/detail-category?action=create&genderId=${selectedGender.id}`}
                             updateHref="/dashboard/product/detail-category?action=update"
                             deleteHref="/dashboard/product/detail-category?action=delete"
                             name="detailCategory"

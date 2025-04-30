@@ -2,6 +2,7 @@
 
 import * as React from 'react';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 
 import { Check, ChevronsUpDown, Plus, Trash, Pencil } from 'lucide-react';
 
@@ -18,28 +19,29 @@ interface PopoverSelectProps<T> {
     getKey: (item: T) => string;
     onChange: (value: T | string | undefined) => void;
     disabled?: boolean;
-    addHref?: string;
+    createHref?: string;
     updateHref?: string;
     deleteHref?: string;
     defaultLabel?: string;
     className?: string;
 }
 
-export default function PopoverSelect<T>({
+export const PopoverSelect = <T,>({
     items = [],
     defaultValue,
     value,
     getItemName,
     getKey,
     onChange,
-    addHref,
+    createHref,
     updateHref,
     deleteHref,
     disabled = false,
     defaultLabel = 'Select an item',
     className,
-}: PopoverSelectProps<T>) {
+}: PopoverSelectProps<T>) => {
     const [open, setOpen] = React.useState(false);
+    const router = useRouter();
 
     const selected = React.useMemo(() => {
         const selectedItem = value ?? defaultValue;
@@ -61,6 +63,10 @@ export default function PopoverSelect<T>({
         [items, value, getKey, onChange],
     );
 
+    const handleLinkClick = (e: React.MouseEvent<HTMLAnchorElement>) => {
+        e.stopPropagation();
+    };
+
     return (
         <div className="flex gap-2">
             <Popover open={open} onOpenChange={setOpen}>
@@ -69,14 +75,14 @@ export default function PopoverSelect<T>({
                         variant="outline"
                         role="combobox"
                         aria-expanded={open}
-                        className="w-full justify-between bg-slate-200 capitalize"
+                        className={cn('w-full justify-between capitalize', { 'bg-slate-200': disabled })}
                         disabled={disabled}
                     >
                         {selectedName}
                         <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
                     </Button>
                 </PopoverTrigger>
-                <PopoverContent className={cn('w-96 p-0', { 'ml-11': addHref }, className)}>
+                <PopoverContent className={cn('w-96 p-0', { 'ml-11': createHref }, className)}>
                     <Command>
                         <CommandInput placeholder="Search..." disabled={disabled} />
                         <CommandList>
@@ -88,53 +94,49 @@ export default function PopoverSelect<T>({
                                     const isSelected = selected && getKey(selected) === id;
 
                                     return (
-                                        <div className="flex flex-row gap-1 pb-1" key={id}>
-                                            <CommandItem
-                                                className="flex flex-1 cursor-pointer capitalize"
-                                                value={id}
-                                                onSelect={() => handleSelect(id)}
-                                                disabled={disabled}
-                                            >
-                                                <div className="flex flex-1">
-                                                    <Check
-                                                        className={cn(
-                                                            'mr-2 h-4 w-4',
-                                                            isSelected ? 'opacity-100' : 'opacity-0',
-                                                        )}
-                                                    />
-                                                    {itemName}
-                                                </div>
-                                            </CommandItem>
+                                        <CommandItem
+                                            key={id}
+                                            className="flex flex-1 cursor-pointer capitalize"
+                                            value={itemName}
+                                            onSelect={() => handleSelect(id)}
+                                            disabled={disabled}
+                                        >
+                                            <div className="flex flex-1">
+                                                <Check
+                                                    className={cn(
+                                                        'mr-2 h-4 w-4',
+                                                        isSelected ? 'opacity-100' : 'opacity-0',
+                                                    )}
+                                                />
+                                                {itemName}
+                                            </div>
                                             <div className="flex items-center gap-1">
                                                 {updateHref && (
-                                                    <Link href={`${updateHref}&id=${id}`}>
-                                                        <Button
-                                                            type="button"
-                                                            size="icon"
-                                                            variant="outline"
-                                                            className="text-blue-600 hover:bg-blue-500 hover:text-white"
-                                                            aria-label="Edit"
-                                                        >
+                                                    <Button
+                                                        asChild
+                                                        size="icon"
+                                                        variant="ghost"
+                                                        className="text-blue-600 hover:bg-blue-500 hover:text-white"
+                                                    >
+                                                        <Link href={`${updateHref}&id=${id}`} onClick={handleLinkClick}>
                                                             <Pencil className="h-4 w-4" />
-                                                        </Button>
-                                                    </Link>
+                                                        </Link>
+                                                    </Button>
                                                 )}
-
                                                 {deleteHref && (
-                                                    <Link href={`${deleteHref}&id=${id}`}>
-                                                        <Button
-                                                            type="button"
-                                                            size="icon"
-                                                            variant="outline"
-                                                            className="text-red-600 hover:bg-red-500 hover:text-white"
-                                                            aria-label="Delete"
-                                                        >
+                                                    <Button
+                                                        asChild
+                                                        size="icon"
+                                                        variant="ghost"
+                                                        className="text-red-600 hover:bg-red-500 hover:text-white"
+                                                    >
+                                                        <Link href={`${deleteHref}&id=${id}`} onClick={handleLinkClick}>
                                                             <Trash className="h-4 w-4" />
-                                                        </Button>
-                                                    </Link>
+                                                        </Link>
+                                                    </Button>
                                                 )}
                                             </div>
-                                        </div>
+                                        </CommandItem>
                                     );
                                 })}
                             </CommandGroup>
@@ -142,15 +144,13 @@ export default function PopoverSelect<T>({
                     </Command>
                 </PopoverContent>
             </Popover>
-            {!disabled && addHref && (
+            {!disabled && createHref && (
                 <div className="flex items-center">
-                    <Link href={addHref}>
-                        <Button type="button" size="icon" variant="outline">
-                            <Plus className="h-4 w-4" />
-                        </Button>
-                    </Link>
+                    <Button type="button" size="icon" variant="outline" onClick={() => router.push(createHref)}>
+                        <Plus className="h-4 w-4" />
+                    </Button>
                 </div>
             )}
         </div>
     );
-}
+};

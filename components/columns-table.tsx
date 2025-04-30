@@ -13,7 +13,7 @@ import { ColumnDef } from '@tanstack/react-table';
 import { Button } from '@/components/ui/button';
 import { Checkbox } from '@/components/ui/checkbox';
 
-import TagList from '@/components/tag-list';
+import { TagList } from '@/components/tag-list';
 import { ProductDetail } from '@/types';
 import { DataTableColumnHeader } from '@/components/data-table-column-header';
 
@@ -101,20 +101,23 @@ export const productTableColumn: ColumnDef<ProductDetail>[] = [
                     <DropdownMenuContent align="end">
                         <DropdownMenuItem asChild>
                             <DropdownMenuItem>
-                                <Link className="block w-full" href={`/dashboard/product/update?id=${row.original.id}`}>
-                                    <Button className="w-full hover:no-underline" variant="link">
+                                <Button className="w-full hover:no-underline" variant="link" asChild>
+                                    <Link
+                                        className="block w-full"
+                                        href={`/dashboard/product/update?id=${row.original.id}`}
+                                    >
                                         Update
-                                    </Button>
-                                </Link>
+                                    </Link>
+                                </Button>
                             </DropdownMenuItem>
                         </DropdownMenuItem>
                         <DropdownMenuSeparator />
                         <DropdownMenuItem>
-                            <Link className="block w-full" href={`/dashboard/product/delete?id=${row.original.id}`}>
-                                <Button className="w-full hover:no-underline" variant="link">
+                            <Button className="w-full hover:no-underline" variant="link" asChild>
+                                <Link className="block w-full" href={`/dashboard/product/delete?id=${row.original.id}`}>
                                     Delete
-                                </Button>
-                            </Link>
+                                </Link>
+                            </Button>
                         </DropdownMenuItem>
                     </DropdownMenuContent>
                 </DropdownMenu>

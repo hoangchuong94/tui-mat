@@ -35,7 +35,7 @@ const categoryOptions: CrudOptions<WithSoftDelete<CategoryModalSchemaType>> = {
     schema: CategoryModalSchema,
     model: 'category',
     pathToRevalidate: '/dashboard/product',
-    uniqueFields: ['name', 'genderId'],
+    uniqueFields: ['name'],
     softDeleteField: 'deletedAt',
 };
 

@@ -33,6 +33,7 @@ export default function DetailCategoryModal() {
 
     const [open, setOpen] = useState(true);
     const [loading, setLoading] = useState(false);
+    const [isFetching, setIsFetching] = useState(false);
     const [errorMessage, setErrorMessage] = useState('');
     const [successMessage, setSuccessMessage] = useState('');
 
@@ -116,11 +117,11 @@ export default function DetailCategoryModal() {
     useEffect(() => {
         if (action === 'update' && idDetailCategory) {
             const fetchData = async () => {
-                setLoading(true);
+                setIsFetching(true);
                 const { data, success, error } = await getDetailCategoryById(idDetailCategory);
                 if (success && data) form.reset(data);
                 else setErrorMessage(error);
-                setLoading(false);
+                setIsFetching(false);
             };
 
             fetchData();
@@ -143,7 +144,7 @@ export default function DetailCategoryModal() {
         <Modal title={`${action} Detail Category`} open={open} openChange={toggleModal}>
             {action !== 'delete' ? (
                 <div>
-                    {loading ? (
+                    {isFetching ? (
                         <LoadingSkeletonUpdateDetailCategoryForm />
                     ) : (
                         <Form {...form}>

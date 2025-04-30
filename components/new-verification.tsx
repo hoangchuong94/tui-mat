@@ -8,7 +8,7 @@ import { Button } from '@/components/ui/button';
 import Link from 'next/link';
 import { FormError } from '@/components/form-error';
 import { FormSuccess } from '@/components/form-success';
-import LoadingSpinner from '@/components/loading-spinner';
+import { LoadingSpinnerBtn } from '@/components/loading-spinner';
 import { ArrowRight } from 'lucide-react';
 
 export default function NewVerificationPage() {
@@ -57,7 +57,7 @@ export default function NewVerificationPage() {
                     ) : (
                         <Button disabled={isPending} onClick={handlerVerificationEmail} className="w-full">
                             {isPending ? (
-                                <LoadingSpinner />
+                                <LoadingSpinnerBtn />
                             ) : (
                                 <>
                                     <p>Click here</p>

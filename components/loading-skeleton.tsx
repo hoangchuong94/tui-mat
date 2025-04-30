@@ -1,7 +1,9 @@
+import { SpinnerIsLLoading } from '@/components/loading-spinner';
+
 export const LoadingSkeletonAuth = () => {
     return (
         <div className="flex h-[596.3px] w-[416px] items-center justify-center rounded-xl bg-white">
-            <div className="h-10 w-10 animate-spin rounded-full border-4 border-gray-300 border-t-blue-500"></div>
+            <SpinnerIsLLoading />
         </div>
     );
 };
@@ -9,7 +11,7 @@ export const LoadingSkeletonAuth = () => {
 export const LoadingSkeletonTokens = () => {
     return (
         <div className="flex h-[240px] w-auto items-center justify-center rounded-xl bg-white">
-            <div className="h-10 w-10 animate-spin rounded-full border-4 border-gray-300 border-t-blue-500"></div>
+            <SpinnerIsLLoading />
         </div>
     );
 };
@@ -17,7 +19,7 @@ export const LoadingSkeletonTokens = () => {
 export const LoadingSkeletonTableProduct = () => {
     return (
         <div className="flex h-full w-full items-center justify-center rounded-xl bg-white">
-            <div className="h-10 w-10 animate-spin rounded-full border-4 border-gray-300 border-t-blue-500"></div>
+            <SpinnerIsLLoading />
         </div>
     );
 };
@@ -25,7 +27,7 @@ export const LoadingSkeletonTableProduct = () => {
 export const LoadingSkeletonUpdateGenderForm = () => {
     return (
         <div className="flex h-36 w-full items-center justify-center bg-transparent">
-            <div className="h-10 w-10 animate-spin rounded-full border-4 border-gray-300 border-t-blue-500"></div>
+            <SpinnerIsLLoading />
         </div>
     );
 };
@@ -33,7 +35,7 @@ export const LoadingSkeletonUpdateGenderForm = () => {
 export const LoadingSkeletonUpdateCategoryForm = () => {
     return (
         <div className="flex h-52 w-full items-center justify-center bg-transparent">
-            <div className="h-10 w-10 animate-spin rounded-full border-4 border-gray-300 border-t-blue-500"></div>
+            <SpinnerIsLLoading />
         </div>
     );
 };
@@ -41,7 +43,23 @@ export const LoadingSkeletonUpdateCategoryForm = () => {
 export const LoadingSkeletonUpdateDetailCategoryForm = () => {
     return (
         <div className="flex h-52 w-full items-center justify-center bg-transparent">
-            <div className="h-10 w-10 animate-spin rounded-full border-4 border-gray-300 border-t-blue-500"></div>
+            <SpinnerIsLLoading />
+        </div>
+    );
+};
+
+export const LoadingSkeletonUpdatePromotion = () => {
+    return (
+        <div className="flex h-52 w-full items-center justify-center bg-transparent">
+            <SpinnerIsLLoading />
+        </div>
+    );
+};
+
+export const LoadingSkeletonUpdateTrademark = () => {
+    return (
+        <div className="flex h-52 w-full items-center justify-center bg-transparent">
+            <SpinnerIsLLoading />
         </div>
     );
 };

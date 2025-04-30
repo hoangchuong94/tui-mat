@@ -11,7 +11,7 @@ import { useForm } from 'react-hook-form';
 import githubIcon from '@/public/icon/github-icon.svg';
 import googleIcon from '@/public/icon/google-icon.svg';
 
-import LoadingSpinner from '@/components/loading-spinner';
+import { LoadingSpinnerBtn } from '@/components/loading-spinner';
 import Auth from '@/components/auth-wrapper';
 import { signIn } from 'next-auth/react';
 import { authenticate } from '@/actions/auth';
@@ -82,7 +82,7 @@ export default function SignInForm() {
 
                     <Button className="w-full" aria-disabled={isPending} disabled={isPending} type="submit">
                         {isPending ? (
-                            <LoadingSpinner />
+                            <LoadingSpinnerBtn />
                         ) : (
                             <>
                                 <span>Sign In</span>

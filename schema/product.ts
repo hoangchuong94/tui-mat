@@ -182,7 +182,7 @@ export const CategoryModalSchema = z.object({
         .min(1, 'Category name is required')
         .max(255, 'Category name is too long')
         .transform((val) => val.trim().replace(/\s+/g, ' ')),
-    genderId: z.string().min(1, 'Gender name is required'),
+    genderIds: z.array(z.string()),
 });
 
 export const DetailCategoryModalSchema = z.object({

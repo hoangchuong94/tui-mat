@@ -21,19 +21,17 @@ interface ModalProps {
 
 export default function Modal({ title, description, header, footer, children, open, openChange }: ModalProps) {
     return (
-        <div>
-            <Dialog open={open} onOpenChange={openChange}>
-                <DialogContent aria-describedby={undefined}>
-                    <DialogHeader>
-                        <DialogHeader className="capitalize">
-                            {header || <DialogTitle className="text-center font-thin">{title}</DialogTitle>}
-                            <DialogDescription>{description}</DialogDescription>
-                        </DialogHeader>
+        <Dialog open={open} onOpenChange={openChange}>
+            <DialogContent aria-describedby={undefined}>
+                <DialogHeader>
+                    <DialogHeader className="capitalize">
+                        {header || <DialogTitle className="text-center font-thin">{title}</DialogTitle>}
+                        <DialogDescription>{description}</DialogDescription>
                     </DialogHeader>
-                    <div>{children}</div>
-                    <DialogFooter className="mt-4">{footer}</DialogFooter>
-                </DialogContent>
-            </Dialog>
-        </div>
+                </DialogHeader>
+                <div>{children}</div>
+                <DialogFooter className="mt-4">{footer}</DialogFooter>
+            </DialogContent>
+        </Dialog>
     );
 }

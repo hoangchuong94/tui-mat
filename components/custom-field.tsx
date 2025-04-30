@@ -6,10 +6,10 @@ import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { FieldValues, FieldPath, UseControllerProps, ControllerRenderProps, Path, PathValue } from 'react-hook-form';
 import { FormControl, FormField, FormItem, FormLabel, FormMessage, FormDescription } from '@/components/ui/form';
 
-import UploadImage from '@/components/uploader-image';
-import UploadImages from '@/components/uploader-images';
-import PopoverCheckbox from '@/components/popover-checkbox';
-import PopoverSelect from '@/components/popover-select';
+import { UploadImage } from '@/components/uploader-image';
+import { UploadImages } from '@/components/uploader-images';
+import { PopoverCheckbox } from '@/components/popover-checkbox';
+import { PopoverSelect } from '@/components/popover-select';
 
 interface GenericFieldProps<TFieldValues extends FieldValues> {
     label?: string;
@@ -35,7 +35,7 @@ interface PopoverSelectFieldProps<TFieldValues extends FieldValues, TItem> exten
     getItemName: (item: TItem) => string;
     disabled?: boolean;
     description?: string;
-    addHref?: string;
+    createHref?: string;
     updateHref?: string;
     deleteHref?: string;
 }
@@ -157,7 +157,7 @@ export const InputField = <TFieldValues extends FieldValues>({
 export const PopoverSelectField = <TFieldValues extends FieldValues, TItem>({
     label,
     defaultLabel,
-    addHref,
+    createHref,
     updateHref,
     deleteHref,
     items = [],
@@ -176,7 +176,7 @@ export const PopoverSelectField = <TFieldValues extends FieldValues, TItem>({
             <PopoverSelect
                 className={className}
                 defaultLabel={defaultLabel}
-                addHref={addHref}
+                createHref={createHref}
                 updateHref={updateHref}
                 deleteHref={deleteHref}
                 defaultValue={defaultValue}
@@ -191,7 +191,7 @@ export const PopoverSelectField = <TFieldValues extends FieldValues, TItem>({
         [
             className,
             defaultLabel,
-            addHref,
+            createHref,
             updateHref,
             deleteHref,
             defaultValue,
@@ -219,7 +219,7 @@ export const PopoverCheckboxField = <TFieldValues extends FieldValues, TItem>({
         (field: ControllerRenderProps<TFieldValues>) => (
             <PopoverCheckbox
                 items={items}
-                value={field.value}
+                value={Array.isArray(field.value) ? field.value : []}
                 onChange={field.onChange}
                 getItemName={memoizedGetItemName}
                 getItemKey={getItemKey}
