@@ -12,7 +12,7 @@ import { Button } from '@/components/ui/button';
 import { Form } from '@/components/ui/form';
 import Modal from '@/components/modal';
 import { CategoryModalSchema, CategoryModalSchemaType } from '@/schema/product';
-import { InputField, PopoverCheckboxField, PopoverSelectField } from '@/components/custom-field';
+import { InputField, PopoverCheckboxField } from '@/components/custom-field';
 import { FormSuccess } from '@/components/form-success';
 import { FormError } from '@/components/form-error';
 
@@ -31,7 +31,7 @@ export default function CategoryModal() {
 
     const action = searchParams.get('action');
     const categoryId = searchParams.get('id');
-    const genderId = searchParams.get('genderId');
+    // const genderId = searchParams.get('genderId');
 
     const [open, setOpen] = useState(true);
     const [isFetching, setIsFetching] = useState(false);

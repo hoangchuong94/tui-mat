@@ -2,7 +2,6 @@
 
 import * as React from 'react';
 import { X } from 'lucide-react';
-import { cn } from '@/lib/utils'; // If you have a classnames utility
 import { twMerge } from 'tailwind-merge'; // Optional for cleaner class merging
 
 interface TagListProps<T> {

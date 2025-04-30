@@ -88,7 +88,7 @@ export default function CreateProductForm({ dataCreateProduct }: CreateProductFo
                         <InputField
                             name="name"
                             label="Name"
-                            className="bg-slate-200 focus:bg-white"
+                            className="bg-slate-200 focus:bg-white dark:text-black"
                             placeholder="Please enter your name"
                         />
 
@@ -96,7 +96,7 @@ export default function CreateProductForm({ dataCreateProduct }: CreateProductFo
                             <InputField
                                 type="number"
                                 name="quantity"
-                                className="bg-slate-200 focus:bg-white"
+                                className="bg-slate-200 focus:bg-white dark:text-black"
                                 label="Quantity"
                                 placeholder="Please enter your price"
                             />
